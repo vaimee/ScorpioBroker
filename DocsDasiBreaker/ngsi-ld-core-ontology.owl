@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#"
+     xml:base="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core">
+        <owl:versionIRI rdf:resource="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core/0.1"/>
+        <rdfs:comment>Ontology made by VAIMEE for dasi-breaker project</rdfs:comment>
+        <owl:versionInfo>ngsi-ld-core-ontology-owl, v0.1, 2021</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@id -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@id">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@type -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@type">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Entity -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Entity">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:label>Entity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Property -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Property">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:label>Property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Relationship -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Relationship">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:label>Relationship</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Value -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#Value">
+        <rdfs:label>Value</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#hasObject -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#hasObject">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+        <rdfs:label>hasObject</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#hasValue -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#hasValue">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+        <rdfs:label>hasValue</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@context -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@context">
+        <rdfs:label>@context</rdfs:label>
+        <owl:deprecated>This is just the rdf graph</owl:deprecated>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#Property -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#Resource -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld -->
+
+    <owl:NamedIndividual rdf:about="https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld">
+        <rdf:type rdf:resource="http://www.semanticweb.org/vaimee/dasi-breaker/ngsi-ld-core#@context"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
