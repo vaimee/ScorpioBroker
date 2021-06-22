@@ -53,6 +53,7 @@ public class StorageReaderService {
 		 * 
 		 */
 
+	
 		logger.trace("Listener queryHandler, Thread ID: " + Thread.currentThread().getId());
 		logger.trace("handleQuery() :: started");
 		String payload = new String(message);

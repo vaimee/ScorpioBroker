@@ -1,5 +1,7 @@
 package eu.neclab.ngsildbroker.entityhandler.controller;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import javax.annotation.PostConstruct;
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfNQuad;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonParseException;
 import eu.neclab.ngsildbroker.commons.constants.AppConstants;
@@ -96,8 +104,24 @@ public class EntityController {// implements EntityHandlerInterface {
 			HttpUtils.doPreflightCheck(request, payload);
 			logger.trace("create entity :: started");
 			String resolved = httpUtils.expandPayload(request, payload, AppConstants.ENTITIES_URL_ID);
-			// entityService.validateEntity(resolved, request);
+			entityService.validateEntity(resolved, request);
+			logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: "+resolved);
+			//---------------------------------------------------------------------------
+			//------------------------------------WIP------------------------------------
+			//---------------------------------------------------------------------------
+			Reader targetReader = new StringReader(resolved);
+			Document document = JsonDocument.of(targetReader);
+			RdfDataset rdf = JsonLd.toRdf(document).get();
+			logger.info("\n---------------------------------------\ncreateEntity.RDF: ");
+			for ( RdfNQuad iterable_element : rdf.toList()) {
+				String temp = "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +">";
+				logger.info("\n"+temp);
+			}
+			
 
+			//---------------------------------------------------------------------------
+			//---------------------------------------------------------------------------
+			//---------------------------------------------------------------------------
 			result = entityService.createMessage(resolved);
 			logger.trace("create entity :: completed");
 			return ResponseEntity.status(HttpStatus.CREATED).header("location", AppConstants.ENTITES_URL + result)

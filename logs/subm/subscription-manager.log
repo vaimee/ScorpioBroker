@@ -1,0 +1,335 @@
+2021-06-10 13:17:02,137 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$6ca0f1dd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:03,427 INFO o.s.c.c.c.ConfigServicePropertySourceLocator [main] Fetching config from server at : http://localhost:8888
+2021-06-10 13:17:04,562 INFO o.s.c.c.c.ConfigServicePropertySourceLocator [main] Located environment: name=subscription-manager, profiles=[default], label=null, version=null, state=null
+2021-06-10 13:17:04,562 INFO o.s.c.b.c.PropertySourceBootstrapConfiguration [main] Located property source: CompositePropertySource {name='configService', propertySources=[MapPropertySource {name='classpath:/config/subscription-manager.yml'}]}
+2021-06-10 13:17:04,616 INFO o.s.b.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-06-10 13:17:05,908 WARN o.s.b.a.e.EndpointId [main] Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-06-10 13:17:06,118 INFO o.s.c.c.s.GenericScope [main] BeanFactory id=29d0b816-2525-33ab-98e4-c5d2372fbbaf
+2021-06-10 13:17:06,126 INFO o.s.i.c.DefaultConfiguringBeanFactoryPostProcessor [main] No bean named 'errorChannel' has been explicitly defined. Therefore, a default PublishSubscribeChannel will be created.
+2021-06-10 13:17:06,132 INFO o.s.i.c.DefaultConfiguringBeanFactoryPostProcessor [main] No bean named 'taskScheduler' has been explicitly defined. Therefore, a default ThreadPoolTaskScheduler will be created.
+2021-06-10 13:17:06,144 INFO o.s.i.c.DefaultConfiguringBeanFactoryPostProcessor [main] No bean named 'integrationHeaderChannelRegistry' has been explicitly defined. Therefore, a default DefaultHeaderChannelRegistry will be created.
+2021-06-10 13:17:06,203 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.kafka.annotation.KafkaBootstrapConfiguration' of type [org.springframework.kafka.annotation.KafkaBootstrapConfiguration$$EnhancerBySpringCGLIB$$24390063] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,255 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$5086eee0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,303 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.security.config.annotation.configuration.ObjectPostProcessorConfiguration' of type [org.springframework.security.config.annotation.configuration.ObjectPostProcessorConfiguration$$EnhancerBySpringCGLIB$$e934b71a] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,310 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'objectPostProcessor' of type [org.springframework.security.config.annotation.configuration.AutowireBeanFactoryObjectPostProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,316 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@70ab80e3' of type [org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,319 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration' of type [org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration$$EnhancerBySpringCGLIB$$e0959cc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,326 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,351 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'integrationDisposableAutoCreatedBeans' of type [org.springframework.integration.config.annotation.Disposables] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,396 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.integration.config.IntegrationManagementConfiguration' of type [org.springframework.integration.config.IntegrationManagementConfiguration$$EnhancerBySpringCGLIB$$bb78aa0f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,404 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration$IntegrationJmxConfiguration' of type [org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration$IntegrationJmxConfiguration$$EnhancerBySpringCGLIB$$970ab52f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,425 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration' of type [org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration$$EnhancerBySpringCGLIB$$cff25dfc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,441 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'mbeanServer' of type [com.sun.jmx.mbeanserver.JmxMBeanServer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,456 INFO o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$6ca0f1dd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-06-10 13:17:06,864 INFO o.s.b.w.e.t.TomcatWebServer [main] Tomcat initialized with port(s): 2025 (http)
+2021-06-10 13:17:06,883 INFO o.a.j.l.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-2025"]
+2021-06-10 13:17:06,895 INFO o.a.j.l.DirectJDKLog [main] Starting service [Tomcat]
+2021-06-10 13:17:06,897 INFO o.a.j.l.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2021-06-10 13:17:06,974 INFO o.a.j.l.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-06-10 13:17:06,975 INFO o.s.b.w.s.c.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 2339 ms
+2021-06-10 13:17:07,117 WARN c.n.c.s.URLConfigurationSource [main] No URLs will be polled as dynamic configuration sources.
+2021-06-10 13:17:07,118 INFO c.n.c.s.URLConfigurationSource [main] To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-06-10 13:17:07,141 INFO c.n.c.DynamicPropertyFactory [main] DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@62577d6
+2021-06-10 13:17:08,423 INFO o.s.c.c.u.InetUtils [main] Cannot determine local hostname
+2021-06-10 13:17:08,707 INFO o.s.s.c.ExecutorConfigurationSupport [main] Initializing ExecutorService 'taskScheduler'
+2021-06-10 13:17:09,665 INFO o.s.s.c.ExecutorConfigurationSupport [main] Initializing ExecutorService
+2021-06-10 13:17:09,693 INFO c.z.h.HikariDataSource [main] SpringBootHikariCP - Starting...
+2021-06-10 13:17:09,945 INFO c.z.h.HikariDataSource [main] SpringBootHikariCP - Start completed.
+2021-06-10 13:17:09,978 TRACE e.n.n.s.s.SubscriptionService [main] call loadStoredSubscriptions() ::
+2021-06-10 13:17:10,621 INFO o.s.b.a.e.w.EndpointLinksResolver [main] Exposing 25 endpoint(s) beneath base path '/actuator'
+2021-06-10 13:17:10,838 INFO o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [main] 
+
+Using generated security password: 81a49280-7c24-4b5d-9d5e-1f134f0879ca
+
+2021-06-10 13:17:11,790 INFO o.s.s.w.DefaultSecurityFilterChain [main] Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@344426bf, org.springframework.security.web.context.SecurityContextPersistenceFilter@14379273, org.springframework.security.web.header.HeaderWriterFilter@cfbc8e8, org.springframework.security.web.authentication.logout.LogoutFilter@2257fadf, org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter@30814f43, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@17740dae, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@bc4d5e1, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5411dd90, org.springframework.security.web.session.SessionManagementFilter@14bf57b2, org.springframework.security.web.access.ExceptionTranslationFilter@16073fa8, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@26a4551a]
+2021-06-10 13:17:11,900 INFO s.d.s.w.PropertySourcedRequestMappingHandlerMapping [main] Mapped URL path [/v2/api-docs] onto method [public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)]
+2021-06-10 13:17:11,964 WARN c.n.c.s.URLConfigurationSource [main] No URLs will be polled as dynamic configuration sources.
+2021-06-10 13:17:11,964 INFO c.n.c.s.URLConfigurationSource [main] To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-06-10 13:17:12,583 INFO o.s.s.c.ExecutorConfigurationSupport [main] Initializing ExecutorService 'applicationTaskExecutor'
+2021-06-10 13:17:15,292 INFO o.s.c.c.u.InetUtils [main] Cannot determine local hostname
+2021-06-10 13:17:15,707 INFO o.s.i.m.IntegrationMBeanExporter [main] Registering MessageChannel errorChannel
+2021-06-10 13:17:15,773 INFO o.s.i.m.IntegrationMBeanExporter [main] Registering MessageChannel SUBSCRIPTIONS_WRITE_CHANNEL
+2021-06-10 13:17:15,803 INFO o.s.i.m.IntegrationMBeanExporter [main] Registering MessageChannel nullChannel
+2021-06-10 13:17:15,818 INFO o.s.i.m.IntegrationMBeanExporter [main] Registering MessageChannel ATCONTEXT
+2021-06-10 13:17:15,824 INFO o.s.i.m.IntegrationMBeanExporter [main] Registering MessageHandler errorLogger
+2021-06-10 13:17:15,877 INFO o.s.i.e.EventDrivenConsumer [main] Adding {logging-channel-adapter:_org.springframework.integration.errorLogger} as a subscriber to the 'errorChannel' channel
+2021-06-10 13:17:15,878 INFO o.s.i.c.AbstractSubscribableChannel [main] Channel 'application-1.errorChannel' has 1 subscriber(s).
+2021-06-10 13:17:15,878 INFO o.s.i.e.AbstractEndpoint [main] started _org.springframework.integration.errorLogger
+2021-06-10 13:17:16,935 INFO o.s.c.c.c.ConfigServicePropertySourceLocator [main] Fetching config from server at : http://localhost:8888
+2021-06-10 13:17:17,996 INFO o.s.c.c.c.ConfigServicePropertySourceLocator [main] Located environment: name=subscription-manager, profiles=[default], label=null, version=null, state=null
+2021-06-10 13:17:17,996 INFO o.s.c.b.c.PropertySourceBootstrapConfiguration [main] Located property source: CompositePropertySource {name='configService', propertySources=[MapPropertySource {name='classpath:/config/subscription-manager.yml'}]}
+2021-06-10 13:17:18,505 INFO o.s.c.s.b.k.p.KafkaTopicProvisioner [main] Using kafka topic for outbound: SUBSCRIPTIONS
+2021-06-10 13:17:18,514 INFO o.a.k.c.c.AbstractConfig [main] AdminClientConfig values: 
+	bootstrap.servers = [localhost:9092]
+	client.id = 
+	connections.max.idle.ms = 300000
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 120000
+	retries = 5
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+
+2021-06-10 13:17:18,664 WARN o.a.k.c.c.AbstractConfig [main] The configuration 'cleanup.policy' was supplied but isn't a known config.
+2021-06-10 13:17:18,672 INFO o.a.k.c.u.AppInfoParser$AppInfo [main] Kafka version : 2.0.1
+2021-06-10 13:17:18,672 INFO o.a.k.c.u.AppInfoParser$AppInfo [main] Kafka commitId : fa14705e51bd2ce5
+2021-06-10 13:17:18,970 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:19,021 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:19,136 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:19,325 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:19,732 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:20,473 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:21,536 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:22,446 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:23,591 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:24,664 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:25,848 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:26,818 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:27,935 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:28,764 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:29,713 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more
+2021-06-10 13:17:30,642 WARN o.a.k.c.NetworkClient [kafka-admin-client-thread | adminclient-1] [AdminClient clientId=adminclient-1] Error connecting to node kafka:9092 (id: 1001 rack: null)
+java.io.IOException: Can't resolve address: kafka:9092
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:235) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.common.network.Selector.connect(Selector.java:214) ~[kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.initiateConnect(NetworkClient.java:864) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.NetworkClient.ready(NetworkClient.java:265) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.sendEligibleCalls(KafkaAdminClient.java:889) [kafka-clients-2.0.1.jar!/:?]
+	at org.apache.kafka.clients.admin.KafkaAdminClient$AdminClientRunnable.run(KafkaAdminClient.java:1104) [kafka-clients-2.0.1.jar!/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_292]
+Caused by: java.nio.channels.UnresolvedAddressException
+	at sun.nio.ch.Net.checkAddress(Net.java:104) ~[?:1.8.0_292]
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:621) ~[?:1.8.0_292]
+	at org.apache.kafka.common.network.Selector.doConnect(Selector.java:233) ~[kafka-clients-2.0.1.jar!/:?]
+	... 6 more

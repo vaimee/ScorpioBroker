@@ -144,7 +144,6 @@ public class QueryService {
 	 */
 	public String retrieveEntity(String entityId, List<String> attrs, boolean keyValues, boolean includeSysAttrs)
 			throws ResponseException, IOException {
-
 		logger.trace("call retriveEntity method in QueryService class");
 		// null id check
 		/*
