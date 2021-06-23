@@ -1,9 +1,8 @@
 package eu.neclab.ngsildbroker.entityhandler.controller;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.time.LocalDateTime;
+
 import java.time.format.DateTimeParseException;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -20,26 +19,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.JsonParseException;
+
+import eu.neclab.ngsildbroker.commons.datatypes.RestResponse;
+import eu.neclab.ngsildbroker.commons.enums.ErrorType;
+import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
+import eu.neclab.ngsildbroker.commons.ldcontext.ContextResolverBasic;
+import eu.neclab.ngsildbroker.commons.tools.HttpUtils;
+import eu.neclab.ngsildbroker.entityhandler.controller.dasibreaker.EntityHandlerFactory;
+import eu.neclab.ngsildbroker.entityhandler.controller.dasibreaker.IEntityHandler;
+
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.time.LocalDateTime;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonParseException;
 import eu.neclab.ngsildbroker.commons.constants.AppConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.AppendResult;
-import eu.neclab.ngsildbroker.commons.datatypes.RestResponse;
 import eu.neclab.ngsildbroker.commons.datatypes.UpdateResult;
-import eu.neclab.ngsildbroker.commons.enums.ErrorType;
-import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
-import eu.neclab.ngsildbroker.commons.ldcontext.ContextResolverBasic;
 import eu.neclab.ngsildbroker.commons.ngsiqueries.ParamsResolver;
-import eu.neclab.ngsildbroker.commons.tools.HttpUtils;
 import eu.neclab.ngsildbroker.entityhandler.config.EntityProducerChannel;
 import eu.neclab.ngsildbroker.entityhandler.services.EntityService;
 import eu.neclab.ngsildbroker.entityhandler.validationutil.Validator;
-
 /**
  * 
  * @version 1.0
@@ -47,9 +53,13 @@ import eu.neclab.ngsildbroker.entityhandler.validationutil.Validator;
  */
 @RestController
 @RequestMapping("/ngsi-ld/v1/entities")
-public class EntityController {// implements EntityHandlerInterface {
+public class EntityController  implements IEntityHandler{
 
 	private final static Logger logger = LoggerFactory.getLogger(EntityController.class);
+
+	private IEntityHandler realEntityController;
+	
+	
 
 	@Autowired
 	EntityService entityService;
@@ -78,14 +88,16 @@ public class EntityController {// implements EntityHandlerInterface {
 	}
 
 	private HttpUtils httpUtils;
-
+	
+	
+	
+	
 	@PostConstruct
 	private void setup() {
 		this.httpUtils = HttpUtils.getInstance(contextResolver);
+		realEntityController= EntityHandlerFactory.get(entityService,objectMapper,paramsResolver,httpUtils);
 	}
-
-	LocalDateTime start;
-	LocalDateTime end;
+	
 
 	public EntityController() {
 	}
@@ -99,33 +111,8 @@ public class EntityController {// implements EntityHandlerInterface {
 	@PostMapping
 	public ResponseEntity<byte[]> createEntity(HttpServletRequest request,
 			@RequestBody(required = false) String payload) {
-		String result = null;
 		try {
-			HttpUtils.doPreflightCheck(request, payload);
-			logger.trace("create entity :: started");
-			String resolved = httpUtils.expandPayload(request, payload, AppConstants.ENTITIES_URL_ID);
-			entityService.validateEntity(resolved, request);
-			logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: "+resolved);
-			//---------------------------------------------------------------------------
-			//------------------------------------WIP------------------------------------
-			//---------------------------------------------------------------------------
-			Reader targetReader = new StringReader(resolved);
-			Document document = JsonDocument.of(targetReader);
-			RdfDataset rdf = JsonLd.toRdf(document).get();
-			logger.info("\n---------------------------------------\ncreateEntity.RDF: ");
-			for ( RdfNQuad iterable_element : rdf.toList()) {
-				String temp = "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +">";
-				logger.info("\n"+temp);
-			}
-			
-
-			//---------------------------------------------------------------------------
-			//---------------------------------------------------------------------------
-			//---------------------------------------------------------------------------
-			result = entityService.createMessage(resolved);
-			logger.trace("create entity :: completed");
-			return ResponseEntity.status(HttpStatus.CREATED).header("location", AppConstants.ENTITES_URL + result)
-					.build();
+			return realEntityController.createEntity(request, payload);
 		} catch (ResponseException exception) {
 			logger.error("Exception :: ", exception);
 			exception.printStackTrace();
@@ -154,22 +141,8 @@ public class EntityController {// implements EntityHandlerInterface {
 	 */
 	@PatchMapping("/**/attrs")
 	public ResponseEntity<byte[]> updateEntity(HttpServletRequest request, @RequestBody String payload) {
-		// String resolved = contextResolver.resolveContext(payload);
 		try {
-			HttpUtils.doPreflightCheck(request, payload);
-			String[] split = request.getServletPath().replace("/ngsi-ld/v1/entities/", "").split("/attrs");
-			String entityId = HttpUtils.denormalize(split[0]);
-			logger.trace("update entity :: started");
-			String resolved = httpUtils.expandPayload(request, payload, AppConstants.ENTITIES_URL_ID);
-
-			UpdateResult update = entityService.updateMessage(entityId, resolved);
-			logger.trace("update entity :: completed");
-			if (update.getUpdateResult()) {
-				return ResponseEntity.noContent().build();
-			} else {
-				return ResponseEntity.status(HttpStatus.MULTI_STATUS)
-						.body(objectMapper.writeValueAsBytes(update.getAppendedJsonFields()));
-			}
+			return realEntityController.updateEntity(request, payload);
 		} catch (ResponseException responseException) {
 			logger.error("Exception :: ", responseException);
 			return ResponseEntity.status(responseException.getHttpStatus())
@@ -199,23 +172,8 @@ public class EntityController {// implements EntityHandlerInterface {
 	@PostMapping("/**/attrs")
 	public ResponseEntity<byte[]> appendEntity(HttpServletRequest request, @RequestBody String payload,
 			@RequestParam(required = false, name = "options") String options) {
-		// String resolved = contextResolver.resolveContext(payload);
 		try {
-			HttpUtils.doPreflightCheck(request, payload);
-			String[] split = request.getServletPath().replace("/ngsi-ld/v1/entities/", "").split("/attrs");
-			String entityId = HttpUtils.denormalize(split[0]);
-
-			logger.trace("append entity :: started");
-			String resolved = httpUtils.expandPayload(request, payload, AppConstants.ENTITIES_URL_ID);
-
-			AppendResult append = entityService.appendMessage(entityId, resolved, options);
-			logger.trace("append entity :: completed");
-			if (append.getAppendResult()) {
-				return ResponseEntity.noContent().build();
-			} else {
-				return ResponseEntity.status(HttpStatus.MULTI_STATUS)
-						.body(objectMapper.writeValueAsBytes(append.getAppendedJsonFields()));
-			}
+			return realEntityController.appendEntity(request, payload, options);
 		} catch (ResponseException responseException) {
 			logger.error("Exception :: ", responseException);
 			return ResponseEntity.status(responseException.getHttpStatus())
@@ -248,29 +206,7 @@ public class EntityController {// implements EntityHandlerInterface {
 	@PatchMapping("/**/attrs/**")
 	public ResponseEntity<byte[]> partialUpdateEntity(HttpServletRequest request, @RequestBody String payload) {
 		try {
-			String[] split = request.getServletPath().replace("/ngsi-ld/v1/entities/", "").split("/attrs/");
-			String attrId = HttpUtils.denormalize(split[1]);
-			String entityId = HttpUtils.denormalize(split[0]);
-
-			HttpUtils.doPreflightCheck(request, payload);
-			logger.trace("partial-update entity :: started");
-			String expandedPayload = httpUtils.expandPayload(request, payload, AppConstants.ENTITIES_URL_ID);
-
-			String expandedAttrib = paramsResolver.expandAttribute(attrId, payload, request);
-
-			UpdateResult update = entityService.partialUpdateEntity(entityId, expandedAttrib, expandedPayload);
-			logger.trace("partial-update entity :: completed");
-			if (update.getStatus()) {
-				return ResponseEntity.noContent().build();
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
-			/*
-			 * There is no 207 multi status response in the Partial Attribute Update
-			 * operation. Section 6.7.3.1 else { return
-			 * ResponseEntity.status(HttpStatus.MULTI_STATUS).body(update.
-			 * getAppendedJsonFields()); }
-			 */
+			return realEntityController.partialUpdateEntity(request, payload);
 		} catch (ResponseException responseException) {
 			logger.error("Exception :: ", responseException);
 			return ResponseEntity.status(responseException.getHttpStatus())
@@ -303,20 +239,7 @@ public class EntityController {// implements EntityHandlerInterface {
 			@RequestParam(value = "datasetId", required = false) String datasetId,
 			@RequestParam(value = "deleteAll", required = false) String deleteAll) {
 		try {
-			String path = request.getServletPath().replace("/ngsi-ld/v1/entities/", "");
-			if (path.contains("/attrs/")) {
-				String[] split = path.split("/attrs/");
-				String attrId = HttpUtils.denormalize(split[1]);
-				String entityId = HttpUtils.denormalize(split[0]);
-				logger.trace("delete attribute :: started");
-				Validator.validate(request.getParameterMap());
-				String expandedAttrib = paramsResolver.expandAttribute(attrId, HttpUtils.getAtContext(request));
-				entityService.deleteAttribute(entityId, expandedAttrib, datasetId, deleteAll);
-				logger.trace("delete attribute :: completed");
-				return ResponseEntity.noContent().build();
-			} else {
-				return deleteEntity(request);
-			}
+			return realEntityController.deleteAttribute(request, datasetId, deleteAll);
 		} catch (ResponseException responseException) {
 			logger.error("Exception :: ", responseException);
 			return ResponseEntity.status(responseException.getHttpStatus())
@@ -344,11 +267,7 @@ public class EntityController {// implements EntityHandlerInterface {
 	 */
 	public ResponseEntity<byte[]> deleteEntity(HttpServletRequest request) {
 		try {
-			String entityId = HttpUtils.denormalize(request.getServletPath().replace("/ngsi-ld/v1/entities/", ""));
-			logger.trace("delete entity :: started");
-			entityService.deleteEntity(entityId);
-			logger.trace("delete entity :: completed");
-			return ResponseEntity.noContent().build();
+			return realEntityController.deleteEntity(request);
 		} catch (ResponseException responseException) {
 			logger.error("Exception :: ", responseException);
 			return ResponseEntity.status(responseException.getHttpStatus())
