@@ -116,5 +116,27 @@
 		
 		<!-- <dependency> <groupId>eu.neclab.ngsildbroker</groupId> <artifactId>LDContextResolver</artifactId> 
 			<version>0.0.1-SNAPSHOT</version> </dependency> -->
+			
+		<!-- Added by VAIMEE for DISI-BREAKER project-->
+		<dependency>
+		    <groupId>com.apicatalog</groupId>
+		    <artifactId>titanium-json-ld</artifactId>
+		    <version>1.1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish</groupId>
+		    <artifactId>jakarta.json</artifactId>
+		    <version>2.0.0</version>
+		</dependency>
+		
+		<!-- This ref is local, we have to change it -->
+		<dependency>
+		    <groupId>com.client.api</groupId>
+		    <artifactId>client-api</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>/${project.basedir}/lib/client-api-0-SNAPSHOT.jar</systemPath>
+		</dependency>
+		
 	</dependencies>
 </project>
