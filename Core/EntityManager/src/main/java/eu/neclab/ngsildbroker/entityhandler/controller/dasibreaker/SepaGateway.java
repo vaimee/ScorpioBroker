@@ -14,7 +14,7 @@ public class SepaGateway {
 	private UpdateHTTPMethod httpMethod = UpdateHTTPMethod.POST;
 	private String host="localhost";
 	private int port=8000;
-	private String path;
+	private String path="/update";
 	//private String authorization;//not implemented yet
 	private String scheme = "http";
 	private int timeOut =60000;
@@ -23,7 +23,7 @@ public class SepaGateway {
 	public String graph ="<http://dasi.breaker.project/>"; 
 
 	public SepaGateway() throws SEPASecurityException {
-		client= new SPARQL11Protocol();
+			client= new SPARQL11Protocol();
 	}
 	
 	public Response executeUpdate(String sparql) {	

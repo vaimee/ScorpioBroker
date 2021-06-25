@@ -54,7 +54,7 @@ public class EntityControllerSPARQL implements IEntityHandler {
 //		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
 		String turtle = "";
 		for ( RdfNQuad iterable_element : rdf.toList()) {
-			turtle += "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +">\n";
+			turtle += "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
 		}
 //		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
 		
