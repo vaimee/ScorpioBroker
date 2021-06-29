@@ -39,6 +39,8 @@ public class HistoryDAO extends StorageReaderDAO {
 
 	@Override
 	protected String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
+
+		System.out.println("\n\n POS-->HISTORY.HISTORYMANAGER.eu.neclab.ngsildbroker.historymanager.repository.translateNgsildQueryToSql\n\n");
 		StringBuilder fullSqlWhere = new StringBuilder(70);
 		String sqlWhereGeoquery = "";
 		String sqlWhere = "";
@@ -164,6 +166,7 @@ public class HistoryDAO extends StorageReaderDAO {
 	}
 
 	private String getSqlWhereForField(String dbColumn, String value) {
+		System.out.println("\n\n POS-->HISTORY.HISTORYMANAGER.eu.neclab.ngsildbroker.historymanager.repository.getSqlWhereForField\n\n");
 		String sqlWhere = "";
 		if (value.indexOf(",") == -1) {
 			sqlWhere = dbColumn + "='" + value + "'";
@@ -175,6 +178,9 @@ public class HistoryDAO extends StorageReaderDAO {
 
 	protected String translateNgsildTimequeryToSql(String timerel, String time, String timeproperty, String endTime,
 			String dbPrefix) throws ResponseException {
+
+
+		System.out.println("\n\n POS-->HISTORY.HISTORYMANAGER.eu.neclab.ngsildbroker.historymanager.repository.translateNgsildTimequeryToSql\n\n");
 		StringBuilder sqlWhere = new StringBuilder(50);
 
 		String sqlTestStatic = dbPrefix + "static = true AND ";
@@ -209,6 +215,7 @@ public class HistoryDAO extends StorageReaderDAO {
 	}
 
 	public boolean entityExists(String entityId) {
+		System.out.println("\n\n POS-->HISTORY.HISTORYMANAGER.eu.neclab.ngsildbroker.historymanager.repository.entityExists\n\n");
 		List<Map<String, Object>> list = readerJdbcTemplate.queryForList("Select id from temporalentity where id='" + entityId + "';");
 		if (list == null || list.isEmpty()) {
 			return false;

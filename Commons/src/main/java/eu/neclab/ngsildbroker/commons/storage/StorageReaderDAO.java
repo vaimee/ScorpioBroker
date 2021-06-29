@@ -38,6 +38,7 @@ abstract public class StorageReaderDAO {
 
 	
 	public List<String> query(QueryParams qp) {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.query\n\n");
 		
 		try {
 			if(qp.getCheck()!=null) {
@@ -71,6 +72,7 @@ abstract public class StorageReaderDAO {
 	}
 
 	public List<String> getLocalTypes() {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.getLocalTypes\n\n");
 		ArrayList<String> result = new ArrayList<String>();
 		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
 				"SELECT distinct type as type FROM entity WHERE type IS NOT NULL;");
@@ -84,6 +86,7 @@ abstract public class StorageReaderDAO {
 	}
 	
 	public List<String> getAllTypes() {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.getAllTypes\n\n");
 		ArrayList<String> result = new ArrayList<String>();
 		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
 				"SELECT distinct type as type FROM entity WHERE type IS NOT NULL UNION SELECT distinct entity_type as type FROM csourceinformation WHERE entity_type IS NOT NULL;");
@@ -100,6 +103,7 @@ abstract public class StorageReaderDAO {
 	 * TODO: optimize sql queries for types and Attributes by using prepared statements (if possible)
 	 */
 	protected String typesAndAttributeQuery(QueryParams qp) throws ResponseException {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.typesAndAttributeQuery\n\n");
 		String query="";
 		if(qp.getCheck()=="NonDeatilsType" && qp.getAttrs()==null) {
 			int number = random.nextInt(999999);
@@ -140,6 +144,7 @@ abstract public class StorageReaderDAO {
 	 * TODO: optimize sql queries by using prepared statements (if possible)
 	 */
 	protected String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.translateNgsildQueryToSql\n\n");
 		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
 
 		// https://stackoverflow.com/questions/3333974/how-to-loop-over-a-class-attributes-in-java
@@ -263,6 +268,7 @@ abstract public class StorageReaderDAO {
 	// the geoproperty field. (probably using dots)
 	protected String translateNgsildGeoqueryToPostgisQuery(GeoqueryRel georel, String geometry, String coordinates,
 			String geoproperty, String dbColumn) throws ResponseException {
+		System.out.println("\n\n POS-->COMMONS.eu.neclab.ngsildbroker.commons.storage.translateNgsildGeoqueryToPostgisQuery\n\n");
 		StringBuilder sqlWhere = new StringBuilder(50);
 
 		String georelOp = georel.getGeorelOp();

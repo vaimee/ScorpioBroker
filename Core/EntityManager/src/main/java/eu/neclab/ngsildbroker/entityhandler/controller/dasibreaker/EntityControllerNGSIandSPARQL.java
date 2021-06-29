@@ -33,8 +33,8 @@ public class EntityControllerNGSIandSPARQL implements IEntityHandler {
 		ResponseEntity<byte[]> ris;
 		//we need grant ACID i think this try-catch is not enough
 		try {
-			 ris = ecNgsi.createEntity(request, payload);
-			 ecSparql.createEntity(request, payload);
+			 ris = ecNgsi.createEntity(request, payload);//qui è vero KAFKA
+			// ecSparql.createEntity(request, payload);	//qui è verso il SEPA
 		} catch (ResponseException exception) {
 			throw exception;
 		} catch (DateTimeParseException exception) {

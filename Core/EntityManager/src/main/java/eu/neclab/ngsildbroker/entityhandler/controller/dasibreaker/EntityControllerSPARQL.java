@@ -21,6 +21,7 @@ import com.apicatalog.rdf.RdfNQuad;
 import eu.neclab.ngsildbroker.commons.constants.AppConstants;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.tools.HttpUtils;
+import eu.neclab.ngsildbroker.entityhandler.services.dasibreaker.SepaGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.request.UpdateRequest;
 
@@ -54,6 +55,8 @@ public class EntityControllerSPARQL implements IEntityHandler {
 //		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
 		String turtle = "";
 		for ( RdfNQuad iterable_element : rdf.toList()) {
+			//iterable_element.getSubject().isBlankNode()
+			//hashmap per sostituirli uguali 
 			turtle += "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
 		}
 //		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
