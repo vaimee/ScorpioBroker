@@ -51,6 +51,9 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 	
 	public boolean store(String tableName, String columnName, String key, String value) {
 		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.store <====\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.store.tableName: "+tableName+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.store.value: "+value+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.store.columnName: "+columnName+"\n");
 		try {
 			String sql;
 			int n = 0;
@@ -75,6 +78,10 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 	public boolean storeEntity(String key, String value, String valueWithoutSysAttrs, String kvValue)
 			throws SQLTransientConnectionException {
 		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity <====\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity.value: "+value+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity.key: "+key+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity.valueWithoutSysAttrs: "+valueWithoutSysAttrs+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity.kvValue: "+kvValue+"\n");
 		String sql;
 		int n = 0;
 		if (value != null && !value.equals("null")) {
@@ -96,6 +103,8 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 
 	public boolean storeTemporalEntity(String key, String value) throws SQLException {
 		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.key: "+key+"\n");
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.value: "+value+"\n");
 		try {
 
 			TemporalEntityStorageKey tesk = DataSerializer.getTemporalEntityStorageKey(key);
@@ -109,6 +118,12 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 			String instanceId = tesk.getInstanceId();
 			Boolean overwriteOp = tesk.getOverwriteOp();
 
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: "+entityId+"\n");
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: "+entityType+"\n");
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityCreatedAt: "+entityCreatedAt+"\n");
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityModifiedAt: "+entityModifiedAt+"\n");
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.attributeId: "+attributeId+"\n");
+			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.instanceId: "+instanceId+"\n");
 			Integer n = 0;
 
 			if (!value.equals("null")) {

@@ -10,20 +10,27 @@ import it.unibo.arces.wot.sepa.commons.response.Response;
 
 public class SepaGateway {
 
-	private SPARQL11Protocol client=null;
-	private UpdateHTTPMethod httpMethod = UpdateHTTPMethod.POST;
-	private String host="localhost";
-	private int port=8000;
-	private String path="/update";
+	protected SPARQL11Protocol client=null;
+	protected UpdateHTTPMethod httpMethod = UpdateHTTPMethod.POST;
+	protected String host="localhost";
+	protected int port=8000;
 	//private String authorization;//not implemented yet
-	private String scheme = "http";
-	private int timeOut =60000;
+	protected String scheme = "http";
+	protected int timeOut =60000;
 	
-	public String protocol="http";
-	public String graph ="<http://dasi.breaker.project/>"; 
+	protected String protocol="http";
+	protected String graph ="http://dasi.breaker.project/"; 
+	protected String ontology ="http://dasi.breaker.ngsi.ontology/"; 
 
 	public SepaGateway() throws SEPASecurityException {
 			client= new SPARQL11Protocol();
+	}
+	
+	public String getGraph() {
+		return graph;
+	}
+	public String getGraph(String path) {
+		return graph+path;
 	}
 	
 	public Response executeUpdate(String sparql) {	
@@ -33,7 +40,7 @@ public class SepaGateway {
 					scheme,
 					host,
 					port,
-					path,
+					"/update",
 					sparql,
 					new HashSet<String>(),
 					new HashSet<String>(),
@@ -43,5 +50,25 @@ public class SepaGateway {
 			
 			return client.update(req);
 		
-		}
+	}
+	
+
+	public Response executeQuery(String sparql) {	
+		
+			UpdateRequest req = new UpdateRequest(
+					httpMethod,
+					scheme,
+					host,
+					port,
+					"/query",
+					sparql,
+					new HashSet<String>(),
+					new HashSet<String>(),
+					null,
+					timeOut,
+					1);
+			
+			return client.update(req);
+		
+	}
 }
