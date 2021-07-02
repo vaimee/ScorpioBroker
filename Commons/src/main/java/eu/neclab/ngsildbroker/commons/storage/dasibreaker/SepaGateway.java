@@ -1,4 +1,4 @@
-package eu.neclab.ngsildbroker.entityhandler.services.dasibreaker;
+package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import java.util.HashSet;
 

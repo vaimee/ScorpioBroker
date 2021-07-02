@@ -20,8 +20,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
-import eu.neclab.ngsildbroker.entityhandler.services.dasibreaker.IStorageWriterDAO;
-import eu.neclab.ngsildbroker.entityhandler.services.dasibreaker.StorageWriterDAOFactory;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 
 @Repository("emstorage")
 @ConditionalOnProperty(value = "writer.enabled", havingValue = "true", matchIfMissing = false)
@@ -30,25 +30,28 @@ public class StorageWriterDAO implements IStorageWriterDAO {
 	private final static Logger logger = LogManager.getLogger(StorageWriterDAO.class);
 //	public static final Gson GSON = DataSerializer.GSON;
 
+//	@Autowired
+//	private JdbcTemplate writerJdbcTemplate;
+//
+//	@Autowired
+//	private DataSource writerDataSource;
+//
+//	private TransactionTemplate writerTransactionTemplate;
+//	private JdbcTemplate writerJdbcTemplateWithTransaction;
+	
 	@Autowired
-	private JdbcTemplate writerJdbcTemplate;
-
-	@Autowired
-	private DataSource writerDataSource;
-
-	private TransactionTemplate writerTransactionTemplate;
-	private JdbcTemplate writerJdbcTemplateWithTransaction;
-
+	QueryLanguageFactory factory;
+	
 	private IStorageWriterDAO swdao;
 	
 	@PostConstruct
 	public void init() {
-		writerJdbcTemplate.execute("SELECT 1"); // create connection pool and connect to database
-		// https://gist.github.com/mdellabitta/1444003
-		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(writerDataSource);
-		writerJdbcTemplateWithTransaction = new JdbcTemplate(transactionManager.getDataSource());
-		writerTransactionTemplate = new TransactionTemplate(transactionManager);
-		swdao = StorageWriterDAOFactory.get(writerJdbcTemplate, writerTransactionTemplate, writerJdbcTemplateWithTransaction);
+//		writerJdbcTemplate.execute("SELECT 1"); // create connection pool and connect to database
+//		// https://gist.github.com/mdellabitta/1444003
+//		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(writerDataSource);
+//		writerJdbcTemplateWithTransaction = new JdbcTemplate(transactionManager.getDataSource());
+//		writerTransactionTemplate = new TransactionTemplate(transactionManager);
+		swdao = factory.getStorageWriterDao();
 	}
 
 	public boolean store(String tableName, String columnName, String key, String value) {

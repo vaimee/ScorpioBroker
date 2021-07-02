@@ -1,34 +1,35 @@
 package eu.neclab.ngsildbroker.storagemanager.repository;
 
-import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
+
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IEntityStorageReaderDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 
 @Repository
 @ConditionalOnProperty(value="reader.enabled", havingValue = "true", matchIfMissing = false)
 public class EntityStorageReaderDAO extends StorageReaderDAO {
+	private IEntityStorageReaderDAO esrDAO;
+	@Autowired
+	QueryLanguageFactory factory;
+	public EntityStorageReaderDAO() {
+//		esrDAO= factory.getEntityStorageReaderDAO();
+
+		//-------------------------------------------------------------THIS NEED TO BE FIX
+		//-----> Autowired don't work so i take istance manually, that's no good
+		esrDAO= QueryLanguageFactory.getInstance().getEntityStorageReaderDAO();
+	}
 	
 	public Long getLocalEntitiesCount() {
-		System.out.println("\n\n POS-->STORAGE.STORAGEMANGER.eu.neclab.ngsildbroker.storagemanager.repository.EntityStorageReaderDAO.getLocalEntitiesCount\n\n");
-		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
-				"SELECT count(id) FROM entity;");
-		if(list == null ||list.isEmpty()) {
-			return null;
-		}
-		return (Long) list.get(0).get("count");
+		return esrDAO.getLocalEntitiesCount();
 
 	}
 	public Long getLocalTypesCount() {
-		System.out.println("\n\n POS-->STORAGE.STORAGEMANGER.eu.neclab.ngsildbroker.storagemanager.repository.EntityStorageReaderDAO.getLocalTypesCount\n\n");
-		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
-				"SELECT count(distinct(type)) FROM entity;");
-		if(list == null ||list.isEmpty()) {
-			return null;
-		}
-		return (Long) list.get(0).get("count");
-
+		return esrDAO.getLocalTypesCount();
 	}
+
+
 }

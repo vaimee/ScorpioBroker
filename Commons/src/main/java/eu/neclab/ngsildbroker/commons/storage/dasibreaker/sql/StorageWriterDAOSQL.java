@@ -1,4 +1,4 @@
-package eu.neclab.ngsildbroker.storagemanager.repository.dasibreaker;
+package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql;
 
 import java.sql.SQLException;
 import java.sql.SQLTransientConnectionException;
@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
 
 //@Repository("emstorage")
 //@ConditionalOnProperty(value = "writer.enabled", havingValue = "true", matchIfMissing = false)
@@ -29,20 +30,27 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 
 
 
+	 @Autowired
 	private JdbcTemplate writerJdbcTemplate;
+    
+    @Autowired
+	private DataSource writerDataSource;
+    
 	private TransactionTemplate writerTransactionTemplate;
-	private JdbcTemplate writerJdbcTemplateWithTransaction;
-
-
-	public StorageWriterDAOSQL(JdbcTemplate writerJdbcTemplate, TransactionTemplate writerTransactionTemplate,
-			JdbcTemplate writerJdbcTemplateWithTransaction) {
-		super();
-		this.writerJdbcTemplate = writerJdbcTemplate;
-		this.writerTransactionTemplate = writerTransactionTemplate;
-		this.writerJdbcTemplateWithTransaction = writerJdbcTemplateWithTransaction;
+	private JdbcTemplate writerJdbcTemplateWithTransaction; 
+		
+	@PostConstruct
+	public void init() {		
+        writerJdbcTemplate.execute("SELECT 1"); // create connection pool and connect to database        
+        
+		// https://gist.github.com/mdellabitta/1444003
+		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(writerDataSource);
+        writerJdbcTemplateWithTransaction = new JdbcTemplate(transactionManager.getDataSource());
+        writerTransactionTemplate = new TransactionTemplate(transactionManager);
 	}
 	
 	public boolean store(String tableName, String columnName, String key, String value) {
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.store <====\n");
 		try {
 			String sql;
 			int n = 0;
@@ -66,6 +74,7 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 
 	public boolean storeEntity(String key, String value, String valueWithoutSysAttrs, String kvValue)
 			throws SQLTransientConnectionException {
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity <====\n");
 		String sql;
 		int n = 0;
 		if (value != null && !value.equals("null")) {
@@ -86,6 +95,7 @@ public class StorageWriterDAOSQL implements IStorageWriterDAO{
 	}
 
 	public boolean storeTemporalEntity(String key, String value) throws SQLException {
+		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====\n");
 		try {
 
 			TemporalEntityStorageKey tesk = DataSerializer.getTemporalEntityStorageKey(key);

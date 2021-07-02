@@ -1,10 +1,10 @@
-package eu.neclab.ngsildbroker.storagemanager.repository.dasibreaker;
+package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.SQLException;
+import java.sql.SQLTransientConnectionException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +17,8 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 
 //@Repository("emstorage")
@@ -69,6 +71,15 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 		return false;
 	}
 	
+	@Override
+	public boolean storeEntity(String key, String value, String valueWithoutSysAttrs, String kvValue)
+			throws SQLTransientConnectionException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+
+	
 	private boolean generalStorEntity(String key,String jsonld) throws JsonLdError {
 		return generalStorEntity(key,jsonld,"<http://dasi.breaker.project/ngsi>");
 	}
@@ -114,7 +125,8 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 				+ "} }" ;
 		return !sepa.executeUpdate(sparql).isError();
 	}
-	
+
+
 
 
 }

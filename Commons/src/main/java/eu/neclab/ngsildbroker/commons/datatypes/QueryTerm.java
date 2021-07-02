@@ -523,7 +523,7 @@ public class QueryTerm {
 		StringBuilder builder = new StringBuilder();
 		toSql(builder, false);
 		// builder.append(";");
-		System.out.println(builder.toString());
+		//System.out.println(builder.toString());
 		return builder.toString();
 	}
 

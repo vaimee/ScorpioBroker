@@ -135,14 +135,7 @@
 		    <version>2.0.0</version>
 		</dependency>
 		
-		<!-- This ref is local, we have to change it -->
-		 <dependency>
-		    <groupId>com.client.api</groupId>
-		    <artifactId>client-api</artifactId>
-		    <version>1.0</version>
-		    <scope>system</scope>
-		    <systemPath>/${project.basedir}/lib/client-api-0-SNAPSHOT.jar</systemPath>
-		</dependency> 
+	
 		
 	<!-- 	<dependency>
 			<groupId>it.unibo.arces.wot</groupId>

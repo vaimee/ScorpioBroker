@@ -1,4 +1,4 @@
-package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
+package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +19,19 @@ import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
+import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 
-public class StorageReaderDAOsql implements IStorageReaderDao {
+ public class StorageReaderDAOSQL implements IStorageReaderDao {
 
-	private final static Logger logger = LogManager.getLogger(StorageReaderDAOsql.class);
+	private final static Logger logger = LogManager.getLogger(StorageReaderDAOSQL.class);
 
 	@Autowired
 	protected JdbcTemplate readerJdbcTemplate;
 
 	public Random random=new Random();
 
-	public static int countHeader = 0;
+	//public static int countHeader = 0;
 	
 	@PostConstruct
 	public void init() {
@@ -38,8 +40,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 
 	
 	public List<String> query(QueryParams qp) {
-
-		logger.info("\n query---------------\n"+qp.getIdPattern().toString());
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.query <====\n");
 		try {
 			if(qp.getCheck()!=null) {
 				String sqlQuery=typesAndAttributeQuery(qp);
@@ -50,11 +51,11 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 			//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 			if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 				List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
-				countHeader = countHeader+list.size();	
+				StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
 				return new ArrayList<String>();
 			} 
 			List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
-			countHeader = countHeader+list.size();
+			StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
 			return list;
 		} catch(DataIntegrityViolationException e) {
 			//Empty result don't worry
@@ -68,10 +69,12 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 	}
 
 	public String getListAsJsonArray(List<String> s) {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.getListAsJsonArray <====\n");
 		return "[" + String.join(",", s) + "]";
 	}
 
 	public List<String> getLocalTypes() {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.getLocalTypes <====\n");
 		ArrayList<String> result = new ArrayList<String>();
 		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
 				"SELECT distinct type as type FROM entity WHERE type IS NOT NULL;");
@@ -85,6 +88,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 	}
 	
 	public List<String> getAllTypes() {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.getAllTypes <====\n");
 		ArrayList<String> result = new ArrayList<String>();
 		List<Map<String, Object>> list = readerJdbcTemplate.queryForList(
 				"SELECT distinct type as type FROM entity WHERE type IS NOT NULL UNION SELECT distinct entity_type as type FROM csourceinformation WHERE entity_type IS NOT NULL;");
@@ -101,6 +105,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 	 * TODO: optimize sql queries for types and Attributes by using prepared statements (if possible)
 	 */
 	public String typesAndAttributeQuery(QueryParams qp) throws ResponseException {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.typesAndAttributeQuery <====\n");
 		String query="";
 		if(qp.getCheck()=="NonDeatilsType" && qp.getAttrs()==null) {
 			int number = random.nextInt(999999);
@@ -141,9 +146,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 	 * TODO: optimize sql queries by using prepared statements (if possible)
 	 */
 	public String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
-
-
-		logger.info("\n translateNgsildQueryToSql---------------\n"+qp.toString());
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildQueryToSql <====\n");
 		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
 
 		// https://stackoverflow.com/questions/3333974/how-to-loop-over-a-class-attributes-in-java
@@ -267,6 +270,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 	// the geoproperty field. (probably using dots)
 	public String translateNgsildGeoqueryToPostgisQuery(GeoqueryRel georel, String geometry, String coordinates,
 			String geoproperty, String dbColumn) throws ResponseException {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildGeoqueryToPostgisQuery <====\n");
 		StringBuilder sqlWhere = new StringBuilder(50);
 
 		String georelOp = georel.getGeorelOp();
@@ -314,6 +318,7 @@ public class StorageReaderDAOsql implements IStorageReaderDao {
 
 	public String translateNgsildGeoqueryToPostgisQuery(GeoqueryRel georel, String geometry, String coordinates,
 			String geoproperty) throws ResponseException {
+		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildGeoqueryToPostgisQuery <====\n");
 		return this.translateNgsildGeoqueryToPostgisQuery(georel, geometry, coordinates, geoproperty, null);
 	}
 
