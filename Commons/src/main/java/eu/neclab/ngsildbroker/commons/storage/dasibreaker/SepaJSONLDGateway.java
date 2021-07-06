@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -15,6 +18,7 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfNQuad;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.StorageReaderDAOSPARQL;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
@@ -29,6 +33,9 @@ public class SepaJSONLDGateway extends SepaGateway{
 	public static final String ENTITY_CREATED_AT = "entityCreatedAt";
 	public static final String ENTITY_MODIFIED_AT = "entityModifiedAt";
 	public static final String HAS_TEMPORAL_INSTANCE = "hasTemporalInstance";
+	
+
+	private final static Logger logger = LogManager.getLogger(SepaJSONLDGateway.class);
 	
 	public SepaJSONLDGateway() throws SEPASecurityException {
 		super();
@@ -67,7 +74,7 @@ public class SepaJSONLDGateway extends SepaGateway{
 //		}
 		return "DELETE {?s ?p ?o}\n"
 				+ "where { \n"
-				+ "  graph <"+super.graph+"/"+db+"> {\n"
+				+ "  graph <"+super.graph+db+"> {\n"
 				+ "<"+key+"> (<>|!<>)* ?s .\n"  
 				+ "?s ?p ?o .\n"
 				+ "} }" ;
@@ -86,7 +93,7 @@ public class SepaJSONLDGateway extends SepaGateway{
 //			}
 		String sparql = "SELECT ?s ?p ?o\n"
 				+ "where { \n"
-				+ "  graph  <"+super.graph+"/"+db+"> {\n"
+				+ "  graph  <"+super.graph+db+"> {\n"
 				+ "<"+key+"> (<>|!<>)* ?s .\n"  
 				+ "?s ?p ?o .\n"
 				+ "} }" ;
@@ -112,11 +119,13 @@ public class SepaJSONLDGateway extends SepaGateway{
 		turtle += "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+"> .\n";
 		
 //		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
-		return "INSERT DATA\n"
+		String sparql ="INSERT DATA\n"
 				+ "{ \n"
-				+ "  graph <"+super.graph+"/"+db+"> {\n"
+				+ "  graph <"+super.graph+db+"> {\n"
 				+turtle 
-				+ "} }" ;
+				+ "} }" ;	
+		logger.info("\n---------------------------------------\n getSparqlGeneralStoreEntity: \n sparql: " +sparql + "\n");
+		return sparql;
 	}
 	public String getSparqlStoreTemporalEntity(String key,String temporalentity_id,String jsonld,String db) throws JsonLdError {
 		
@@ -130,11 +139,13 @@ public class SepaJSONLDGateway extends SepaGateway{
 		turtle += "<"+key+"><"+super.ontology+"#"+HAS_TEMPORAL_INSTANCE+"><"+composedkey+"> .\n";
 		
 //		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
-		return "INSERT DATA\n"
+		String sparql = "INSERT DATA\n"
 				+ "{ \n"
-				+ "  graph <"+super.graph+"/"+db+"> {\n"
+				+ "  graph <"+super.graph+db+"> {\n"
 				+turtle 
 				+ "} }" ;
+		logger.info("\n---------------------------------------\n getSparqlStoreTemporalEntity: \n sparql: " +sparql + "\n");
+		return sparql;
 	}
 	public Set<String> getAllKeys(){
 		return getAllKeys(DBConstants.DBTABLE_ENTITY);
@@ -143,9 +154,10 @@ public class SepaJSONLDGateway extends SepaGateway{
 	public Set<String> getAllKeys(String db){
 		String sparql = "SELECT ?o\n"
 				+ "where { \n"
-				+ "  graph  <"+super.graph+"/"+db+"> {\n" 
+				+ "  graph  <"+super.graph+db+"> {\n" 
 				+ "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> ?o.\n"
 				+ "} }" ;
+		logger.info("\n---------------------------------------\n getAllKeys: \n sparql: " +sparql + "\n");
 		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
 		Set<String> ids = new HashSet<String>();
 		for (Bindings binding : res.getBindingsResults().getBindings()) {
@@ -157,7 +169,7 @@ public class SepaJSONLDGateway extends SepaGateway{
 	public boolean deleteInternalEntityKey(String key,String db) {
 		String sparql = "DELETE DATA\n"
 				+ "where { \n"
-				+ "  graph <"+super.graph+"/"+db+"> {\n"
+				+ "  graph <"+super.graph+db+"> {\n"
 				+"<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> <"+key+">.\n"
 				+ "} }" ;
 		return !super.executeUpdate(sparql).isError();
@@ -190,33 +202,62 @@ public class SepaJSONLDGateway extends SepaGateway{
 		String turtle = "";
 		HashMap<String,String> blankNodeHasMap = new HashMap<String,String>();
 		for ( RdfNQuad iterable_element : rdf.toList()) {
+//			if(iterable_element.getSubject().isBlankNode()) {
+//				String genericBlankNode = iterable_element.getSubject().getValue();
+//				String uniqueBlankNode;
+//				if(blankNodeHasMap.containsKey(genericBlankNode)){
+//					uniqueBlankNode = blankNodeHasMap.get(genericBlankNode);
+//				}else {
+//					uniqueBlankNode = "_:"+key+"_"+UUID.randomUUID().toString();
+//					blankNodeHasMap.put(genericBlankNode,uniqueBlankNode);
+//				}
+//				turtle += "<"+ uniqueBlankNode + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
+//			}else if(iterable_element.getObject().isBlankNode()){
+//				String genericBlankNode = iterable_element.getObject().getValue();
+//				String uniqueBlankNode;
+//				if(blankNodeHasMap.containsKey(genericBlankNode)){
+//					uniqueBlankNode = blankNodeHasMap.get(genericBlankNode);
+//				}else {
+//					uniqueBlankNode = "_:"+key+"_"+UUID.randomUUID().toString();
+//					blankNodeHasMap.put(genericBlankNode,uniqueBlankNode);
+//				}
+//				turtle += "<"+ iterable_element.getSubject().getValue()  + "><"+iterable_element.getPredicate().getValue() + "><"+ uniqueBlankNode +"> .\n";
+//			}else{
+//				turtle += "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
+//			}
+			
+			
+			String s = iterable_element.getSubject().getValue();
 			if(iterable_element.getSubject().isBlankNode()) {
-				String genericBlankNode = iterable_element.getSubject().getValue();
-				String uniqueBlankNode;
-				if(blankNodeHasMap.containsKey(genericBlankNode)){
-					uniqueBlankNode = blankNodeHasMap.get(genericBlankNode);
-				}else {
-					uniqueBlankNode = "_:"+key+"_"+UUID.randomUUID().toString();
-					blankNodeHasMap.put(genericBlankNode,uniqueBlankNode);
-				}
-				turtle += "<"+ uniqueBlankNode + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
-			}else if(iterable_element.getObject().isBlankNode()){
-				String genericBlankNode = iterable_element.getObject().getValue();
-				String uniqueBlankNode;
-				if(blankNodeHasMap.containsKey(genericBlankNode)){
-					uniqueBlankNode = blankNodeHasMap.get(genericBlankNode);
-				}else {
-					uniqueBlankNode = "_:"+key+"_"+UUID.randomUUID().toString();
-					blankNodeHasMap.put(genericBlankNode,uniqueBlankNode);
-				}
-				turtle += "<"+ iterable_element.getSubject().getValue()  + "><"+iterable_element.getPredicate().getValue() + "><"+ uniqueBlankNode +"> .\n";
-			}else{
-				turtle += "<"+ iterable_element.getSubject().getValue() + "><"+iterable_element.getPredicate().getValue() + "><"+ iterable_element.getObject().getValue() +"> .\n";
+				s= "<"+resolveBlankNode(blankNodeHasMap,s,key) +">";
+			}else {
+				s = "<"+s+">";
 			}
+			String p= "<"+iterable_element.getPredicate().getValue()+">";
+			String o =  iterable_element.getObject().getValue();
+			if(iterable_element.getObject().isBlankNode()) {
+				o= "<"+resolveBlankNode(blankNodeHasMap,o,key) +">";
+			}else if(iterable_element.getObject().isLiteral()) {
+				o = "'"+o+"'";
+			}else {
+				o = "<"+o+">";
+			}
+			turtle+=s+" "+ p+ " " + o +".\n";
 		}
 		return turtle;
 	}
 
+	private String resolveBlankNode(HashMap<String,String> blankNodeHasMap,String blankNode,String key) {
+		String uniqueBlankNode;
+		if(blankNodeHasMap.containsKey(blankNode)){
+			uniqueBlankNode = blankNodeHasMap.get(blankNode);
+		}else {
+			uniqueBlankNode = "_:"+key+"_"+UUID.randomUUID().toString();
+			blankNodeHasMap.put(blankNode,uniqueBlankNode);
+		}
+		return uniqueBlankNode;
+	}
+	
 	private String jsonldToTriple(String jsonld,String key) throws JsonLdError {
 		Reader targetReader = new StringReader(jsonld);
 		Document document = JsonDocument.of(targetReader);

@@ -1,0 +1,553 @@
+2021-07-05 11:29:48.723  INFO 8181 --- [io-27015-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-07-05 11:29:48.723  INFO 8181 --- [io-27015-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2021-07-05 11:29:48.728  INFO 8181 --- [io-27015-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+2021-07-05 11:29:49.031  INFO 8181 --- [io-27015-exec-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeEntity <====
+
+2021-07-05 11:29:49.031  INFO 8181 --- [io-27015-exec-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeEntity.value: {"https://schema.org/address":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"Friedrichstraße 44"}]}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.fiware.org/ns/data-models#category":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"@id":"urn:ngsi-ld:Building:store004","https://uri.etsi.org/ngsi-ld/location":[{"@type":["https://uri.etsi.org/ngsi-ld/GeoProperty"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.etsi.org/ngsi-ld/name":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"@type":["https://uri.fiware.org/ns/data-models#Building"],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}
+
+2021-07-05 11:29:49.031  INFO 8181 --- [io-27015-exec-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeEntity.key: urn:ngsi-ld:Building:store004
+
+2021-07-05 11:29:49.031  INFO 8181 --- [io-27015-exec-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeEntity.valueWithoutSysAttrs: {"https://schema.org/address":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"Friedrichstraße 44"}]}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}]}]}],"https://uri.fiware.org/ns/data-models#category":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}]}],"@id":"urn:ngsi-ld:Building:store004","https://uri.etsi.org/ngsi-ld/location":[{"@type":["https://uri.etsi.org/ngsi-ld/GeoProperty"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}]}],"https://uri.etsi.org/ngsi-ld/name":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}]}],"@type":["https://uri.fiware.org/ns/data-models#Building"]}
+
+2021-07-05 11:29:49.031  INFO 8181 --- [io-27015-exec-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeEntity.kvValue: {"https://schema.org/address":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"Friedrichstraße 44"}]}],"https://uri.fiware.org/ns/data-models#category":[{"@value":"commercial"}],"@id":"urn:ngsi-ld:Building:store004","https://uri.etsi.org/ngsi-ld/location":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/name":[{"@value":"Checkpoint Markt"}],"@type":["https://uri.fiware.org/ns/data-models#Building"]}
+
+2021-07-05 11:29:49.175  INFO 8181 --- [      Thread-23] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+
+2021-07-05 11:29:49.176  INFO 8181 --- [      Thread-23] o.a.kafka.common.utils.AppInfoParser     : Kafka version : 2.0.1
+2021-07-05 11:29:49.176  INFO 8181 --- [      Thread-23] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId : fa14705e51bd2ce5
+2021-07-05 11:29:49.179  INFO 8181 --- [d | producer-18] org.apache.kafka.clients.Metadata        : Cluster ID: b4WcDuUATQ6LTxRBQW2SnA
+2021-07-05 11:29:49.184  INFO 8181 --- [      Thread-23] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+
+2021-07-05 11:29:49.185  INFO 8181 --- [      Thread-23] o.a.kafka.common.utils.AppInfoParser     : Kafka version : 2.0.1
+2021-07-05 11:29:49.185  INFO 8181 --- [      Thread-23] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId : fa14705e51bd2ce5
+2021-07-05 11:29:49.186  INFO 8181 --- [d | producer-19] org.apache.kafka.clients.Metadata        : Cluster ID: b4WcDuUATQ6LTxRBQW2SnA
+2021-07-05 11:29:49.197  INFO 8181 --- [pool-2-thread-1] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = earliest
+	bootstrap.servers = [localhost:9092]
+	check.crcs = true
+	client.id = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 2147483647
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = 82b3e6ed-559d-451e-9ea6-ed52b53ff472
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 2147483647
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	session.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+{"https://schema.org/address":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"Friedrichstraße 44"}]}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.fiware.org/ns/data-models#category":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"@id":"urn:ngsi-ld:Building:store004","https://uri.etsi.org/ngsi-ld/location":[{"@type":["https://uri.etsi.org/ngsi-ld/GeoProperty"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.etsi.org/ngsi-ld/name":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"@type":["https://uri.fiware.org/ns/data-models#Building"],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}
+2021-07-05 11:29:49.199  WARN 8181 --- [pool-2-thread-1] o.a.k.clients.consumer.ConsumerConfig    : The configuration 'spring.json.trusted.packages' was supplied but isn't a known config.
+2021-07-05 11:29:49.199  INFO 8181 --- [pool-2-thread-1] o.a.kafka.common.utils.AppInfoParser     : Kafka version : 2.0.1
+2021-07-05 11:29:49.199  INFO 8181 --- [pool-2-thread-1] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId : fa14705e51bd2ce5
+2021-07-05 11:29:49.201  INFO 8181 --- [pool-2-thread-1] org.apache.kafka.clients.Metadata        : Cluster ID: b4WcDuUATQ6LTxRBQW2SnA
+2021-07-05 11:29:49.201  INFO 8181 --- [pool-2-thread-1] o.a.k.c.c.internals.AbstractCoordinator  : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] Discovered group coordinator 127.0.0.1:9092 (id: 2147482646 rack: null)
+2021-07-05 11:29:49.201  INFO 8181 --- [pool-2-thread-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] Revoking previously assigned partitions []
+2021-07-05 11:29:49.201  INFO 8181 --- [pool-2-thread-1] o.a.k.c.c.internals.AbstractCoordinator  : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] (Re-)joining group
+2021-07-05 11:29:49.204  INFO 8181 --- [ntainer#1-0-C-1] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+
+2021-07-05 11:29:49.204  INFO 8181 --- [pool-2-thread-1] o.a.k.c.c.internals.AbstractCoordinator  : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] Successfully joined group with generation 1
+2021-07-05 11:29:49.204  INFO 8181 --- [pool-2-thread-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] Setting newly assigned partitions [CONTEXT_SOURCE-0]
+2021-07-05 11:29:49.205  INFO 8181 --- [ntainer#1-0-C-1] o.a.kafka.common.utils.AppInfoParser     : Kafka version : 2.0.1
+2021-07-05 11:29:49.205  INFO 8181 --- [ntainer#1-0-C-1] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId : fa14705e51bd2ce5
+2021-07-05 11:29:49.206  INFO 8181 --- [pool-2-thread-1] o.a.k.c.consumer.internals.Fetcher       : [Consumer clientId=consumer-40, groupId=82b3e6ed-559d-451e-9ea6-ed52b53ff472] Resetting offset for partition CONTEXT_SOURCE-0 to offset 0.
+2021-07-05 11:29:49.206  INFO 8181 --- [d | producer-20] org.apache.kafka.clients.Metadata        : Cluster ID: b4WcDuUATQ6LTxRBQW2SnA
+2021-07-05 11:29:49.216  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====
+
+2021-07-05 11:29:49.216  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.key: {
+  "entityId": "urn:ngsi-ld:Building:store004",
+  "entityType": "https://uri.fiware.org/ns/data-models#Building",
+  "entityCreatedAt": "2021-07-05T09:29:49.024221Z",
+  "entityModifiedAt": "2021-07-05T09:29:49.024221Z",
+  "attributeId": "https://schema.org/address"
+}
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.value: {"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"Friedrichstraße 44"}]}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/instanceId":[{"@id":"urn:ngsi-ld:a9e48c84-b90e-411f-bd78-e14387c95ae7"}]}
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: urn:ngsi-ld:Building:store004
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: https://uri.fiware.org/ns/data-models#Building
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityCreatedAt: 2021-07-05T09:29:49.024221Z
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityModifiedAt: 2021-07-05T09:29:49.024221Z
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.attributeId: https://schema.org/address
+
+2021-07-05 11:29:49.217  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.instanceId: null
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.key: {
+  "entityId": "urn:ngsi-ld:Building:store004",
+  "entityModifiedAt": "2021-07-05T09:29:49.024221Z",
+  "attributeId": "https://uri.fiware.org/ns/data-models#category",
+  "overwriteOp": false
+}
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.value: {"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/instanceId":[{"@id":"urn:ngsi-ld:d4628a2f-da22-496a-b510-24989be023d8"}]}
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: urn:ngsi-ld:Building:store004
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: null
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityCreatedAt: null
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityModifiedAt: 2021-07-05T09:29:49.024221Z
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.attributeId: https://uri.fiware.org/ns/data-models#category
+
+2021-07-05 11:29:49.255  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.instanceId: null
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.key: {
+  "entityId": "urn:ngsi-ld:Building:store004",
+  "entityModifiedAt": "2021-07-05T09:29:49.024221Z",
+  "attributeId": "https://uri.etsi.org/ngsi-ld/location",
+  "overwriteOp": false
+}
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.value: {"@type":["https://uri.etsi.org/ngsi-ld/GeoProperty"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/instanceId":[{"@id":"urn:ngsi-ld:5d731797-c6ae-4b64-8efe-4cfc213cd6e3"}]}
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: urn:ngsi-ld:Building:store004
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: null
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityCreatedAt: null
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityModifiedAt: 2021-07-05T09:29:49.024221Z
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.attributeId: https://uri.etsi.org/ngsi-ld/location
+
+2021-07-05 11:29:49.258  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.instanceId: null
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity <====
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.key: {
+  "entityId": "urn:ngsi-ld:Building:store004",
+  "entityModifiedAt": "2021-07-05T09:29:49.024221Z",
+  "attributeId": "https://uri.etsi.org/ngsi-ld/name",
+  "overwriteOp": false
+}
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.value: {"@type":["https://uri.etsi.org/ngsi-ld/Property"],"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"@type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-05T09:29:49.024221Z"}],"https://uri.etsi.org/ngsi-ld/instanceId":[{"@id":"urn:ngsi-ld:8bd37f96-6603-440d-abc3-87723fac9ef7"}]}
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: urn:ngsi-ld:Building:store004
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: null
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityCreatedAt: null
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityModifiedAt: 2021-07-05T09:29:49.024221Z
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.attributeId: https://uri.etsi.org/ngsi-ld/name
+
+2021-07-05 11:29:49.260  INFO 8181 --- [yWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.instanceId: null
+
+2021-07-05 11:29:49.414  INFO 8181 --- [pool-2-thread-1] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [localhost:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+
+2021-07-05 11:29:49.416  INFO 8181 --- [pool-2-thread-1] o.a.kafka.common.utils.AppInfoParser     : Kafka version : 2.0.1
+2021-07-05 11:29:49.416  INFO 8181 --- [pool-2-thread-1] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId : fa14705e51bd2ce5
+2021-07-05 11:29:49.418  INFO 8181 --- [d | producer-21] org.apache.kafka.clients.Metadata        : Cluster ID: b4WcDuUATQ6LTxRBQW2SnA
+2021-07-05 11:29:49.422  INFO 8181 --- [eWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.store <====
+
+2021-07-05 11:29:49.422  INFO 8181 --- [eWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.store.tableName: csource
+
+2021-07-05 11:29:49.422  INFO 8181 --- [eWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.store.value: {
+  "@id": "urn:ngsi-ld:Building:store004",
+  "@type": [
+    "CSourceRegistration"
+  ],
+  "https://uri.etsi.org/ngsi-ld/endpoint": [
+    {
+      "@value": "http://11.0.0.53:9090"
+    }
+  ],
+  "https://uri.etsi.org/ngsi-ld/internal": [
+    {
+      "@value": true
+    }
+  ],
+  "https://uri.etsi.org/ngsi-ld/information": [
+    {
+      "https://uri.etsi.org/ngsi-ld/properties": [
+        {
+          "@id": "https://uri.fiware.org/ns/data-models#category"
+        },
+        {
+          "@id": "https://schema.org/address"
+        },
+        {
+          "@id": "https://uri.etsi.org/ngsi-ld/name"
+        }
+      ],
+      "https://uri.etsi.org/ngsi-ld/relationships": [],
+      "https://uri.etsi.org/ngsi-ld/entities": [
+        {
+          "@id": "urn:ngsi-ld:Building:store004",
+          "@type": [
+            "https://uri.fiware.org/ns/data-models#Building"
+          ]
+        }
+      ]
+    }
+  ],
+  "https://uri.etsi.org/ngsi-ld/default-context/timestamp": [
+    {
+      "https://uri.etsi.org/ngsi-ld/start": [
+        {
+          "@value": "2021-07-05T09:29:49.171000Z",
+          "@type": "https://uri.etsi.org/ngsi-ld/DateTime"
+        }
+      ]
+    }
+  ],
+  "https://uri.etsi.org/ngsi-ld/location": [
+    {
+      "@value": "{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"
+    }
+  ]
+}
+
+2021-07-05 11:29:49.422  INFO 8181 --- [eWriter-1-0-C-1] e.n.n.c.s.d.sql.StorageWriterDAOSQL      : 
+call on DAO ====> StorageWriterDAOSQL.store.columnName: data
+
+2021-07-05 11:30:17.853  INFO 8181 --- [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2021-07-05 11:35:17.853  INFO 8181 --- [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

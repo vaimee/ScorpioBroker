@@ -202,6 +202,29 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //		}
 //		logger.trace("Rows affected: " + Integer.toString(n));
 //		return true; // (n>0);
+
+		try {
+			boolean success =false;
+			String path =  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_DATA ;
+			if (value != null && !value.equals("null")) {
+				success =sepa.generalStoreEntity(key,value,path);
+				
+				path=  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS ;
+				success =sepa.generalStoreEntity(key,valueWithoutSysAttrs,path);
+				
+				path=  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_KVDATA ;
+				success =sepa.generalStoreEntity(key,kvValue,path);
+				
+				logger.info("\n===> NGSI-LD to SPARQL on sepa (generalStorEntity) success: " + success + "\n");
+			}else {
+				success =sepa.generalDeleteEntityRecursively(key,path);
+				logger.info("\n===> NGSI-LD to SPARQL on sepa (generalDeleteEntityRecursively) success: " + success + "\n");
+			}
+			return true; // success;
+		} catch (Exception e) {
+			logger.error("Exception ::", e);
+			e.printStackTrace();
+		}
 		return false;
 	}
 	
