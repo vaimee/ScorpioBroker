@@ -97,10 +97,13 @@ public class SepaJSONLDGateway extends SepaGateway{
 				+ "<"+key+"> (<>|!<>)* ?s .\n"  
 				+ "?s ?p ?o .\n"
 				+ "} }" ;
+		return getJsonLdResOfQuery(sparql);
+	}
+
+	public String getJsonLdResOfQuery(String sparql) throws JsonLdError, SEPABindingsException {
 		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
 		return bindingsResultsToJsonld(res.getBindingsResults());
 	}
-
 	/*
 	 * SPARQL INSERT DATA
 	 */

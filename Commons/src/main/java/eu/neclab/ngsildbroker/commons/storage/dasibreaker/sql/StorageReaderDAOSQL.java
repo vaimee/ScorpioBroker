@@ -160,6 +160,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 			if (fieldValue != null) {
 
 				logger.trace("Query parameter:" + queryParameter);
+				logger.info("Query parameter:" + queryParameter+"; fieldValue: "+fieldValue);
 
 				String queryValue = "";
 				if (fieldValue instanceof String) {
@@ -260,7 +261,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 			sqlQuery += "OFFSET " + offSet + " "; 
 		}
 		// order by ?
-
+		logger.info("\ntranslateNgsildQueryToSql------->" + sqlQuery);
 		return sqlQuery;
 	}
 

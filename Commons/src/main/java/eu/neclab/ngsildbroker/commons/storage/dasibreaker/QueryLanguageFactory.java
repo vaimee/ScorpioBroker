@@ -48,7 +48,9 @@ public class QueryLanguageFactory {
 	
 	public  IStorageReaderDao getStorageReaderDao(QueryLanguage entityHandlerType) {
 		if(entityHandlerType==QueryLanguage.SPARQL) {
-			return new StorageReaderDAOSPARQL();
+			StorageReaderDAOSPARQL srDAO = new StorageReaderDAOSPARQL();
+			srDAO.init();
+			return srDAO;
 		}else {//default SQL
 			AutowireCapableBeanFactory factory = context.getAutowireCapableBeanFactory();
 			StorageReaderDAOSQL storageReaderDAOSQL = new StorageReaderDAOSQL();

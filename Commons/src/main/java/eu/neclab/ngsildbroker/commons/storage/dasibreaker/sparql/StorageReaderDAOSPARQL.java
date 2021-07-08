@@ -19,19 +19,56 @@ import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
+import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaJSONLDGateway;
+import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
 	private final static Logger logger = LogManager.getLogger(StorageReaderDAOSPARQL.class);
 	
+	private SepaJSONLDGateway sepa;
 	public void init() {
-		
+		try {
+			sepa= new SepaJSONLDGateway();
+		} catch (SEPASecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
 	
 	public List<String> query(QueryParams qp) {
+		try {
+			if(qp.getCheck()!=null) {
+				logger.info("query{qp.getCheck()!=null} NOT IMPLEMENTED");
+				return null;//----------------------------------------------------NOT IMPLEMENTED
+//				String sqlQuery=typesAndAttributeQuery(qp);
+//				return readerJdbcTemplate.queryForList(sqlQuery,String.class);
+			}
+			String sparqlQuery = translateNgsildQueryToSql(qp);
+			logger.info("NGSI-LD to SPARQL: " + sparqlQuery);
+			logger.info("Query JSON-LD result: \n" + sepa.getJsonLdResOfQuery(sparqlQuery));
+			//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
+			//------------------------------------------------------------------------------------------INGORED
+//			if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
+//				List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
+//				StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
+//				return new ArrayList<String>();
+//			} 
+//			List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
+//			StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
+			
+			return new ArrayList<String>();
+		} catch(DataIntegrityViolationException e) {
+			//Empty result don't worry
+			logger.warn("SQL Result Exception::", e);
+			return new ArrayList<String>();
+		} catch (Exception e) {
+			logger.error("Exception ::", e);
+		}
 		return new ArrayList<String>();
 
 	}
@@ -61,16 +98,22 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 	 */
 	public String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
 		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildQueryToSql <====\n");
-		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
-
+//		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
+		
+		//--------------------SPARQL
+		StringBuilder fullInnerGraphClause = new StringBuilder(200);
+		
 		// https://stackoverflow.com/questions/3333974/how-to-loop-over-a-class-attributes-in-java
 		ReflectionUtils.doWithFields(qp.getClass(), field -> {
 			String dbColumn, sqlOperator;
 			String sqlWhereProperty = "";
-
 			field.setAccessible(true);
 			String queryParameter = field.getName();
 			Object fieldValue = field.get(qp);
+			
+			//--------------------SPARQL
+			String innerGraphClause = "";
+			
 			if (fieldValue != null) {
 
 				logger.trace("Query parameter:" + queryParameter);
@@ -82,100 +125,146 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 				}
 
 				switch (queryParameter) {
-				case NGSIConstants.QUERY_PARAMETER_IDPATTERN:
-					dbColumn = DBConstants.DBCOLUMN_ID;
-					sqlOperator = "~";
-					sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
-					break;
-				case NGSIConstants.QUERY_PARAMETER_TYPE:
-				case NGSIConstants.QUERY_PARAMETER_ID:
-					dbColumn = queryParameter;
+				case NGSIConstants.QUERY_PARAMETER_IDPATTERN: 
+					throw new IllegalArgumentException("QUERY_PARAMETER_IDPATTERN Not implemented yet!");
+//					dbColumn = DBConstants.DBCOLUMN_ID;
+//					sqlOperator = "~";
+//					sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
+//					break;
+				case NGSIConstants.QUERY_PARAMETER_TYPE://-------------------------------------------------------------DONE
 					if (queryValue.indexOf(",") == -1) {
-						sqlOperator = "=";
-						sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
-					} else {
-						sqlOperator = "IN";
-						sqlWhereProperty = dbColumn + " " + sqlOperator + " ('" + queryValue.replace(",", "','") + "')";
+						innerGraphClause+="?temp rdf:type <" + queryValue+">.\n";
+					}else {
+						innerGraphClause+="VALUES (?o){\n";
+						for (String qV : queryValue.split(",")) {
+							innerGraphClause+="("+qV+")\n";
+						}
+						innerGraphClause+="}\n";
+						innerGraphClause+="?temp rdf:type ?o.\n";
 					}
+					innerGraphClause+="?temp (<>|!<>)* ?s .\n";
+					break;
+				case NGSIConstants.QUERY_PARAMETER_ID://---------------------------------------------------------------DONE
+//					dbColumn = queryParameter;
+//					if (queryValue.indexOf(",") == -1) {
+//						sqlOperator = "=";
+//						sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
+//					} else {
+//						sqlOperator = "IN";
+//						sqlWhereProperty = dbColumn + " " + sqlOperator + " ('" + queryValue.replace(",", "','") + "')";
+//					}
+					if (queryValue.indexOf(",") == -1) {
+						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"><" + queryValue+">.\n";
+					}else {
+						innerGraphClause+="VALUES (?temp){\n";
+						for (String qV : queryValue.split(",")) {
+							innerGraphClause+="("+qV+")\n";
+						}
+						innerGraphClause+="}\n";
+						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"> ?temp.\n";
+					}
+					innerGraphClause+="?temp (<>|!<>)* ?s .\n";
 					break;
 				case NGSIConstants.QUERY_PARAMETER_ATTRS:
-					dbColumn = "data";
-					sqlOperator = "?";
-					if (queryValue.indexOf(",") == -1) {
-						sqlWhereProperty = dbColumn + " " + sqlOperator + "'" + queryValue + "'";
-					} else {
-						sqlWhereProperty = "("+dbColumn + " " + sqlOperator + " '"
-								+ queryValue.replace(",", "' OR " + dbColumn + " " + sqlOperator + "'") + "')";
-					}
-					break;
+					throw new IllegalArgumentException("QUERY_PARAMETER_ATTRS Not implemented yet!");
+//					dbColumn = "data";
+//					sqlOperator = "?";
+//					if (queryValue.indexOf(",") == -1) {
+//						sqlWhereProperty = dbColumn + " " + sqlOperator + "'" + queryValue + "'";
+//					} else {
+//						sqlWhereProperty = "("+dbColumn + " " + sqlOperator + " '"
+//								+ queryValue.replace(",", "' OR " + dbColumn + " " + sqlOperator + "'") + "')";
+//					}
+//					break;
 				case NGSIConstants.QUERY_PARAMETER_GEOREL:
 					if (fieldValue instanceof GeoqueryRel) {
-						GeoqueryRel gqr = (GeoqueryRel) fieldValue;
-						logger.trace("Georel value " + gqr.getGeorelOp());
-						try {
-							sqlWhereProperty = translateNgsildGeoqueryToPostgisQuery(gqr, qp.getGeometry(),
-									qp.getCoordinates(), qp.getGeoproperty());
-						} catch (ResponseException e) {
-							e.printStackTrace();
-						}
+						throw new IllegalArgumentException("QUERY_PARAMETER_GEOREL Not implemented yet!");
+//						GeoqueryRel gqr = (GeoqueryRel) fieldValue;
+//						logger.trace("Georel value " + gqr.getGeorelOp());
+//						try {
+//							sqlWhereProperty = translateNgsildGeoqueryToPostgisQuery(gqr, qp.getGeometry(),
+//									qp.getCoordinates(), qp.getGeoproperty());
+//						} catch (ResponseException e) {
+//							e.printStackTrace();
+//						}
 					}
 					break;
 				case NGSIConstants.QUERY_PARAMETER_QUERY:
-					sqlWhereProperty = queryValue;
-					break;
+					throw new IllegalArgumentException("QUERY_PARAMETER_QUERY Not implemented yet!");
+//					sqlWhereProperty = queryValue;
+//					break;
 				}
-				fullSqlWhereProperty.append(sqlWhereProperty);
-				if (!sqlWhereProperty.isEmpty())
-					fullSqlWhereProperty.append(" AND ");
+				if(!innerGraphClause.isEmpty()) {
+					fullInnerGraphClause.append(innerGraphClause+"\n");
+				}
+				
+//				fullSqlWhereProperty.append(sqlWhereProperty);
+//				if (!sqlWhereProperty.isEmpty()) {
+//					fullSqlWhereProperty.append(" AND ");
+//				}
 			}
 		});
 
-		String tableDataColumn;
+		String graph;//tableDataColumn;
 		if (qp.getKeyValues()) {
 			if (qp.getIncludeSysAttrs()) {
-				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
+				graph = DBConstants.DBCOLUMN_KVDATA;
 			} else { // without sysattrs at root level (entity createdat/modifiedat)
-				tableDataColumn = DBConstants.DBCOLUMN_KVDATA + " - '" + NGSIConstants.NGSI_LD_CREATED_AT + "' - '"
+				graph = DBConstants.DBCOLUMN_KVDATA + " - '" + NGSIConstants.NGSI_LD_CREATED_AT + "' - '"
 						+ NGSIConstants.NGSI_LD_MODIFIED_AT + "'";
 			}
 		} else {
 			if (qp.getIncludeSysAttrs()) {
-				tableDataColumn = DBConstants.DBCOLUMN_DATA;
+				graph = DBConstants.DBCOLUMN_DATA;
 			} else {
-				tableDataColumn = DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS; // default request
+				graph = DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS; // default request
 			}
 		}
 
-		String dataColumn = tableDataColumn;
+//		String dataColumn = tableDataColumn;
 		if (qp.getAttrs() != null) {
-			String expandedAttributeList = "'" + NGSIConstants.JSON_LD_ID + "','" + NGSIConstants.JSON_LD_TYPE + "','"
-					+ qp.getAttrs().replace(",", "','") + "'";
-			if (qp.getIncludeSysAttrs()) {
-				expandedAttributeList += "," + NGSIConstants.NGSI_LD_CREATED_AT + ","
-						+ NGSIConstants.NGSI_LD_MODIFIED_AT;
-			}
-			dataColumn = "(SELECT jsonb_object_agg(key, value) FROM jsonb_each(" + tableDataColumn + ") WHERE key IN ( "
-					+ expandedAttributeList + "))";
+			throw new IllegalArgumentException("qp.getAttrs() Not implemented yet!");
+//			String expandedAttributeList = "'" + NGSIConstants.JSON_LD_ID + "','" + NGSIConstants.JSON_LD_TYPE + "','"
+//					+ qp.getAttrs().replace(",", "','") + "'";
+//			if (qp.getIncludeSysAttrs()) {
+//				expandedAttributeList += "," + NGSIConstants.NGSI_LD_CREATED_AT + ","
+//						+ NGSIConstants.NGSI_LD_MODIFIED_AT;
+//			}
+//			dataColumn = "(SELECT jsonb_object_agg(key, value) FROM jsonb_each(" + tableDataColumn + ") WHERE key IN ( "
+//					+ expandedAttributeList + "))";
 		}
-		String sqlQuery = "SELECT " + dataColumn + " as data FROM " + DBConstants.DBTABLE_ENTITY + " ";
-		if (fullSqlWhereProperty.length() > 0) {
-			sqlQuery += "WHERE " + fullSqlWhereProperty.toString() + " 1=1 ";
+		//--------------
+//		String sqlQuery = "SELECT " + dataColumn + " as data FROM " + DBConstants.DBTABLE_ENTITY + " ";
+		graph=DBConstants.DBTABLE_ENTITY +"/"+graph;
+		String sparqlQuery = "SELECT ?s ?p ?o WHERE {\n";
+		//---------------
+		if (fullInnerGraphClause.length() > 0) {
+//			sqlQuery += "WHERE " + fullSqlWhereProperty.toString() + " 1=1 ";
+			sparqlQuery+=fullInnerGraphClause;
+		}else {
+			logger.trace("WARNING: sparql query for get all RDF-DB");
+//			sparqlQuery+="?s ?p ?o.\n";
 		}
-		int limit = qp.getLimit();
-		int offSet = qp.getOffSet();
-				
-		if(limit == 0) {
-            sqlQuery += "";           
-        }
-        else {
-        sqlQuery += "LIMIT " + limit + " ";
-        }
-		if(offSet != -1) {
-			sqlQuery += "OFFSET " + offSet + " "; 
-		}
+		sparqlQuery+="?s ?p ?o.\n";
+		sparqlQuery+="}";
+		
+		
+		///-----------------------------------------------------_NOT IMPLEMENTED
+//		int limit = qp.getLimit();
+//		int offSet = qp.getOffSet();
+//				
+//		if(limit == 0) {
+//            sqlQuery += "";           
+//        }
+//        else {
+//        sqlQuery += "LIMIT " + limit + " ";
+//        }
+//		if(offSet != -1) {
+//			sqlQuery += "OFFSET " + offSet + " "; 
+//		}
 		// order by ?
-
-		return sqlQuery;
+		
+		return sparqlQuery; //sqlQuery;
 	}
 
 	// TODO: SQL input sanitization
