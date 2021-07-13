@@ -27,12 +27,8 @@ import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 
 public class SepaJSONLDGateway extends SepaGateway{
 
-	public static final String FOR_INTERNAL_USE = "internaluse";
-	public static final String EXISTS_ID = "existsid";
-	public static final String ENTITY_TYPE = "entityType";
-	public static final String ENTITY_CREATED_AT = "entityCreatedAt";
-	public static final String ENTITY_MODIFIED_AT = "entityModifiedAt";
-	public static final String HAS_TEMPORAL_INSTANCE = "hasTemporalInstance";
+//-----------------------------------------------------------------DEPRECATE
+//------------------------use SepaGateway and SPARQLGenerator instead
 	
 
 	private final static Logger logger = LogManager.getLogger(SepaJSONLDGateway.class);
@@ -41,147 +37,167 @@ public class SepaJSONLDGateway extends SepaGateway{
 		super();
 	}
 	
-	/*
-	 * SPARQL DELETE WHERE
-	 * this update will delete all triples linked to "key" subject
-	 * maybe is not safe: will be delete triple linked by others "key" with same object
-	 * example:
-	 * 
-	 *T1) <key1> <p1> <o1>
-	 *T2) <o1> <p2> <o2>
-	 * 
-	 *T3) <key2> <p1> <o1>
-	 *T4) <o1> <p2> <o4>
-	 * 
-	 * generalDeleteEntityRecursively(key1); will delete T1,T2,T4 so T3 is not consistent
-	 */
-	public boolean generalDeleteEntityRecursively(String key,String db) {
-//		delete { ?s ?p ?o }
-//		where {
-//		  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
-//		  ?s ?p ?o .
-//		}
-		String sparql = getSparqlDeleteEntityRecursively(key,db);
-		return !super.executeUpdate(sparql).isError() && !deleteInternalEntityKey(key,db);
-		
+	public boolean executeCreateEntity(SPARQLGenerator gen) {
+		return !super.executeUpdate(gen.generateCreateEntity()).isError();
 	}
 	
-	public String getSparqlDeleteEntityRecursively(String key,String db) {
-//		delete { ?s ?p ?o }
-//		where {
-//		  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
-//		  ?s ?p ?o .
-//		}
-		return "DELETE {?s ?p ?o}\n"
-				+ "where { \n"
-				+ "  graph <"+super.graph+db+"> {\n"
-				+ "<"+key+"> (<>|!<>)* ?s .\n"  
-				+ "?s ?p ?o .\n"
-				+ "} }" ;
-		
-	}
-	/*
-	 * SPARQL SELECT
-	 */
-	public String generalGetEntityRecursivelyByKey(String key,String db) throws JsonLdError, SEPABindingsException {
-//		SELECT ?s ?p ?o 
-//		where {
-//	          GRAPH <prova>{
-//			  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
-//			  ?s ?p ?o .
-//	          }
-//			}
-		String sparql = "SELECT ?s ?p ?o\n"
-				+ "where { \n"
-				+ "  graph  <"+super.graph+db+"> {\n"
-				+ "<"+key+"> (<>|!<>)* ?s .\n"  
-				+ "?s ?p ?o .\n"
-				+ "} }" ;
-		return getJsonLdResOfQuery(sparql);
-	}
+//	public boolean generalStoreEntity(String key,String jsonld,String table) throws JsonLdError {
+//		String sparql = getSparqlGeneralStoreEntity(key,jsonld,table);
+//		return !super.executeUpdate(sparql).isError();
+//	}
 
-	public String getJsonLdResOfQuery(String sparql) throws JsonLdError, SEPABindingsException {
-		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
-		return bindingsResultsToJsonld(res.getBindingsResults());
-	}
-	/*
-	 * SPARQL INSERT DATA
-	 */
-	public boolean generalStoreEntity(String key,String jsonld,String db) throws JsonLdError {
-		
-		String sparql = getSparqlGeneralStoreEntity(key,jsonld,db);
-		return !super.executeUpdate(sparql).isError();
-	}
+//	public String getSparqlGeneralStoreEntity(String key,String jsonld,String table) throws JsonLdError {
+//		String turtle = "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+">";
+//		SPARQLGenerator gen = new SPARQLGenerator(table, key);
+//		gen.insertJsonColumn(jsonld, turtle);
+//		return gen.generateInsertData();
+//	}
+
 	
-	public String getSparqlGeneralStoreEntity(String key,String jsonld,String db) throws JsonLdError {
-		
-//		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
-		String turtle = jsonldToTriple(jsonld,key);
-		
-		//for faster and easy getAllIDs method:
-		turtle += "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+"> .\n";
-		
-//		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
-		String sparql ="INSERT DATA\n"
-				+ "{ \n"
-				+ "  graph <"+super.graph+db+"> {\n"
-				+turtle 
-				+ "} }" ;	
-		logger.info("\n---------------------------------------\n getSparqlGeneralStoreEntity: \n sparql: " +sparql + "\n");
-		return sparql;
-	}
-	public String getSparqlStoreTemporalEntity(String key,String temporalentity_id,String jsonld,String db) throws JsonLdError {
-		
-//		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
-		String composedkey = key+"@"+temporalentity_id;
-		String turtle = jsonldToTriple(jsonld,key,composedkey);
-		
-		//for faster and easy getAllIDs method:
-		turtle += "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+"> .\n";
-		//Linking key with composedkey
-		turtle += "<"+key+"><"+super.ontology+"#"+HAS_TEMPORAL_INSTANCE+"><"+composedkey+"> .\n";
-		
-//		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
-		String sparql = "INSERT DATA\n"
-				+ "{ \n"
-				+ "  graph <"+super.graph+db+"> {\n"
-				+turtle 
-				+ "} }" ;
-		logger.info("\n---------------------------------------\n getSparqlStoreTemporalEntity: \n sparql: " +sparql + "\n");
-		return sparql;
-	}
-	public Set<String> getAllKeys(){
-		return getAllKeys(DBConstants.DBTABLE_ENTITY);
-	}
+//----------------------------------------------DEPRECATE-----START
+//	/*
+//	 * SPARQL DELETE WHERE
+//	 * this update will delete all triples linked to "key" subject
+//	 * maybe is not safe: will be delete triple linked by others "key" with same object
+//	 * example:
+//	 * 
+//	 *T1) <key1> <p1> <o1>
+//	 *T2) <o1> <p2> <o2>
+//	 * 
+//	 *T3) <key2> <p1> <o1>
+//	 *T4) <o1> <p2> <o4>
+//	 * 
+//	 * generalDeleteEntityRecursively(key1); will delete T1,T2,T4 so T3 is not consistent
+//	 */
+//	public boolean generalDeleteEntityRecursively(String key,String db) {
+////		delete { ?s ?p ?o }
+////		where {
+////		  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
+////		  ?s ?p ?o .
+////		}
+//		String sparql = getSparqlDeleteEntityRecursively(key,db);
+//		return !super.executeUpdate(sparql).isError() && !deleteInternalEntityKey(key,db);
+//		
+//	}
+//	
+//	public String getSparqlDeleteEntityRecursively(String key,String db) {
+////		delete { ?s ?p ?o }
+////		where {
+////		  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
+////		  ?s ?p ?o .
+////		}
+//		return "DELETE {?s ?p ?o}\n"
+//				+ "where { \n"
+//				+ "  graph <"+super.graph+db+"> {\n"
+//				+ "<"+key+"> (<>|!<>)* ?s .\n"  
+//				+ "?s ?p ?o .\n"
+//				+ "} }" ;
+//		
+//	}
+//	/*
+//	 * SPARQL SELECT
+//	 */
+//	public String generalGetEntityRecursivelyByKey(String key,String db) throws JsonLdError, SEPABindingsException {
+////		SELECT ?s ?p ?o 
+////		where {
+////	          GRAPH <prova>{
+////			  <urn:ngsi-ld:testunit:4915> (<>|!<>)* ?s . 
+////			  ?s ?p ?o .
+////	          }
+////			}
+//		String sparql = "SELECT ?s ?p ?o\n"
+//				+ "where { \n"
+//				+ "  graph  <"+super.graph+db+"> {\n"
+//				+ "<"+key+"> (<>|!<>)* ?s .\n"  
+//				+ "?s ?p ?o .\n"
+//				+ "} }" ;
+//		return getJsonLdResOfQuery(sparql);
+//	}
+//
+//	public String getJsonLdResOfQuery(String sparql) throws JsonLdError, SEPABindingsException {
+//		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
+//		return bindingsResultsToJsonld(res.getBindingsResults());
+//	}
+//	/*
+//	 * SPARQL INSERT DATA
+//	 */
+//	public boolean generalStoreEntity(String key,String jsonld,String db) throws JsonLdError {
+//		
+//		String sparql = getSparqlGeneralStoreEntity(key,jsonld,db);
+//		return !super.executeUpdate(sparql).isError();
+//	}
+//	
+//	public String getSparqlGeneralStoreEntity(String key,String jsonld,String db) throws JsonLdError {
+//		
+////		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
+//		String turtle = jsonldToTriple(jsonld,key);
+//		
+//		//for faster and easy getAllIDs method:
+//		turtle += "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+"> .\n";
+//		
+////		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
+//		String sparql ="INSERT DATA\n"
+//				+ "{ \n"
+//				+ "  graph <"+super.graph+db+"> {\n"
+//				+turtle 
+//				+ "} }" ;	
+//		logger.info("\n---------------------------------------\n getSparqlGeneralStoreEntity: \n sparql: " +sparql + "\n");
+//		return sparql;
+//	}
+//	public String getSparqlStoreTemporalEntity(String key,String temporalentity_id,String jsonld,String db) throws JsonLdError {
+//		
+////		logger.info("\n---------------------------------------\ncreateEntity.JSON-LD: \n" + resolved + "\n");
+//		String composedkey = key+"@"+temporalentity_id;
+//		String turtle = jsonldToTriple(jsonld,key,composedkey);
+//		
+//		//for faster and easy getAllIDs method:
+//		turtle += "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"><"+key+"> .\n";
+//		//Linking key with composedkey
+//		turtle += "<"+key+"><"+super.ontology+"#"+HAS_TEMPORAL_INSTANCE+"><"+composedkey+"> .\n";
+//		
+////		logger.info("\n---------------------------------------\ncreateEntity.RDF: \n" + turtle + "\n");
+//		String sparql = "INSERT DATA\n"
+//				+ "{ \n"
+//				+ "  graph <"+super.graph+db+"> {\n"
+//				+turtle 
+//				+ "} }" ;
+//		logger.info("\n---------------------------------------\n getSparqlStoreTemporalEntity: \n sparql: " +sparql + "\n");
+//		return sparql;
+//	}
+//	public Set<String> getAllKeys(){
+//		return getAllKeys(DBConstants.DBTABLE_ENTITY);
+//	}
+//	
+//	public Set<String> getAllKeys(String db){
+//		String sparql = "SELECT ?o\n"
+//				+ "where { \n"
+//				+ "  graph  <"+super.graph+db+"> {\n" 
+//				+ "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> ?o.\n"
+//				+ "} }" ;
+//		logger.info("\n---------------------------------------\n getAllKeys: \n sparql: " +sparql + "\n");
+//		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
+//		Set<String> ids = new HashSet<String>();
+//		for (Bindings binding : res.getBindingsResults().getBindings()) {
+//			ids.add(binding.getValue("o"));
+//		} 
+//		return ids;
+//	}
+//	
+//	public boolean deleteInternalEntityKey(String key,String db) {
+//		String sparql = "DELETE DATA\n"
+//				+ "where { \n"
+//				+ "  graph <"+super.graph+db+"> {\n"
+//				+"<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> <"+key+">.\n"
+//				+ "} }" ;
+//		return !super.executeUpdate(sparql).isError();
+//		
+//	}
+//----------------------------------------------DEPRECATE-----END
+
 	
-	public Set<String> getAllKeys(String db){
-		String sparql = "SELECT ?o\n"
-				+ "where { \n"
-				+ "  graph  <"+super.graph+db+"> {\n" 
-				+ "<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> ?o.\n"
-				+ "} }" ;
-		logger.info("\n---------------------------------------\n getAllKeys: \n sparql: " +sparql + "\n");
-		QueryResponse res = (QueryResponse)super.executeQuery(sparql);
-		Set<String> ids = new HashSet<String>();
-		for (Bindings binding : res.getBindingsResults().getBindings()) {
-			ids.add(binding.getValue("o"));
-		} 
-		return ids;
-	}
-	
-	public boolean deleteInternalEntityKey(String key,String db) {
-		String sparql = "DELETE DATA\n"
-				+ "where { \n"
-				+ "  graph <"+super.graph+db+"> {\n"
-				+"<"+ super.ontology+"#"+FOR_INTERNAL_USE+"><"+super.ontology+"#"+EXISTS_ID+"> <"+key+">.\n"
-				+ "} }" ;
-		return !super.executeUpdate(sparql).isError();
-		
-	}
-	
-	//-------------------------------------------------------------------------------
-	//---------------------------------------------------------------CONVERT UTILS---
-	//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+//---------------------------------------------------------------CONVERT UTILS---
+//-------------------------------------------------------------------------------
 	
 	private String bindingsResultsToJsonld(BindingsResults bindings) throws JsonLdError, SEPABindingsException {
 		String triples = "";

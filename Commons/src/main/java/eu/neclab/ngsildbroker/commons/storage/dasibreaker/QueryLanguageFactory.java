@@ -27,7 +27,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.StorageReaderDAOSQ
 @Component
 public class QueryLanguageFactory {
 	
-	private final static QueryLanguage entityHandlerType = QueryLanguage.SPARQL;
+	private final static QueryLanguage entityHandlerType = QueryLanguage.SQL;
 
 	@Autowired
 	private  ApplicationContext context;

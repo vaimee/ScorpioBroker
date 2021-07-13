@@ -23,6 +23,8 @@ public class DBConstants {
 	public final static String DBCOLUMN_LOCATION = "location";
 	public final static String DBCOLUMN_OBSERVATION_SPACE = "observationspace";
 	public final static String DBCOLUMN_OPERATION_SPACE = "operationspace";
+	
+	public final static String DBCOLUMN_ATTRIBUTE_ID = "attributeId";
 
 	public final static Map<String, String> NGSILD_TO_SQL_RESERVED_PROPERTIES_MAPPING = initNgsildToSqlReservedPropertiesMapping();
 

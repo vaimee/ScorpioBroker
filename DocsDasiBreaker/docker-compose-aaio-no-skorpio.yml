@@ -26,3 +26,15 @@ services:
       POSTGRES_USER: ngb
       POSTGRES_PASSWORD: ngb
       POSTGRES_DB: ngb
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:5050"
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ngb@ngb.com
+      PGADMIN_DEFAULT_PASSWORD: ngb
+      PGADMIN_LISTEN_PORT: 5050
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 10
+    depends_on:
+      - postgres

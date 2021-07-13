@@ -50,7 +50,7 @@ import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 			}
 			String sparqlQuery = translateNgsildQueryToSql(qp);
 			logger.info("NGSI-LD to SPARQL: " + sparqlQuery);
-			logger.info("Query JSON-LD result: \n" + sepa.getJsonLdResOfQuery(sparqlQuery));
+//			logger.info("Query JSON-LD result: \n" + sepa.getJsonLdResOfQuery(sparqlQuery));
 			//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 			//------------------------------------------------------------------------------------------INGORED
 //			if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
@@ -154,14 +154,14 @@ import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 //						sqlWhereProperty = dbColumn + " " + sqlOperator + " ('" + queryValue.replace(",", "','") + "')";
 //					}
 					if (queryValue.indexOf(",") == -1) {
-						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"><" + queryValue+">.\n";
+//						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"><" + queryValue+">.\n";
 					}else {
 						innerGraphClause+="VALUES (?temp){\n";
 						for (String qV : queryValue.split(",")) {
 							innerGraphClause+="("+qV+")\n";
 						}
 						innerGraphClause+="}\n";
-						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"> ?temp.\n";
+//						innerGraphClause+="<"+SepaJSONLDGateway.FOR_INTERNAL_USE+"><"+SepaJSONLDGateway.EXISTS_ID+"> ?temp.\n";
 					}
 					innerGraphClause+="?temp (<>|!<>)* ?s .\n";
 					break;
