@@ -18,8 +18,11 @@ public class SPARQLClause {
 		this._isFilter=false;
 	}
 	
-	public String getClauseTriple(int index) {
-		return "?s"+index+" ?p"+index+" ?o"+index+".\n";
+	public String getClauseTriple(String table, String key,int index) {
+		String triple = "?s"+index+" ?p"+index+" ?o"+index+".\n";
+		String myX ="?x"+index;
+		String myGraph  = SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+key;
+		return "BIND(EXISTS{GRAPH <"+myGraph+"> {"+triple+"}} AS "+myX+")";
 	}
 	public void setFilter(String filter) {
 		this.filter=filter;

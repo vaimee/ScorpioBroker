@@ -8,8 +8,14 @@ public class SPARQLClauseRawData extends SPARQLClause{
 	}
 
 	@Override
-	public String getClauseTriple(int index) {
-		return "<"+SPARQLConstant.FOR_INTERNAL_USE+"><"+SPARQLConstant.HAS_RAW_DATA+">'"+super.value
-				+"'.\n?s"+index+" ?p"+index+" ?o"+index+".\n";
+	public String getClauseTriple(String table, String key,int index) {
+		
+		String triple ="<"+SPARQLConstant.FOR_INTERNAL_USE+
+				"><"+SPARQLConstant.HAS_RAW_DATA+">'"+super.value;
+		
+		String myX ="?x"+index;
+		String myGraph  = SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+key;
+		
+		return "BIND(EXISTS{GRAPH <"+myGraph+"> {"+triple+"}} AS "+myX+")";
 	}
 }

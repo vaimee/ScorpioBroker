@@ -73,15 +73,18 @@ public class SPARQLGenerator {
 		sparql +="}";
 		return sparql;
 	}
-	
+	protected String generateDeleteAll() {
+		String sparql="GRAPH ?g {\n";
+		sparql+="?s ?p ?o.\n";
+		sparql+="}\n";
+		sparql+=" FILTER regex(?g,"+gnererateRegexColumn()+") \n";
+		return sparql;
+	}
 	public String generateDeleteWhere(boolean deleteAll) {
 		String sparql ="DELETE WHERE {\n";
 		//deleteAll-->false--> is for ON CONFLICT DO UPDATE
 		if(deleteAll) {
-			sparql+="GRAPH ?g {\n";
-			sparql+="?s ?p ?o.\n";
-			sparql+="}\n";
-			sparql+=" FILTER regex(?g,"+gnererateRegexColumn()+") \n";
+			sparql+=generateDeleteAll();
 		}else {
 			for (String mapKey : _map.keySet()) {
 				if(mapKey.compareTo(SPARQLConstant.SPARQL_COLUMN)==0) {
@@ -100,27 +103,69 @@ public class SPARQLGenerator {
 	
 	public String generateDeleteWhere(ArrayList<SPARQLClause> column_value) {
 		//WIP----------------------------------WIP
-//		DELETE { 
-//			  ?uri our:name ?literal .
-//			}
-//			WHERE { 
-//			  { SELECT ?uri ?literal 
-//			    WHERE { ?uri a our:thing; 
-//			                 our:name ?literal . 
+//	DELETE { GRAPH ?g {?s ?p ?o} } 
+//		WHERE{
+//			  GRAPH ?g {?s ?p ?o}
+//			  { 
+//			    SELECT ?g WHERE {
+//			      {
+//			        SELECT ?ok1 {
+//
+//			        BIND( EXISTS{
+//			            GRAPH ?g1 {
+//			              ?s1 ?p1 <o2>.
+//			              ?s1 ?p1 ?o1}}AS ?ok1)
+//
+//
+//			        BIND( EXISTS{
+//			            GRAPH ?g2 {
+//			              ?s2 ?p2 <o>.
+//			              ?s2 ?p2 ?o2}}AS ?ok2)
+//			      }
+//			      HAVING(?ok1 =true && ?ok2=true)
 //			    }
-//			  }
+//			      
+//			    	GRAPH ?g{?s ?p ?o}
+//			        FILTER(regex(str(?g),"^http://localhost:9999/blazegraph/namespace/kb/g.$") && ?ok1)
+//			              
+//			   }
+//			           
+//			 }
+//
 //			}
-		String sparql ="DELETE WHERE {\n";
-		int index =0;
+//			           
+//			  
+	
+		
+		String sparql =	"DELETE {\n";
+		sparql+=			"GRAPH ?g {\n";
+		sparql+="				?s ?p ?o.\n";
+		sparql+=			"}\n";
+		sparql+=		"} WHERE {\n"; 
+		sparql+=		"{ SELECT ?g ?ok WHERE {\n"; 
+		sparql+=		"}}\n"; 
+		sparql+=		"FILTER (?ok = 1)\n"; 
+//			    WHERE { ?uri a our:thing; 
+//                our:name ?literal . 
+//   }
+// }
+		sparql+=		"}\n";
+		
+		
+		int index =0;	
+		String conditionHAVING = "HAVING( ";
+		String conditionSelect = "SELECT ";
+		String binds = "";
 		for (SPARQLClause sparqlClause : column_value) {
-			String g = "?g"+index;
-			sparql+="GRAPH "+g+ " {\n";
-			sparql+=sparqlClause.getClauseTriple(index);
-			sparql+="}\n";
-			if(sparqlClause.ifFilter()) {
-				sparql+=sparqlClause.getFilter(index);
-			}
+			conditionSelect+="?ok"+index+" ";
+			conditionHAVING+="?ok"+index+"=1 ";
+			binds+=sparqlClause.getClauseTriple(_table, _key, index)+"\n";
+			index++;
 		}
+		conditionHAVING+=")";
+		conditionSelect+="{";
+		binds+="}";
+		
 		sparql +="}";
 		return sparql;
 	}
@@ -137,10 +182,10 @@ public class SPARQLGenerator {
 	
 	protected String gnererateRegexColumn() {
 //		return "^http:\\/\\/parte1\\/.+\\/parte3$";
-		return "^http:\\/\\/"+_table+"\\/.+\\/"+_key+"$";
+		return "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"\\/.+\\/"+_key+"$";
 	}
 	protected String getGraph(String column) {
-		return "http://"+_table+"/"+column+"/"+_key;
+		return SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+_key;
 	}
 	
 	protected String jsonldToTriple(String jsonld,String key) throws JsonLdError {

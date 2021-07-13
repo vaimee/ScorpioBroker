@@ -14,6 +14,8 @@ public class SPARQLConstant {
 	
 	public static final String SPARQL_COLUMN = "ngsitosparql";
 	
+	public static final String NGSI_GRAPH_PREFIX = "http://ngsi/";
+	
 //	public static final String SPARQL_CHECK_CONFLICT = "http://"+SPARQL_COLUMN+"/checkconflict";
 	
 	public static final String[] JSON_COLUMNS = new String[]{
