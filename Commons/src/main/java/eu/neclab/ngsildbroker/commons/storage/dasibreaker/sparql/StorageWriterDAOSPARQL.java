@@ -32,6 +32,8 @@ import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
@@ -192,8 +194,10 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //							+ " WHERE temporalentity_id = ? AND attributeid = ?";
 //					n = writerJdbcTemplate.update(sql, entityId, attributeId);
 					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
-					sparql+=gen.generateDeleteWhere(true)+";\n";
+//					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
+					ArrayList<SPARQLClause> clauses =new ArrayList<SPARQLClause>();
+					clauses.add(new SPARQLClauseRawData(DBConstants.DBCOLUMN_ATTRIBUTE_ID,attributeId));
+					sparql+=gen.generateDeleteAllWhere(clauses)+";\n";
 					//------------------------------------------------------___WIP
 					//	need use SPARQLClause concept and SPARQLGenerator.generateDeleteWhere(ArrayList<SPARQLClause>)
 					//------------------------------------------------------___WIP
@@ -201,7 +205,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------------------------------------------------------WARNING
 					//------------------------------------------------------------WARNING
 					//------------------------------------------------------------WARNING
-					// 	need check if Scorpio always use 'entityId' as identifier in SQL query
+					//need check if Scorpio always use 'entityId' as identifier in SQL query
 					//for example here, the SQL WHERE is on temporalentity_id = ? AND attributeid = ?" so we have
 					//'entityId', but if there is a SQL WHERE that didn't use 'entityId' we will be in trouble
 					//------------------------------------------------------------WARNING
@@ -214,9 +218,13 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					sparql+=gen.generateDeleteWhere(true)+";\n";
 				}
 			}
-
-			logger.debug("Rows affected: " + Integer.toString(n));
-			return true;
+			
+			logger.info("\nstoreTemporalEntity--> sparql:\n" + sparql);
+			boolean success= !sepa.executeUpdate(sparql).isError();
+//			logger.debug("Rows affected: " + Integer.toString(n));
+			logger.info("\nstoreTemporalEntity--> success:\n" + success);
+			
+			return success;
 		} catch (Exception e) {
 			logger.error("Exception ::", e);
 			e.printStackTrace();

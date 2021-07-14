@@ -101,8 +101,7 @@ public class SPARQLGenerator {
 		return sparql;
 	}
 	
-	public String generateDeleteWhere(ArrayList<SPARQLClause> column_value) {
-		//WIP----------------------------------WIP
+	public String generateDeleteAllWhere(ArrayList<SPARQLClause> column_value) {
 //	DELETE { GRAPH ?g {?s ?p ?o} } 
 //		WHERE{
 //			  GRAPH ?g {?s ?p ?o}
@@ -135,38 +134,44 @@ public class SPARQLGenerator {
 //			}
 //			           
 //			  
-	
-		
-		String sparql =	"DELETE {\n";
-		sparql+=			"GRAPH ?g {\n";
-		sparql+="				?s ?p ?o.\n";
-		sparql+=			"}\n";
-		sparql+=		"} WHERE {\n"; 
-		sparql+=		"{ SELECT ?g ?ok WHERE {\n"; 
-		sparql+=		"}}\n"; 
-		sparql+=		"FILTER (?ok = 1)\n"; 
-//			    WHERE { ?uri a our:thing; 
-//                our:name ?literal . 
-//   }
-// }
-		sparql+=		"}\n";
-		
+		String varName = "ok";
+		String regex = gnererateRegexColumn();
+		String filter ="FILTER(regex(str(?g), "+regex+" && ?"+varName+"1)";
+		String having ="HAVING(";// HAVING(?ok1 =true && ?ok2=true)
+		String bindings ="";
 		
 		int index =0;	
-		String conditionHAVING = "HAVING( ";
-		String conditionSelect = "SELECT ";
-		String binds = "";
 		for (SPARQLClause sparqlClause : column_value) {
-			conditionSelect+="?ok"+index+" ";
-			conditionHAVING+="?ok"+index+"=1 ";
-			binds+=sparqlClause.getClauseTriple(_table, _key, index)+"\n";
+//	        BIND( EXISTS{
+//	            GRAPH ?g2 {
+//	              ?s2 ?p2 <o>.
+//	              ?s2 ?p2 ?o2}}AS ?ok2)
+			bindings+=sparqlClause.getClause(_table, _key, varName,index)+"\n";
+			having+="?"+varName+index+ "=true ";
+			if(index>0) {
+				having+="&& ";
+			}
 			index++;
 		}
-		conditionHAVING+=")";
-		conditionSelect+="{";
-		binds+="}";
+		having+=")";
+		String sparql =	"DELETE { GRAPH ?g {?s ?p ?o} } \n";
+		sparql+=			"WHERE {\n";
+		sparql+=				"GRAPH ?g {?s ?p ?o}\n";
+		sparql+=					"{\n";
+		sparql+=						"SELECT ?g WHERE {\n";
+		sparql+=								"{\n";
+		sparql+=									"SELECT ?"+varName+"1 {\n";
+		sparql+=										bindings+"\n";
+		sparql+=									"}\n";
+		sparql+=									having+"\n";
+		sparql+=								"}\n";
+		sparql+=							"GRAPH ?g{?s ?p ?o}\n";
+		sparql+=							filter+"\n";
+		sparql+=						"}\n";
+		sparql+=					"}\n";
+		sparql+=			"}\n";
 		
-		sparql +="}";
+		
 		return sparql;
 	}
 	
