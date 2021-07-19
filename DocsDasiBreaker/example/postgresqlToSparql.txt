@@ -1,0 +1,301 @@
+#-----------------------------------------------------------------------------------------------typesAndAttributeQuerY.PART1
+
+query="select 
+
+jsonb_build_object(
+	'"+NGSIConstants.JSON_LD_ID+"',
+	'urn:ngsi-ld:EntityTypeList:"+number+"',
+	'"+NGSIConstants.JSON_LD_TYPE+"',
+	 jsonb_build_array('"+NGSIConstants.NGSI_LD_ENTITY_LIST+"'),
+	'"+NGSIConstants.NGSI_LD_TYPE_LIST+"',
+	json_agg(distinct jsonb_build_object('"+NGSIConstants.JSON_LD_ID+"', type)::jsonb)
+)
+
+from entity;";
+
+#LINE 11--> type is the column
+
+#jsonb_build_object --> build a json
+#https://docs.yugabyte.com/latest/api/ysql/datatypes/type_json/functions-operators/jsonb-build-object/
+
+#jsonb_build_array --> build a json array
+#https://docs.yugabyte.com/latest/api/ysql/datatypes/type_json/functions-operators/jsonb-build-array/
+
+#json_agg -->
+#https://docs.yugabyte.com/latest/api/ysql/datatypes/type_json/functions-operators/jsonb-agg/
+
+#EXAMPLE:
+select jsonb_build_object('@id','urn:ngsi-ld:EntityTypeList:01234','@type', jsonb_build_array('https://uri.etsi.org/ngsi-ld/EntityTypeList'), 'https://uri.etsi.org/ngsi-ld/typeList',json_agg(distinct jsonb_build_object('@id', type)::jsonb)) from entity;
+
+#ris:
+{
+    "@id": "urn:ngsi-ld:EntityTypeList:01234", 				//builded (is const)
+    "@type": [
+        "https://uri.etsi.org/ngsi-ld/EntityTypeList"  			//builded (is const)
+    ],
+    "https://uri.etsi.org/ngsi-ld/typeList": [  			//builded (is const)
+        {
+            "@id": "https://uri.fiware.org/ns/data-models#Building" 	//real result!
+        }
+    ]
+}
+
+#---------------------------try convert query to SPARQL
+SELECT ?o ?g WHERE{
+	GRAPH ?g {
+       	<internaluse> <hasRawData> ?o.
+      }
+  FILTER regex(str(?g),"^http://ngsi/entity/type/.+")
+}
+
+<http://ngsi/temporalentity/type/urn:ngsi-ld:Building:storeProva9999>
+
+
+
+#--------------------------------------------------------------------------------------
+
+{
+    "@id": "urn:ngsi-ld:Building:storeProva9999",
+    "@type": [
+        "https://uri.fiware.org/ns/data-models#Building"
+    ],
+    "https://schema.org/address": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "https://uri.etsi.org/ngsi-ld/default-context/postalCode": [
+                        {
+                            "@value": "10969"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/addressRegion": [
+                        {
+                            "@value": "Berlin"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/streetAddress": [
+                        {
+                            "@value": "Friedrichstraße 44"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/addressLocality": [
+                        {
+                            "@value": "Kreuzberg"
+                        }
+                    ]
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/default-context/verified": [
+                {
+                    "@type": [
+                        "https://uri.etsi.org/ngsi-ld/Property"
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/hasValue": [
+                        {
+                            "@value": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/name": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "Checkpoint Markt"
+                }
+            ]
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/location": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/GeoProperty"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"
+                }
+            ]
+        }
+    ],
+    "https://uri.fiware.org/ns/data-models#category": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "commercial"
+                }
+            ]
+        }
+    ]
+}
+
+#-------------------------------------------------
+
+{
+    "@id": "urn:ngsi-ld:Building:storeProva9999",
+    "@type": [
+        "https://uri.fiware.org/ns/data-models#Building"
+    ],
+    "https://schema.org/address": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "https://uri.etsi.org/ngsi-ld/default-context/postalCode": [
+                        {
+                            "@value": "10969"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/addressRegion": [
+                        {
+                            "@value": "Berlin"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/streetAddress": [
+                        {
+                            "@value": "Friedrichstraße 44"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/default-context/addressLocality": [
+                        {
+                            "@value": "Kreuzberg"
+                        }
+                    ]
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/createdAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/default-context/verified": [
+                {
+                    "@type": [
+                        "https://uri.etsi.org/ngsi-ld/Property"
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/hasValue": [
+                        {
+                            "@value": true
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/createdAt": [
+                        {
+                            "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                            "@value": "2021-07-15T12:21:34.577056Z"
+                        }
+                    ],
+                    "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+                        {
+                            "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                            "@value": "2021-07-15T12:21:34.577056Z"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/name": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "Checkpoint Markt"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/createdAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ]
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/location": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/GeoProperty"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/createdAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ]
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/createdAt": [
+        {
+            "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+            "@value": "2021-07-15T12:21:34.577056Z"
+        }
+    ],
+    "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+        {
+            "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+            "@value": "2021-07-15T12:21:34.577056Z"
+        }
+    ],
+    "https://uri.fiware.org/ns/data-models#category": [
+        {
+            "@type": [
+                "https://uri.etsi.org/ngsi-ld/Property"
+            ],
+            "https://uri.etsi.org/ngsi-ld/hasValue": [
+                {
+                    "@value": "commercial"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/createdAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ],
+            "https://uri.etsi.org/ngsi-ld/modifiedAt": [
+                {
+                    "@type": "https://uri.etsi.org/ngsi-ld/DateTime",
+                    "@value": "2021-07-15T12:21:34.577056Z"
+                }
+            ]
+        }
+    ]
+}

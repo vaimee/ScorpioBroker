@@ -12,11 +12,12 @@ public class SPARQLClauseRawData extends SPARQLClause{
 	public String getClause(String table, String key,String varName,int index) {
 		
 		String triple ="<"+SPARQLConstant.FOR_INTERNAL_USE+
-				"><"+SPARQLConstant.HAS_RAW_DATA+">'"+super.value;
+				"><"+SPARQLConstant.HAS_RAW_DATA+">'"+super.value+"'";
 		
 		String okVar ="?"+varName+index;
-		String myGraph  = SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+column+"/"+key;
 		
-		return "BIND(EXISTS{GRAPH <"+myGraph+"> {"+triple+"}} AS "+okVar+")";
+		String myGraph  =key==null? "?g"+index:"<"+ SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+column+"/"+key+">";
+		
+		return "BIND(EXISTS{GRAPH "+myGraph+" {"+triple+"}} AS "+okVar+")";
 	}
 }

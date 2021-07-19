@@ -1,32 +1,13 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.SQLTransientConnectionException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfNQuad;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
@@ -35,9 +16,8 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGeneratorUpdate;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaJSONLDGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 
 //@Repository("emstorage")
@@ -83,22 +63,29 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //		}
 
 		boolean success =false;
-		SPARQLGenerator gen = new SPARQLGenerator(tableName,key,true);
-		if(Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(columnName)) {
-			try {
-				gen.insertJsonColumn(value,columnName);
-			} catch (JsonLdError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}else {
-			gen.insertRawDataColumn(value,columnName);
-		}
+		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(tableName,key,true);
+		
+		String sparql = "";
+	
 		if (value != null && !value.equals("null")) {
-			success= !sepa.executeUpdate(gen.generateDeleteWhere(true)).isError();
+			if(Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(columnName)) {
+				try {
+					gen.insertJsonColumn(value,columnName);
+				} catch (JsonLdError e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else {
+				gen.insertRawDataColumn(value,columnName);
+			}
+			sparql=gen.generateCreateEntity();
 		}else{
-			success= !sepa.executeUpdate(gen.generateCreateEntity()).isError();
+			sparql=gen.generateDeleteWhere(true);
 		}
+
+		logger.info("\store--> sparql:\n" + sparql);
+		success= !sepa.executeUpdate(sparql).isError();
+		logger.info("\store--> success:\n" + success);
 		return success;
 	}
 
@@ -146,7 +133,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					ON CONFLICT(id) DO UPDATE SET type = EXCLUDED.type, createdat = EXCLUDED.createdat, modifiedat = EXCLUDED.modifiedat";
 //					tn = writerJdbcTemplateWithTransaction.update(sql, entityId, entityType, entityCreatedAt,
 //							entityModifiedAt);
-					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
+					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
 					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
 					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
 					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
@@ -157,7 +144,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //						sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //								+ " WHERE temporalentity_id = ? AND attributeid = ?";
 //						tn += writerJdbcTemplateWithTransaction.update(sql, entityId, attributeId);
-						SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+						SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
 						gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
 						sparql+=gen.generateDeleteWhere(true)+";\n";
 					}
@@ -165,7 +152,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sql = "INSERT INTO " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " (temporalentity_id, attributeid, data) VALUES (?, ?, ?::jsonb) ON CONFLICT(temporalentity_id, attributeid, instanceid) DO UPDATE SET data = EXCLUDED.data";
 //					tn += writerJdbcTemplateWithTransaction.update(sql, entityId, attributeId, value);
-					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
 					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
 					gen.insertRawDataColumn(value,DBConstants.DBCOLUMN_DATA);
 					sparql+=gen.generateCreateEntity()+";\n";
@@ -174,7 +161,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sql = "UPDATE " + DBConstants.DBTABLE_TEMPORALENTITY
 //							+ " SET modifiedat = ?::timestamp WHERE id = ?";
 //					tn += writerJdbcTemplateWithTransaction.update(sql, entityModifiedAt, entityId);
-					gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
+					gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
 					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
 					sparql+=gen.generateCreateEntity()+";\n";
 				}
@@ -184,7 +171,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " WHERE temporalentity_id = ? AND attributeid = ? AND instanceid = ?";
 //					n = writerJdbcTemplate.update(sql, entityId, attributeId, instanceId);
-					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
 					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
 					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
 					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
@@ -193,7 +180,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " WHERE temporalentity_id = ? AND attributeid = ?";
 //					n = writerJdbcTemplate.update(sql, entityId, attributeId);
-					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
 //					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
 					ArrayList<SPARQLClause> clauses =new ArrayList<SPARQLClause>();
 					clauses.add(new SPARQLClauseRawData(DBConstants.DBCOLUMN_ATTRIBUTE_ID,attributeId));
@@ -214,7 +201,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 				} else if (entityId != null) {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY + " WHERE id = ?";
 //					n = writerJdbcTemplate.update(sql, entityId);
-					SPARQLGenerator gen = new SPARQLGenerator(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
 					sparql+=gen.generateDeleteWhere(true)+";\n";
 				}
 			}
@@ -340,6 +327,40 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 	public boolean storeEntity(String key, String value, String valueWithoutSysAttrs, String kvValue)
 			throws SQLTransientConnectionException {
 		
+		boolean success =false;
+		int n = 0;//not used yet
+		
+
+		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);
+		String sparql = "";
+		if (value != null && !value.equals("null")) {
+//			sql = "INSERT INTO " + DBConstants.DBTABLE_ENTITY + " (id, " + DBConstants.DBCOLUMN_DATA + ", "
+//					+ DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS + ",  " + DBConstants.DBCOLUMN_KVDATA
+//					+ ") VALUES (?, ?::jsonb, ?::jsonb, ?::jsonb) ON CONFLICT(id) DO UPDATE SET ("
+//					+ DBConstants.DBCOLUMN_DATA + ", " + DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS + ",  "
+//					+ DBConstants.DBCOLUMN_KVDATA + ") = (EXCLUDED." + DBConstants.DBCOLUMN_DATA + ", EXCLUDED."
+//					+ DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS + ",  EXCLUDED." + DBConstants.DBCOLUMN_KVDATA + ")";
+//			n = writerJdbcTemplate.update(sql, key, value, valueWithoutSysAttrs, kvValue);
+			try {
+				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_DATA);
+				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
+				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_KVDATA);
+				sparql=gen.generateCreateEntity();
+			} catch (JsonLdError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		}else {
+
+			sparql=gen.generateDeleteWhere(true);
+		}
+		
+		
+		success= !sepa.executeUpdate(sparql).isError();
+		return success;
+		
+		
 //		logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeEntity <====\n");
 //		String sql;
 //		int n = 0;
@@ -358,29 +379,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //		logger.trace("Rows affected: " + Integer.toString(n));
 //		return true; // (n>0);
 
-//		try {
-//			boolean success =false;
-//			String path =  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_DATA ;
-//			if (value != null && !value.equals("null")) {
-//				success =sepa.generalStoreEntity(key,value,path);
-//				
-//				path=  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS ;
-//				success =sepa.generalStoreEntity(key,valueWithoutSysAttrs,path);
-//				
-//				path=  DBConstants.DBTABLE_ENTITY +"/"+ DBConstants.DBCOLUMN_KVDATA ;
-//				success =sepa.generalStoreEntity(key,kvValue,path);
-//				
-//				logger.info("\n===> NGSI-LD to SPARQL on sepa (generalStorEntity) success: " + success + "\n");
-//			}else {
-//				success =sepa.generalDeleteEntityRecursively(key,path);
-//				logger.info("\n===> NGSI-LD to SPARQL on sepa (generalDeleteEntityRecursively) success: " + success + "\n");
-//			}
-//			return true; // success;
-//		} catch (Exception e) {
-//			logger.error("Exception ::", e);
-//			e.printStackTrace();
-//		}
-		return false;
+
 	}
 	
 

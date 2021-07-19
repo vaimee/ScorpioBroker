@@ -6,6 +6,7 @@ public class SPARQLClause {
 	
 	protected String column;
 	protected String value;
+	protected boolean isAnd = true;
 //	protected String name;
 //	protected boolean _isFilter;
 //	protected String filter;
@@ -56,6 +57,18 @@ public class SPARQLClause {
 //	public void setName(String name) {
 //		this.name = name;
 //	}
+
+	public boolean isAnd() {
+		return isAnd;
+	}
+
+	public void setAnd(boolean isAnd) {
+		this.isAnd = isAnd;
+	}
+	
+	public String getCongiunction() {
+		return isAnd ? "&&" : "||";
+	}
 
 	
 	

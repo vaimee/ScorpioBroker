@@ -41,30 +41,34 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 	
 	public List<String> query(QueryParams qp) {
 		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.query <====\n");
+		ArrayList<String> ris = new ArrayList<String>();
 		try {
 			if(qp.getCheck()!=null) {
 				String sqlQuery=typesAndAttributeQuery(qp);
-				return readerJdbcTemplate.queryForList(sqlQuery,String.class);
+				ris= new ArrayList<String>(readerJdbcTemplate.queryForList(sqlQuery,String.class));
+			}else {
+				String sqlQuery = translateNgsildQueryToSql(qp);
+				logger.info("NGSI-LD to SQL: " + sqlQuery);
+				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
+				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
+					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
+					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
+					return new ArrayList<String>();
+				}else {
+					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
+					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
+					ris=new ArrayList<String>(list);
+				}
 			}
-			String sqlQuery = translateNgsildQueryToSql(qp);
-			logger.info("NGSI-LD to SQL: " + sqlQuery);
-			//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
-			if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
-				List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
-				StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
-				return new ArrayList<String>();
-			} 
-			List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
-			StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
-			return list;
+			
 		} catch(DataIntegrityViolationException e) {
 			//Empty result don't worry
 			logger.warn("SQL Result Exception::", e);
-			return new ArrayList<String>();
 		} catch (Exception e) {
 			logger.error("Exception ::", e);
 		}
-		return new ArrayList<String>();
+		return ris;
+	
 
 	}
 

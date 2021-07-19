@@ -3,15 +3,18 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 import java.util.HashSet;
 
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
+import it.unibo.arces.wot.sepa.commons.protocol.SPARQL11Properties.QueryHTTPMethod;
 import it.unibo.arces.wot.sepa.commons.protocol.SPARQL11Properties.UpdateHTTPMethod;
 import it.unibo.arces.wot.sepa.commons.protocol.SPARQL11Protocol;
+import it.unibo.arces.wot.sepa.commons.request.QueryRequest;
 import it.unibo.arces.wot.sepa.commons.request.UpdateRequest;
 import it.unibo.arces.wot.sepa.commons.response.Response;
 
 public class SepaGateway {
 
 	protected SPARQL11Protocol client=null;
-	protected UpdateHTTPMethod httpMethod = UpdateHTTPMethod.POST;
+	protected UpdateHTTPMethod httpMethod_u = UpdateHTTPMethod.POST;
+	protected QueryHTTPMethod httpMethod_q = QueryHTTPMethod.POST;
 	protected String host="localhost";
 	protected int port=8000;
 	//private String authorization;//not implemented yet
@@ -36,7 +39,7 @@ public class SepaGateway {
 	public Response executeUpdate(String sparql) {	
 		
 			UpdateRequest req = new UpdateRequest(
-					httpMethod,
+					httpMethod_u,
 					scheme,
 					host,
 					port,
@@ -55,8 +58,8 @@ public class SepaGateway {
 
 	public Response executeQuery(String sparql) {	
 		
-			UpdateRequest req = new UpdateRequest(
-					httpMethod,
+			QueryRequest req = new QueryRequest(
+					httpMethod_q,
 					scheme,
 					host,
 					port,
@@ -68,7 +71,7 @@ public class SepaGateway {
 					timeOut,
 					1);
 			
-			return client.update(req);
+			return client.query(req);
 		
 	}
 }
