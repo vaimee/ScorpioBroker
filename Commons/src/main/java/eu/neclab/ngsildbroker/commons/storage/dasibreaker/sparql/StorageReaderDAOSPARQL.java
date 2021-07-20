@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,16 @@ import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ConverterJSONLDSPARQL;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGeneratorQuery;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
+import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
@@ -59,6 +62,7 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 				//---------------------------------WIP
 //				String sqlQuery=typesAndAttributeQuery(qp);
 //				ris= new ArrayList<String>(readerJdbcTemplate.queryForList(sqlQuery,String.class));
+				throw new ResponseException("NOT IMPLEMENTED YET");
 			}else {
 				String sparql = translateNgsildQueryToSql(qp);
 				logger.info("NGSI-LD to SPARQL: " + sparql);
@@ -68,13 +72,24 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 //					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
 //					return new ArrayList<String>();
+					throw new ResponseException("NOT IMPLEMENTED YET");
 				}else {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 //					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
 //					ris=new ArrayList<String>(list);
 					QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
 					List<String> list = new ArrayList<String>();
-					list.add(ConverterJSONLDSPARQL.tempRDFtoJSONLD(resp.getBindingsResults()));
+					for (Bindings bind : resp.getBindingsResults().getBindings()) {
+							if(bind.getVariables().contains("o")) {
+
+								// Decode data on other side, by processing encoded data
+								String valueDecoded = new String(Base64.decodeBase64(bind.getRDFTerm("o").getValue()));
+								logger.info("result of sparql query-->\n"+valueDecoded);
+								list.add(valueDecoded);
+							}
+					} 
+				
+//					list.add(JRSConverter.tempRDFtoJSONLD(resp.getBindingsResults()));
 					return list;
 				}
 			}
@@ -173,14 +188,22 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 	 * translateNgsildQueryToSql
 	 */
 	public String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
-		SPARQLGeneratorQuery gen = new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY);
-		boolean getById = false;
+//		SPARQLGeneratorQuery gen = new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY);
+		boolean getById = qp.getId()!=null && qp.getId()!="";
 		boolean getByType = qp.getType()!=null && qp.getType()!="";
 		
+		JRSConverter jsr = new JRSConverter(DBConstants.DBTABLE_ENTITY);
+		/*---------------------------------REMEMBER (for future implements)
+		 * REMEMBER: for using && and || in in the WHERE condition, need to use USING and UNIQUE on SPARQL query
+		 * ---------------------------------REMEMBER
+		 */
+		
 		if(getByType) {
-			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
+//			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
+//			jsr.addTriple("?s", DBConstants.DBCOLUMN_TYPE, qp.getType());
+			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA);
 		}else if(getById) {
-			throw new ResponseException("NOT IMPLEMENTED YET");
+			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA);
 		}else {
 			throw new ResponseException("NOT IMPLEMENTED YET");
 		}

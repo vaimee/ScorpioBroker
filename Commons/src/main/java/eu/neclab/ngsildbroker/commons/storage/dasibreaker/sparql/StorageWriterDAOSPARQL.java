@@ -8,10 +8,13 @@ import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.apicatalog.jsonld.JsonLdError;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
@@ -62,27 +65,38 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //			e.printStackTrace();
 //		}
 
-		boolean success =false;
-		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(tableName,key,true);
+//		boolean success =false;
+//		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(tableName,key,true);
+//		
+//		String sparql = "";
+//	
+//		if (value != null && !value.equals("null")) {
+//			if(Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(columnName)) {
+//				try {
+//					gen.insertJsonColumn(value,columnName);
+//				} catch (JsonLdError e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}else {
+//				gen.insertRawDataColumn(value,columnName);
+//			}
+//			sparql=gen.generateCreateEntity();
+//		}else{
+//			sparql=gen.generateDeleteWhere(true);
+//		}
 		
-		String sparql = "";
-	
+		boolean success =false;
+		JRSConverter jrs = new JRSConverter(tableName);
+		jrs.addTriple(key, columnName, value);
+//		String triple = JRSConverter.tempJSONLDtoSparql(columnName, key, value);
+//		String sparql =JRSConverter.tempJSONLDtoSparqlGraph(tableName, key, triple);
+		String sparql="";
 		if (value != null && !value.equals("null")) {
-			if(Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(columnName)) {
-				try {
-					gen.insertJsonColumn(value,columnName);
-				} catch (JsonLdError e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}else {
-				gen.insertRawDataColumn(value,columnName);
-			}
-			sparql=gen.generateCreateEntity();
-		}else{
-			sparql=gen.generateDeleteWhere(true);
+			sparql = jrs.generateCreate(key, true);
+		}else {
+			sparql = jrs.generateDeleteAllWhere(key);
 		}
-
 		logger.info("\store--> sparql:\n" + sparql);
 		success= !sepa.executeUpdate(sparql).isError();
 		logger.info("\store--> success:\n" + success);
@@ -133,37 +147,71 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					ON CONFLICT(id) DO UPDATE SET type = EXCLUDED.type, createdat = EXCLUDED.createdat, modifiedat = EXCLUDED.modifiedat";
 //					tn = writerJdbcTemplateWithTransaction.update(sql, entityId, entityType, entityCreatedAt,
 //							entityModifiedAt);
-					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
-					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
-					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
-					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
-					sparql+=gen.generateCreateEntity()+";\n";
+					
+					//------------DEPRECATE
+//					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
+//					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
+//					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
+//					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
+//					sparql+=gen.generateCreateEntity()+";\n";
+					//------------DEPRECATE
+					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
+					sparql+=jrs.generateCreate(entityId, true);
 				}
 				if (entityId != null && attributeId != null) {
 					if (overwriteOp != null && overwriteOp) {
 //						sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //								+ " WHERE temporalentity_id = ? AND attributeid = ?";
 //						tn += writerJdbcTemplateWithTransaction.update(sql, entityId, attributeId);
-						SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-						gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
-						sparql+=gen.generateDeleteWhere(true)+";\n";
+
+						//------------DEPRECATE
+//						SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+//						gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
+//						sparql+=gen.generateDeleteWhere(true)+";\n";
+						//------------DEPRECATE
+						JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+						jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+						jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
+						sparql+=jrs.generateDeleteAllWhere(entityId);
 					}
 					
 //					sql = "INSERT INTO " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " (temporalentity_id, attributeid, data) VALUES (?, ?, ?::jsonb) ON CONFLICT(temporalentity_id, attributeid, instanceid) DO UPDATE SET data = EXCLUDED.data";
 //					tn += writerJdbcTemplateWithTransaction.update(sql, entityId, attributeId, value);
-					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
-					gen.insertRawDataColumn(value,DBConstants.DBCOLUMN_DATA);
-					sparql+=gen.generateCreateEntity()+";\n";
+					
+					//------------DEPRECATE
+//					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+//					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
+//					gen.insertRawDataColumn(value,DBConstants.DBCOLUMN_DATA);
+//					sparql+=gen.generateCreateEntity()+";\n";
+					//------------DEPRECATE
+					
+					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_DATA, value);
+					sparql+=jrs.generateCreate(entityId,true);
 					
 					// update modifiedat field in temporalentity
 //					sql = "UPDATE " + DBConstants.DBTABLE_TEMPORALENTITY
 //							+ " SET modifiedat = ?::timestamp WHERE id = ?";
 //					tn += writerJdbcTemplateWithTransaction.update(sql, entityModifiedAt, entityId);
-					gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
-					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
-					sparql+=gen.generateCreateEntity()+";\n";
+					
+					//------------DEPRECATE
+//					gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY,entityId,true);
+//					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
+//					sparql+=gen.generateCreateEntity()+";\n";
+					//------------DEPRECATE
+					
+					jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
+					sparql+=jrs.generateCreate(entityId,true);
+					
 				}
 			} else {
 
@@ -171,38 +219,64 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " WHERE temporalentity_id = ? AND attributeid = ? AND instanceid = ?";
 //					n = writerJdbcTemplate.update(sql, entityId, attributeId, instanceId);
-					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
-					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
-					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
-					sparql+=gen.generateCreateEntity()+";\n";
+					
+					//------------DEPRECATE
+//					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+//					gen.insertRawDataColumn(entityType,DBConstants.DBCOLUMN_TYPE);
+//					gen.insertRawDataColumn(entityCreatedAt,DBConstants.DBCOLUMN_CREATED_AT);
+//					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
+//					sparql+=gen.generateCreateEntity()+";\n";
+					//------------DEPRECATE
+					
+					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
+					sparql+=jrs.generateCreate(entityId,true);
+					
 				} else if (entityId != null && attributeId != null) {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE
 //							+ " WHERE temporalentity_id = ? AND attributeid = ?";
 //					n = writerJdbcTemplate.update(sql, entityId, attributeId);
-					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-//					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
-					ArrayList<SPARQLClause> clauses =new ArrayList<SPARQLClause>();
-					clauses.add(new SPARQLClauseRawData(DBConstants.DBCOLUMN_ATTRIBUTE_ID,attributeId));
-					sparql+=gen.generateDeleteAllWhere(clauses)+";\n";
-					//------------------------------------------------------___WIP
-					//	need use SPARQLClause concept and SPARQLGenerator.generateDeleteWhere(ArrayList<SPARQLClause>)
-					//------------------------------------------------------___WIP
+
+					//------------DEPRECATE
+//					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+////					gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
+//					ArrayList<SPARQLClause> clauses =new ArrayList<SPARQLClause>();
+//					clauses.add(new SPARQLClauseRawData(DBConstants.DBCOLUMN_ATTRIBUTE_ID,attributeId));
+//					sparql+=gen.generateDeleteAllWhere(clauses)+";\n";
+//					//------------------------------------------------------___WIP
+//					//	need use SPARQLClause concept and SPARQLGenerator.generateDeleteWhere(ArrayList<SPARQLClause>)
+//					//------------------------------------------------------___WIP
+//					
+//					//------------------------------------------------------------WARNING
+//					//------------------------------------------------------------WARNING
+//					//------------------------------------------------------------WARNING
+//					//need check if Scorpio always use 'entityId' as identifier in SQL query
+//					//for example here, the SQL WHERE is on temporalentity_id = ? AND attributeid = ?" so we have
+//					//'entityId', but if there is a SQL WHERE that didn't use 'entityId' we will be in trouble
+//					//------------------------------------------------------------WARNING
+//					//------------------------------------------------------------WARNING
+//					//------------------------------------------------------------WARNING
+					//------------DEPRECATE
 					
-					//------------------------------------------------------------WARNING
-					//------------------------------------------------------------WARNING
-					//------------------------------------------------------------WARNING
-					//need check if Scorpio always use 'entityId' as identifier in SQL query
-					//for example here, the SQL WHERE is on temporalentity_id = ? AND attributeid = ?" so we have
-					//'entityId', but if there is a SQL WHERE that didn't use 'entityId' we will be in trouble
-					//------------------------------------------------------------WARNING
-					//------------------------------------------------------------WARNING
-					//------------------------------------------------------------WARNING
+					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
+					sparql+=jrs.generateDeleteAllWhere(entityId);
 				} else if (entityId != null) {
 //					sql = "DELETE FROM " + DBConstants.DBTABLE_TEMPORALENTITY + " WHERE id = ?";
 //					n = writerJdbcTemplate.update(sql, entityId);
-					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
-					sparql+=gen.generateDeleteWhere(true)+";\n";
+					
+					//------------DEPRECATE
+//					SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE,entityId,true);
+//					sparql+=gen.generateDeleteWhere(true)+";\n";
+					//------------DEPRECATE
+					
+					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					sparql+=jrs.generateDeleteAllWhere(entityId);
 				}
 			}
 			
@@ -331,7 +405,10 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 		int n = 0;//not used yet
 		
 
-		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);
+//		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);
+		JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_ENTITY);
+		jrs.addTriple(key, SPARQLConstant.EXISTS_ID, key);
+		
 		String sparql = "";
 		if (value != null && !value.equals("null")) {
 //			sql = "INSERT INTO " + DBConstants.DBTABLE_ENTITY + " (id, " + DBConstants.DBCOLUMN_DATA + ", "
@@ -341,19 +418,33 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					+ DBConstants.DBCOLUMN_KVDATA + ") = (EXCLUDED." + DBConstants.DBCOLUMN_DATA + ", EXCLUDED."
 //					+ DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS + ",  EXCLUDED." + DBConstants.DBCOLUMN_KVDATA + ")";
 //			n = writerJdbcTemplate.update(sql, key, value, valueWithoutSysAttrs, kvValue);
-			try {
-				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_DATA);
-				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
-				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_KVDATA);
-				sparql=gen.generateCreateEntity();
-			} catch (JsonLdError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			}
+			
+			//------------DEPRECATE
+//			try {
+//				gen.insertJsonColumn(value,  DBConstants.DBCOLUMN_DATA);
+//				gen.insertJsonColumn(valueWithoutSysAttrs,  DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
+//				gen.insertJsonColumn(kvValue,  DBConstants.DBCOLUMN_KVDATA);
+//				sparql=gen.generateCreateEntity();
+//			} catch (JsonLdError e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				return false;
+//			}
+			//------------DEPRECATE
+			
+			
+			jrs.addTriple(key, DBConstants.DBCOLUMN_DATA, value);
+			jrs.addTriple(key, DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS, valueWithoutSysAttrs);
+			jrs.addTriple(key, DBConstants.DBCOLUMN_KVDATA, kvValue);
+			
+			//--------------WIP (this part need to be managed directly from "value" json-ld)
+			JsonObject jsonObject = new JsonParser().parse(value).getAsJsonObject();
+			String type = jsonObject.get("@type").isJsonNull()?"noTyep": jsonObject.get("@type").getAsString();
+			jrs.addTriple(key, DBConstants.DBCOLUMN_TYPE, type);//this will be inferred from the json-ld
+			//so from the respective triple when we will found a RDF-JSONLD converter (titanium is not good)
+			sparql=jrs.generateCreate(key,true);
 		}else {
-
-			sparql=gen.generateDeleteWhere(true);
+			sparql=jrs.generateDeleteAllWhere(key);
 		}
 		
 		

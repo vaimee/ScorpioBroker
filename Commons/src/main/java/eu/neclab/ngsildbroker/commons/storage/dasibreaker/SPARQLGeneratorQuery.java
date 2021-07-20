@@ -41,7 +41,7 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		String varName="ok";
 		String having = "HAVING(";
 		String bindings = "";
-		String regex = "\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/.+\"";
+		String regex = "\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/.+\"";
 		
 		int index =0;	
 		for (SPARQLClause sparqlClause : column_value) {
@@ -49,7 +49,7 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 //	            GRAPH ?g2 {
 //	              ?s2 ?p2 <o>.
 //	              ?s2 ?p2 ?o2}}AS ?ok2)
-			bindings+=sparqlClause.getClause(_table, null, varName,index)+"\n";
+			bindings+=sparqlClause.getClause(super.getTable(), null, varName,index)+"\n";
 			having+="?"+varName+index+ "=true ";
 			if(index>0) {
 				having+=sparqlClause.getCongiunction()+" ";
@@ -83,7 +83,7 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 //		    FILTER(regex(str(?g),"^http://ngsi/entity/data/.+"))
 //		}
 
-		String regex = "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/.+";
+		String regex = "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/"+column+"/.+";
 		String sparql ="PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
 		sparql+="SELECT ?s ?p ?o {";
 		sparql+="GRAPH ?g { ?s ?p ?o}{";

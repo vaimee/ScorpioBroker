@@ -11,6 +11,7 @@ public class SPARQLConstant {
 	public static final String ENTITY_MODIFIED_AT = "entityModifiedAt";
 	public static final String HAS_TEMPORAL_INSTANCE = "hasTemporalInstance";
 	public static final String HAS_RAW_DATA = "hasRawData";
+	public static final String IS_JSON_LD = "isJsonLD";
 	
 	public static final String SPARQL_COLUMN = "ngsitosparql";
 	

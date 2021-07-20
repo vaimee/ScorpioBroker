@@ -17,15 +17,15 @@ import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.rdf.RdfDataset;
 
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ConverterJSONLDSPARQL;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
-public class TitaniumTest extends ConverterJSONLDSPARQL {
+public class TitaniumTest extends JRSConverter {
 
 
 	public TitaniumTest() {
-		super();
+		super("TitaniumTest");
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -90,8 +90,9 @@ public class TitaniumTest extends ConverterJSONLDSPARQL {
 //		Reader targetReader = new StringReader(rdf);
 		Document document2 = RdfDocument.of(rdf);
 		JsonArray ris = JsonLd.fromRdf(document2).get();
-		Consumer<JsonValue> print = x -> System.out.println(x.toString());
-		ris.forEach(print);
+		String jsonld_str= super.resolveJsonBlankNode(ris);
+		System.out.println("test jsonld-->"+jsonld);
+		System.out.println("test result-->"+jsonld_str);
 	}
 	
 	

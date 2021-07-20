@@ -4,36 +4,26 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 public class SPARQLGenerator {
 
-	protected String _table;
-	protected ConverterJSONLDSPARQL _converter;
+	protected JRSConverter _converter;
 	
 	
 	public SPARQLGenerator(String table){
-		_table=table;
-		_converter= new ConverterJSONLDSPARQL();
+		_converter= new JRSConverter(table);
 	}
 	
-	public void resetConverter() {
-		_converter= new ConverterJSONLDSPARQL();
-	}
+
 	
 	//----------------------------------SETTERS and GETTERS
 	public String getTable() {
-		return _table;
+		return _converter.getTable();
 	}
 
-	public void setTable(String _table) {
-		this._table = _table;
-	}
-
-
-	public ConverterJSONLDSPARQL get_converter() {
+	public JRSConverter getConverter() {
 		return _converter;
 	}
 
-
-	public void set_converter(ConverterJSONLDSPARQL _converter) {
-		this._converter = _converter;
+	public void setConverter(JRSConverter converter) {
+		this._converter =  converter;
 	}
 	
 	

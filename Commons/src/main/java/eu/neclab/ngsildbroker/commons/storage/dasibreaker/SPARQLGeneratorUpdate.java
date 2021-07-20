@@ -134,7 +134,7 @@ public class SPARQLGeneratorUpdate extends SPARQLGenerator{
 //	            GRAPH ?g2 {
 //	              ?s2 ?p2 <o>.
 //	              ?s2 ?p2 ?o2}}AS ?ok2)
-			bindings+=sparqlClause.getClause(super._table, _key, varName,index)+"\n";
+			bindings+=sparqlClause.getClause(super.getTable(), _key, varName,index)+"\n";
 			having+="?"+varName+index+ "=true ";
 			if(index>0) {
 				having+="&& ";
@@ -174,10 +174,10 @@ public class SPARQLGeneratorUpdate extends SPARQLGenerator{
 	
 	protected String gnererateRegexColumn() {
 //		return "^http:\\/\\/parte1\\/.+\\/parte3$";
-		return "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"\\/.+\\/"+_key+"$";
+		return "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"\\/.+\\/"+_key+"$";
 	}
 	protected String getGraph(String column) {
-		return ""+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+_key;
+		return ""+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/"+column+"/"+_key;
 	}
 
 	//-----------------------------------------setters and getters
