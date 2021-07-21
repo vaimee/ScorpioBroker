@@ -93,7 +93,12 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //		String sparql =JRSConverter.tempJSONLDtoSparqlGraph(tableName, key, triple);
 		String sparql="";
 		if (value != null && !value.equals("null")) {
-			sparql = jrs.generateCreate(key, true);
+			try {
+				sparql = jrs.generateCreate(key, true);
+			} catch (JsonLdError e) {
+				logger.error("Exception ::", e);
+				return false;
+			}
 		}else {
 			sparql = jrs.generateDeleteAllWhere(key);
 		}
@@ -442,7 +447,12 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 			String type = jsonObject.get("@type").isJsonNull()?"noTyep": jsonObject.get("@type").getAsString();
 			jrs.addTriple(key, DBConstants.DBCOLUMN_TYPE, type);//this will be inferred from the json-ld
 			//so from the respective triple when we will found a RDF-JSONLD converter (titanium is not good)
-			sparql=jrs.generateCreate(key,true);
+			try {
+				sparql=jrs.generateCreate(key,true);
+			} catch (JsonLdError e) {
+				logger.error("Exception ::", e);
+				return false;
+			}
 		}else {
 			sparql=jrs.generateDeleteAllWhere(key);
 		}

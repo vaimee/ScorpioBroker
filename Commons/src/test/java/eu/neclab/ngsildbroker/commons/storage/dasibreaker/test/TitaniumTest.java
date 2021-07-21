@@ -15,9 +15,14 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.rdf.Rdf;
 import com.apicatalog.rdf.RdfDataset;
+import com.apicatalog.rdf.RdfResource;
+import com.apicatalog.rdf.RdfTriple;
+import com.apicatalog.rdf.RdfValue;
 
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter2;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonValue;
 
@@ -87,22 +92,22 @@ public class TitaniumTest extends JRSConverter {
 		Reader targetReader = new StringReader(jsonld);
 		Document document = JsonDocument.of(targetReader);
 		RdfDataset rdf = JsonLd.toRdf(document).get();
-//		Reader targetReader = new StringReader(rdf);
-		Document document2 = RdfDocument.of(rdf);
+		String rdf_triples = super.rdfDatasetToTripleString(rdf,"KEY");
+		System.out.println("RDF-->"+rdf_triples);
+		RdfDataset rdf2 = super.triplesStringToDataSet(rdf_triples);
+		Document document2 = RdfDocument.of(rdf2);
 		JsonArray ris = JsonLd.fromRdf(document2).get();
+		String rdf_triples2 = super.rdfDatasetToTripleString(rdf2,"KEY");
+		System.out.println("rdf_triples2-->"+rdf_triples2);
 		String jsonld_str= super.resolveJsonBlankNode(ris);
 		System.out.println("test jsonld-->"+jsonld);
 		System.out.println("test result-->"+jsonld_str);
 	}
 	
-	
 	@Test
-	public void testJSONLDtoRDFtoJSONLD_MOD() throws JsonLdError{
-		System.out.println("---------------------------------TEST: testJSONLDtoRDFtoJSONLD_MOD");
-		
-		//----------------------------------------DON'T WORK
-		//https://github.com/filip26/titanium-json-ld/issues/181
-		String josn_ld_01 = "{\n"
+	public void testJSONLDtoRDFtoJSONLD_direct() throws JsonLdError{
+		System.out.println("---------------------------------TEST: testJSONLDtoRDFtoJSONLD_direct");
+		String jsonld = "{\n"
 				+ "    \"id\": \"urn:ngsi-ld:Building:storeProva94\",\n"
 				+ "    \"type\": \"Building\",\n"
 				+ "    \"category\": {\n"
@@ -137,13 +142,20 @@ public class TitaniumTest extends JRSConverter {
 				+ "        \"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\"\n"
 				+ "    ]\n"
 				+ "}";
-		
-		String rdf=super.jsonldToTriple(josn_ld_01, "this.is.a.test");
-		System.out.println("rdf:\n"+rdf);
-		JsonArray json_ld =  super.rdfToJsonLd(rdf);
-		Consumer<JsonValue> print = x -> System.out.println(x.toString());
-		json_ld.forEach(print);
+		Reader targetReader = new StringReader(jsonld);
+		Document document = JsonDocument.of(targetReader);
+		RdfDataset rdf = JsonLd.toRdf(document).get();
+		Document document2 = RdfDocument.of(rdf);
+		JsonArray ris = JsonLd.fromRdf(document2).get();
+		String jsonld_str= super.resolveJsonBlankNode(ris);
+		System.out.println("jsonld_str-->"+jsonld_str);
+//		Consumer<JsonValue> print = x -> System.out.println(x.toString());
+//		ris.forEach(print);
 				
-		
 	}
+	
+	
+	
+	
+	
 }

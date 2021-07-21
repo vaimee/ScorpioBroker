@@ -28,7 +28,6 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.StorageReaderDAOSQ
 public class QueryLanguageFactory {
 	
 	private final static QueryLanguage entityHandlerType = QueryLanguage.SQL;
-	public final static boolean usingTitanium = true;
 
 	@Autowired
 	private  ApplicationContext context;
