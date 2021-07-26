@@ -100,6 +100,7 @@ public class JSONfromToRDFTest{
 				+ "        \"value\": \"Checkpoint Markt\"\n"
 				+ "    },\n"
 				+ "    \"@context\": [\n"
+				+ "        \"https://fiware.github.io/data-models/context.jsonld\",\n"
 				+ "        \"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\"\n"
 				+ "    ]\n"
 				+ "}";
@@ -109,7 +110,7 @@ public class JSONfromToRDFTest{
 			String sparql = "DELETE WHERE {GRAPH <g> {?s ?p ?o}};INSERT DATA { GRAPH <g> {"+turtle+"}}";
 			SepaGateway sg = new SepaGateway();
 			assertTrue("INSERT DATA",!sg.executeUpdate(sparql).isError());
-			sparql="SELECT ?s ?p ?o {GRAPH <g> { ?s ?p ?o}}";
+			sparql="SELECT ?e ?s ?p ?o {GRAPH <g> { ?s ?p ?o} GRAPH ?e { ?s ?p ?o}}";
 			QueryResponse qr = (QueryResponse)sg.executeQuery(sparql);
 			System.out.println("fullChain test result-->"+new JSONfromToRDF().RDFtoJson(qr.getBindingsResults().getBindings()));
 		} catch (Exception e) {

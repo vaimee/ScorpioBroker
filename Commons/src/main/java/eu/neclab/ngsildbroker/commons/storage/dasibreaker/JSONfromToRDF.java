@@ -50,14 +50,16 @@ public class JSONfromToRDF {
 			resolvedKey=" "+SPARQLConstant.rdfValue+" ";
 		}else if(entryKey.startsWith(SPARQLConstant.arrayPos)) {
 			resolvedKey=" "+entryKey+" ";
+		}else if(entryKey.startsWith("https://")||entryKey.startsWith("http://")){
+			resolvedKey =" <"+ entryKey+"> ";
 		}else {
-			resolvedKey ="<"+SPARQLConstant.NGSI_GRAPH_PREFIX + entryKey+">";
+			resolvedKey =" <"+SPARQLConstant.NGSI_GRAPH_PREFIX + entryKey+"> ";
 		}
 		if (element instanceof JsonObject) {
 			String bn_name1 = SPARQLConstant.balnkNode+getNextBN();
 			String bn_name2 = SPARQLConstant.balnkNode+getNextBN();
 			rdf+=subject+resolvedKey+bn_name1+".\n";
-			rdf+=bn_name1+"<"+SPARQLConstant.isJsonObject+">"+bn_name2+".\n";
+			rdf+=bn_name1+" <"+SPARQLConstant.isJsonObject+"> "+bn_name2+".\n";
 			JsonObject jo=((JsonObject)element);
 			Set<String> keys = jo.keySet();
 			for (String key : keys) {
@@ -67,7 +69,7 @@ public class JSONfromToRDF {
 			String bn_name1 = SPARQLConstant.balnkNode+getNextBN();
 			String bn_name2 = SPARQLConstant.balnkNode+getNextBN();
 			rdf+=subject+resolvedKey+bn_name1+".\n";
-			rdf+=bn_name1+"<"+SPARQLConstant.isJsonArray+">"+bn_name2+".\n";
+			rdf+=bn_name1+" <"+SPARQLConstant.isJsonArray+"> "+bn_name2+".\n";
 			JsonArray jo=((JsonArray)element);
 			for (int x=0;x<jo.size();x++) {
 				rdf+=JSONtoRDF(SPARQLConstant.arrayPos+x,bn_name2,jo.get(x));
