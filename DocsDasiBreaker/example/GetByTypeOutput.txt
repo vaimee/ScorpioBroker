@@ -1,0 +1,129 @@
+  {
+"https://schema.org/address": {
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"verified": {
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"value": true,
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z"
+},
+"value": {
+"addressLocality": "Kreuzberg",
+"addressRegion": "Berlin",
+"postalCode": "10969",
+"streetAddress": "FriedrichstraÃe 44"
+},
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z"
+},
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"location": {
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"value": "{"type":"Point","coordinates":[13.3903,52.5075]}",
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z"
+},
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z",
+"name": {
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"value": "Checkpoint Markt",
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z"
+},
+"https://uri.fiware.org/ns/data-models#category": {
+"ngsi-ld:createdAt": "2021-07-26T11:17:25.834744Z",
+"value": "commercial",
+"ngsi-ld:modifiedAt": "2021-07-26T11:17:25.834744Z"
+},
+"@context": [
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+}
+
+
+  {
+"id": "urn:ngsi-ld:Building:storeProva777",
+"type": "https://uri.fiware.org/ns/data-models#Building",
+"https://schema.org/address": {
+"type": "Property",
+"verified": {
+"type": "Property",
+"value": true
+},
+"value": {
+"addressLocality": "Kreuzberg",
+"addressRegion": "Berlin",
+"postalCode": "10969",
+"streetAddress": "Friedrichstraße 44"
+}
+},
+"location": {
+"type": "GeoProperty",
+"value": {
+"type": "Point",
+"coordinates": [
+  13.3903,
+  52.5075
+],
+}
+},
+"name": {
+"type": "Property",
+"value": "Checkpoint Markt"
+},
+"https://uri.fiware.org/ns/data-models#category": {
+"type": "Property",
+"value": "commercial"
+},
+"@context": [
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+}
+
+[{"@id": "urn:ngsi-ld:Building:storeProva777", "@type": ["https://uri.fiware.org/ns/data-models#Building"], "https://schema.org/address": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"https://uri.etsi.org/ngsi-ld/default-context/postalCode": [{"@value": "10969"}], "https://uri.etsi.org/ngsi-ld/default-context/addressRegion": [{"@value": "Berlin"}], "https://uri.etsi.org/ngsi-ld/default-context/streetAddress": [{"@value": "Friedrichstraße 44"}], "https://uri.etsi.org/ngsi-ld/default-context/addressLocality": [{"@value": "Kreuzberg"}]}], "https://uri.etsi.org/ngsi-ld/default-context/verified": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": true}]}]}], "https://uri.etsi.org/ngsi-ld/name": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "Checkpoint Markt"}]}], "https://uri.etsi.org/ngsi-ld/location": [{"@type": ["https://uri.etsi.org/ngsi-ld/GeoProperty"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}]}], "https://uri.fiware.org/ns/data-models#category": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "commercial"}]}]}]
+
+
+[{"@id": "urn:ngsi-ld:Building:storeProva777", "@type": ["https://uri.fiware.org/ns/data-models#Building"], "https://schema.org/address": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"https://uri.etsi.org/ngsi-ld/default-context/postalCode": [{"@value": "10969"}], "https://uri.etsi.org/ngsi-ld/default-context/addressRegion": [{"@value": "Berlin"}], "https://uri.etsi.org/ngsi-ld/default-context/streetAddress": [{"@value": "Friedrichstraße 44"}], "https://uri.etsi.org/ngsi-ld/default-context/addressLocality": [{"@value": "Kreuzberg"}]}], "https://uri.etsi.org/ngsi-ld/default-context/verified": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": true}]}]}], "https://uri.etsi.org/ngsi-ld/name": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "Checkpoint Markt"}]}], "https://uri.etsi.org/ngsi-ld/location": [{"@type": ["https://uri.etsi.org/ngsi-ld/GeoProperty"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}]}], "https://uri.fiware.org/ns/data-models#category": [{"@type": ["https://uri.etsi.org/ngsi-ld/Property"], "https://uri.etsi.org/ngsi-ld/hasValue": [{"@value": "commercial"}]}]}]
+
+
+
+  {
+"id": "urn:ngsi-ld:Building:storeProva7799",
+"type": "https://uri.fiware.org/ns/data-models#Building",
+"https://schema.org/address": {
+"type": "Property",
+"verified": {
+"type": "Property",
+"value": true
+},
+"value": {
+"addressLocality": "Kreuzberg",
+"addressRegion": "Berlin",
+"postalCode": "10969",
+"streetAddress": "FriedrichstraÃe 44"
+}
+},
+"location": {
+"type": "GeoProperty",
+"value": {
+"type": "Point",
+"coordinates": [
+  13.3903,
+  52.5075
+],
+}
+},
+"name": {
+"type": "Property",
+"value": "Checkpoint Markt"
+},
+"https://uri.fiware.org/ns/data-models#category": {
+"type": "Property",
+"value": "commercial"
+},
+"@context": [
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+}
+
+-------------
+[{"https://schema.org/address":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"FriedrichstraÃe 44"}]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/location":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/GeoProperty"]}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/name":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.fiware.org/ns/data-models#category":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"type":["https://uri.fiware.org/ns/data-models#Building"],"id":"urn:ngsi-ld:Building:storeProva7799"}]
+
+
+[{"https://schema.org/address":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"https://uri.etsi.org/ngsi-ld/default-context/addressLocality":[{"@value":"Kreuzberg"}],"https://uri.etsi.org/ngsi-ld/default-context/addressRegion":[{"@value":"Berlin"}],"https://uri.etsi.org/ngsi-ld/default-context/postalCode":[{"@value":"10969"}],"https://uri.etsi.org/ngsi-ld/default-context/streetAddress":[{"@value":"FriedrichstraÃe 44"}]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/default-context/verified":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":true}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/location":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"{\"type\":\"Point\",\"coordinates\":[13.3903,52.5075]}"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/GeoProperty"]}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/name":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"Checkpoint Markt"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"https://uri.fiware.org/ns/data-models#category":[{"https://uri.etsi.org/ngsi-ld/hasValue":[{"@value":"commercial"}],"https://uri.etsi.org/ngsi-ld/createdAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"https://uri.etsi.org/ngsi-ld/modifiedAt":[{"type":"https://uri.etsi.org/ngsi-ld/DateTime","@value":"2021-07-26T12:56:45.383158Z"}],"type":["https://uri.etsi.org/ngsi-ld/Property"]}],"type":["https://uri.fiware.org/ns/data-models#Building"],"id":"urn:ngsi-ld:Building:storeProva7799"}]

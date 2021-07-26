@@ -22,6 +22,7 @@ public class JSONfromToRDF {
 		return _blankNodeIndex;
 	}
 	public String JSONtoRDF(String json) throws Exception {
+		System.out.println("\n--------------------JSON converter:\n"+json);
 		String rdf = "";
 //		try {
 			JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
@@ -152,41 +153,41 @@ public class JSONfromToRDF {
 		return ris;
 	}
 	
-	public String RDFtoJsonSingleEntity(List<Bindings> binings) throws Exception {
-		return RDFtoJsonSingleEntity(binings,"s","p","o");
-	}
-	public String RDFtoJsonSingleEntity(List<Bindings> binings,String s,String p,String o) throws Exception {
-		JsonObject json = new JsonObject();
-		ArrayList<ConvertingField> rootField = new ArrayList<ConvertingField>();
-		HashMap<String,ArrayList<ConvertingField>> map = new HashMap<String,ArrayList<ConvertingField>>();
-		ArrayList<EntityConverter> ec =new 	ArrayList<EntityConverter> ();
-		for (Bindings bind : binings) {
-			String subject = bind.getRDFTerm(s).getValue();
-			ConvertingField field = new ConvertingField(
-					bind.getRDFTerm(p).getValue(),
-					bind.getRDFTerm(o)
-				);
-			if(subject.compareTo(SPARQLConstant.root)==0) {
-				rootField.add(field);
-			}else {
-				if(map.containsKey(subject)){
-					map.get(subject).add(field);
-				}else {
-					ArrayList<ConvertingField> fieldList = new ArrayList<ConvertingField>();
-					fieldList.add(field);
-					map.put(subject, fieldList);
-				}
-			}
-		
-		}
-		
-		for (int x =0; x<rootField.size();x++) {
-			resolve(rootField.get(x),map,json);
-		}
-		return json.toString();
-	}
-	
-	
+//	public String RDFtoJsonSingleEntity(List<Bindings> binings) throws Exception {
+//		return RDFtoJsonSingleEntity(binings,"s","p","o");
+//	}
+//	public String RDFtoJsonSingleEntity(List<Bindings> binings,String s,String p,String o) throws Exception {
+//		JsonObject json = new JsonObject();
+//		ArrayList<ConvertingField> rootField = new ArrayList<ConvertingField>();
+//		HashMap<String,ArrayList<ConvertingField>> map = new HashMap<String,ArrayList<ConvertingField>>();
+//		ArrayList<EntityConverter> ec =new 	ArrayList<EntityConverter> ();
+//		for (Bindings bind : binings) {
+//			String subject = bind.getRDFTerm(s).getValue();
+//			ConvertingField field = new ConvertingField(
+//					bind.getRDFTerm(p).getValue(),
+//					bind.getRDFTerm(o)
+//				);
+//			if(subject.compareTo(SPARQLConstant.root)==0) {
+//				rootField.add(field);
+//			}else {
+//				if(map.containsKey(subject)){
+//					map.get(subject).add(field);
+//				}else {
+//					ArrayList<ConvertingField> fieldList = new ArrayList<ConvertingField>();
+//					fieldList.add(field);
+//					map.put(subject, fieldList);
+//				}
+//			}
+//		
+//		}
+//		
+//		for (int x =0; x<rootField.size();x++) {
+//			resolve(rootField.get(x),map,json);
+//		}
+//		return json.toString();
+//	}
+//	
+//	
 	private void resolve(ConvertingField field,HashMap<String,ArrayList<ConvertingField>> map,JsonObject acc) throws Exception {
 //		if(field.isId()){
 //			JsonElement element = new JsonPrimitive(field.getValueAsString());
@@ -199,15 +200,24 @@ public class JSONfromToRDF {
 //			acc.add("@context", element);
 //		}else 
 		if(field.isJsonObject()){
-			JsonObject element = new JsonObject();
 			ArrayList<ConvertingField> bNodes = map.get(field.getAsBlankNodeString());
-			for (int x =0; x<bNodes.size();x++) {
-				resolve(bNodes.get(x),map,element);
+			if(field.fromArrayElement()) {
+				//if the field is from an array, no need to create
+				//JsonObject parent to pass to the next resolve invocation
+				//or we will have an additional "JsonObjectKey" key on our json
+				for (int x =0; x<bNodes.size();x++) {
+					resolve(bNodes.get(x),map,acc);
+				}
+			}else {
+				JsonObject element = new JsonObject();
+				for (int x =0; x<bNodes.size();x++) {
+					resolve(bNodes.get(x),map,element);
+				}
+				acc.add(field.resolveKey(), element);
 			}
-			acc.add(field.resolveKey(), element);
 		}else if(field.isJsonArray()){
-			JsonArray element = new JsonArray();
 			ArrayList<ConvertingField> bNodes = map.get(field.getAsBlankNodeString());
+			JsonArray element = new JsonArray();
 			for (int x =0; x<bNodes.size();x++) {
 				resolve(bNodes.get(x),map,element);
 			}
@@ -247,22 +257,26 @@ public class JSONfromToRDF {
 				if(bn.size()!=1) {
 					throw new Exception("RDF not well formed for be a JSON representation: more than one blanknode for JsonArray or JsonObject");
 				}else {
-					ConvertingField bncf =bn.get(0);
+					ConvertingField bncf =bn.get(0);//un element array can refer at just one blanknode
 					if(!bncf.isBlankNode()) {
 						throw new Exception("RDF not well formed for be a JSON representation: the blanknode as object need to refer to another blanknode that is JsonArray or JsonObject");
 					}
 					if(bncf.isJsonArray()) {
-						JsonArray element = new JsonArray();
 						ArrayList<ConvertingField> bNodes = map.get(field.getAsBlankNodeString());
+						JsonArray element = new JsonArray();
 						for (int x =0; x<bNodes.size();x++) {
-							resolve(bNodes.get(x),map,element);
+							ConvertingField cf =bNodes.get(x);
+							cf.setFromArrayElement(true);
+							resolve(cf,map,element);
 						}
 						acc.add(element);
 					}else if(bncf.isJsonObject()) {
-						JsonObject element = new JsonObject();
 						ArrayList<ConvertingField> bNodes = map.get(field.getAsBlankNodeString());
+						JsonObject element = new JsonObject();
 						for (int x =0; x<bNodes.size();x++) {
-							resolve(bNodes.get(x),map,element);
+							ConvertingField cf =bNodes.get(x);
+							cf.setFromArrayElement(true);
+							resolve(cf,map,element);
 						}
 						acc.add(element);
 					}else {
@@ -288,6 +302,7 @@ public class JSONfromToRDF {
 		private RDFTerm  _object;
 		private String _predicate;
 		private String _key;
+		private boolean _fromArrayElement=false;
 		public ConvertingField(String predicate, RDFTerm object) {
 			this._object = object;
 			if(predicate.startsWith(SPARQLConstant.RDF_PREFIX_START)) {
@@ -358,9 +373,9 @@ public class JSONfromToRDF {
 				toResolve= _key;
 			}
 			if(this.isId()){
-				return "id"; //"@id";
+				return "@id"; //"@id";
 			}else if(this.isType()) {
-				return "type";//"@type";
+				return "@type";//"@type";
 			}else if(this.isContext()) {
 				return "@context";
 			}else if(this.isValue()) {
@@ -378,6 +393,13 @@ public class JSONfromToRDF {
 		public String toString() {
 			return _predicate + " - " + _object;
 		}
+		public boolean fromArrayElement() {
+			return _fromArrayElement;
+		}
+		public void setFromArrayElement(boolean fromArrayElement) {
+			this._fromArrayElement = fromArrayElement;
+		}
+		
 	}
 	private class EntityConverter{
 		private JsonObject json = new JsonObject();

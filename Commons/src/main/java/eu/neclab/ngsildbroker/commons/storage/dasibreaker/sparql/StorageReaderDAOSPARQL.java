@@ -204,9 +204,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 		if(getByType) {
 //			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
 //			jsr.addTriple("?s", DBConstants.DBCOLUMN_TYPE, qp.getType());
-			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA);
+			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
 		}else if(getById) {
-			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA);
+			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
 		}else {
 			throw new ResponseException("NOT IMPLEMENTED YET");
 		}

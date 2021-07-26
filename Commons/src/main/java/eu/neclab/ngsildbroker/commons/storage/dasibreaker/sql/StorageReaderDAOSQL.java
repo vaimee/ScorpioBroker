@@ -45,6 +45,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 		try {
 			if(qp.getCheck()!=null) {
 				String sqlQuery=typesAndAttributeQuery(qp);
+				logger.info("NGSI-LD to SQL: " + sqlQuery);
 				ris= new ArrayList<String>(readerJdbcTemplate.queryForList(sqlQuery,String.class));
 			}else {
 				String sqlQuery = translateNgsildQueryToSql(qp);
