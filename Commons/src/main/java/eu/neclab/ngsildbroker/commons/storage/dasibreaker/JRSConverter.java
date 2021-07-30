@@ -5,26 +5,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import org.apache.commons.codec.binary.Base64;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.rdf.Rdf;
-import com.apicatalog.rdf.RdfDataset;
-import com.apicatalog.rdf.RdfNQuad;
-import com.apicatalog.rdf.RdfResource;
 
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
-import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -39,13 +26,11 @@ public class JRSConverter {
 	
 	
 	private HashMap<String,String> _blankNodeHasMap;
-//	private HashMap<String,String> _dataGraphs;
 	protected String _table;
 	private ArrayList<InternalTriple> _triples;
 	public JRSConverter(String table){
 		_table = table;
 		_blankNodeHasMap = new HashMap<String,String>();
-//		_dataGraphs = new HashMap<String,String>();
 		_triples= new ArrayList<InternalTriple>();
 	}
 	
@@ -58,11 +43,7 @@ public class JRSConverter {
 		boolean needDataGraph=Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(column);
 		InternalTriple it ;
 		if(needDataGraph) {
-			//Encode data on your side using BASE64
-//			byte[] bytesEncoded = Base64.encodeBase64(value.getBytes());
-//			v=new String (bytesEncoded);
 			v=SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+key;
-//			_dataGraphs.put(v,value);
 			it= new InternalTriple(
 					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+">",
 					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+column+">",
@@ -228,162 +209,38 @@ public class JRSConverter {
 		return sparqlGetEntityTriples;
 	}
 	//-------------------------------------------------------------------WIP
-	public static String tempJSONLDtoSparql(String jsonld,String key) {
-		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+"><"
-				+SPARQLConstant.NGSI_GRAPH_PREFIX+SPARQLConstant.IS_JSON_LD
-				+">'"+jsonld+"'";
-	}
-	public static String tempJSONLDtoSparql(String column,String key,String value) {
-		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+"><"
-				+SPARQLConstant.NGSI_GRAPH_PREFIX+column
-				+">'"+value+"'";
-	}
-	public static String tempJSONLDtoSparqlGraph(String table,String key,String triples) {
-		String sparql = "GRAPH <"+getGraph(table,key)+"> {\n";
-		sparql+=triples;
-		sparql +="}\n";
-		return sparql;
-	}
-	protected static String getGraph(String table,String key) {
-		return SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+key;
-	}
-
-	public static String tempRDFtoJSONLD(BindingsResults rdf) throws SEPABindingsException {
-//		for (Bindings bind : rdf.getBindings()) {
-//			if(bind.getRDFTerm("p").getValue().compareTo("http://temp")==0) {
-//				return bind.getRDFTerm("o").getValue();
-//			}
-//		}
-		return "";
-	}
-	
-
+//	public String JSONLDtoSparqlTriple(String jsonld,String key) {
+//		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+"><"
+//				+SPARQLConstant.NGSI_GRAPH_PREFIX+SPARQLConstant.IS_JSON_LD
+//				+">'"+jsonld+"'";
+//	}
+//	public static String JSONLDtoSparqlTriple(String column,String key,String value) {
+//		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+"><"
+//				+SPARQLConstant.NGSI_GRAPH_PREFIX+column
+//				+">'"+value+"'";
+//	}
+//	public static String JSONLDtoSparqlGraph(String table,String key,String triples) {
+//		String sparql = "GRAPH <"+getGraph(table,key)+"> {\n";
+//		sparql+=triples;
+//		sparql +="}\n";
+//		return sparql;
+//	}
+//	protected static String getGraph(String table,String key) {
+//		return SPARQLConstant.NGSI_GRAPH_PREFIX+table+"/"+key;
+//	}
 
 	//-------------------------------------------------------------------WIP
-	
-	protected String jsonldToTriple(String jsonld,String key) throws JsonLdError {
-		return tempJSONLDtoSparql(jsonld,key);//------------------------WIP
-//		Reader targetReader = new StringReader(jsonld);
-//		Document document = JsonDocument.of(targetReader);
-//		RdfDataset rdf = JsonLd.toRdf(document).get();
-//		re)turn rdfDatasetToTripleString(rdf,key);
-	}
-//	protected String rdfDatasetToTripleString(RdfDataset rdf, String key) {
-//		String turtle = "";
-//		for ( RdfNQuad iterable_element : rdf.toList()) {
-//			String s = iterable_element.getSubject().getValue();
-//			if(iterable_element.getSubject().isBlankNode()) {
-//				s= "<"+resolveBlankNode(s,key) +">";
-//			}else {
-//				s = "<"+s+">";
-//			}
-//			String p= "<"+iterable_element.getPredicate().getValue()+">";
-//			String o =  iterable_element.getObject().getValue();
-//			if(iterable_element.getObject().isBlankNode()) {
-//				o= "<"+resolveBlankNode(o,key) +">";
-//			}else if(iterable_element.getObject().isLiteral()) {
-//				o = "'"+o+"'";
-//			}else {
-//				o = "<"+o+">";
-//			}
-//			//----------------------
-////			if(p.compareTo("rdf:type")==0) {
-////				p="<rdf:type>";
-////			}
-//			turtle+=s+" "+ p+ " " + o +".\n";
-//		}
-//		return turtle;
-//	}
-//	public RdfDataset triplesStringToDataSet(String triples) {
-//		RdfDataset rdf = Rdf.createDataset();
-//		HashMap<String,String> map = new HashMap<String,String> ();
-//		int index = 0;
-//		for (String  triple : triples.split(".\n")) {
-//			String temp[] = triple.split(" ");
-//			RdfResource s; //= Rdf.createIRI(temp[0].replace("<", "").replace(">", ""));
-//			if(temp[0].startsWith("<"+SPARQLConstant.BLANK_NODE)) {
-//				if(map.containsKey(temp[0])) {
-//					s = Rdf.createBlankNode(map.get(temp[0]));
-//				}else {
-//					String b_node="b"+index;
-//					index++;
-//					map.put(temp[0], b_node);
-//					s = Rdf.createBlankNode(b_node);
-//				}
-////				s = Rdf.createBlankNode(temp[0].replace("<", "").replace(">", ""));
-//			}else {
-//				s = Rdf.createIRI(temp[0].replace("<", "").replace(">", ""));
-//			}
-//			RdfResource p = Rdf.createIRI(temp[1].replace("<", "").replace(">", ""));
-//			RdfResource o;
-//			if(temp[2].startsWith("<"+SPARQLConstant.BLANK_NODE)) {
-//				if(map.containsKey(temp[2])) {
-//					o = Rdf.createBlankNode(map.get(temp[2]));
-//				}else {
-//					String b_node="b"+index;
-//					index++;
-//					map.put(temp[2], b_node);
-//					o = Rdf.createBlankNode(b_node);
-//				}
-//				
-//				rdf.add(Rdf.createTriple(s, p, o));
-//			}else if(temp[2].startsWith("'") && temp[2].endsWith("'")) {
-//				//this will add @value on json-ld so we using IRI instead VALUE for literals too
-////				rdf.add(Rdf.createTriple(s, p, Rdf.createValue(temp[2].substring(1, temp[2].length()-1))));
-//				o = Rdf.createIRI(temp[2].substring(1, temp[2].length()-1));
-//			}else {
-//				o = Rdf.createIRI(temp[2].replace("<", "").replace(">", ""));
-//			}
-//			rdf.add(Rdf.createTriple(s, p, o));
-//		}
-//		return rdf;
-//	}
-//	protected String resolveBlankNode(String blankNode,String key) {
-//		String uniqueBlankNode;
-//		if(_blankNodeHasMap.containsKey(blankNode)){
-//			uniqueBlankNode = _blankNodeHasMap.get(blankNode);
-//		}else {
-//			uniqueBlankNode = genBlankNode(key);
-//			_blankNodeHasMap.put(blankNode,uniqueBlankNode);
-//		}
-//		return uniqueBlankNode;
-//	}
-	
+
 	
 	protected JsonArray rdfToJsonLd(String rdf) throws JsonLdError {
 		Reader targetReader = new StringReader(rdf);
 		Document document = RdfDocument.of(targetReader);
 		return JsonLd.fromRdf(document).get();
 	}
-	
-//	protected String genBlankNode(String key) {
-////			return  "_:"+key+"_"+UUID.randomUUID().toString();
-//			return SPARQLConstant.BLANK_NODE+ key+"_"+UUID.randomUUID().toString();
-//	}
-	
+
 
 	public HashMap<String, String> getBlankNodeHasMap() {
 		return _blankNodeHasMap;
-	}
-	private String bindingsResultsToJsonld(BindingsResults bindings) throws JsonLdError, SEPABindingsException {
-		String triples = "";
-		if(bindings.getBindings().size()==0) {
-			return "";
-		}
-		for (Bindings binding : bindings.getBindings()) {
-			triples+="<" +binding.getValue("s") + ">";
-			triples+=" <" +binding.getValue("p") + ">";
-			if(binding.isLiteral("o")) {
-				triples+="'" +binding.getValue("o") + "'";
-			}else {
-				triples+=" <" +binding.getValue("o") + ">";
-			}
-			triples+=".\n";
-		} 
-		Reader targetReader = new StringReader(triples);
-		
-		RdfDocument document = (RdfDocument) RdfDocument.of(targetReader);
-		return JsonLd.fromRdf(document).get().toString();
 	}
 	
 	//----------------------------------------------------------------------------------------Internal obj for support
@@ -515,12 +372,6 @@ public class JRSConverter {
 				}
 			}
 		}
-//		public String getS() {
-//			return _s;
-//		}
-//		public String getP() {
-//			return _p;
-//		}
 		public String getO() {
 			return _o;
 		}
@@ -540,7 +391,7 @@ public class JRSConverter {
 //			Document document = JsonDocument.of(targetReader);
 //			RdfDataset rdf = JsonLd.toRdf(document).get();
 //			return rdf.toString();
-			JSONfromToRDF converter = new JSONfromToRDF();
+			JfromToRDF converter = new JfromToRDF();
 			try {
 				return converter.JSONtoRDF(_needDataGraph);
 			} catch (Exception e) {

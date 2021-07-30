@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
 import com.google.gson.*;
-
-import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
 import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 
-public class JSONfromToRDF {
+public class JfromToRDF {
 
 	private int _blankNodeIndex;
-	public JSONfromToRDF() {
+	public JfromToRDF() {
 		_blankNodeIndex=-1;
 	}
 	private int getNextBN() {
@@ -24,17 +21,12 @@ public class JSONfromToRDF {
 	public String JSONtoRDF(String json) throws Exception {
 		System.out.println("\n--------------------JSON converter:\n"+json);
 		String rdf = "";
-//		try {
-			JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
-			Set<String> keys = jsonObject.keySet();
-			for (String key : keys) {
-				rdf+=JSONtoRDF(key,"<"+SPARQLConstant.root+">",jsonObject.get(key)); 
-			}
-//		}catch(Exception e) {
-//		System.out.println("ERROR for: \n"+json);
-//		}
-	
-		return rdf;//JSONtoRDF(null,0,root,jsonObject);
+		JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+		Set<String> keys = jsonObject.keySet();
+		for (String key : keys) {
+			rdf+=JSONtoRDF(key,"<"+SPARQLConstant.root+">",jsonObject.get(key)); 
+		}
+		return rdf;
 	}
 	private String JSONtoRDF(String entryKey,String subject,JsonElement element) throws Exception{
 		String rdf = "";
@@ -77,20 +69,13 @@ public class JSONfromToRDF {
 			}
 	    }else if(element instanceof JsonPrimitive) {
 			JsonPrimitive jo=((JsonPrimitive)element);
-//			if(entryKey.trim().toLowerCase().compareTo("@type")==0) {
-//				rdf+=subject+"<"+rdfType+">\""+jo.getAsString()+"\".\n";
-//			}else if(entryKey.trim().toLowerCase().compareTo("@id")==0) {
-//				rdf+=subject+"<"+rdfId+">\""+jo.getAsString()+"\".\n";
-//			}else if(entryKey.trim().toLowerCase().compareTo("@context")==0) {
-//				rdf+=subject+"<"+context+">\""+jo.getAsString()+"\".\n";
-//			}else 
 			if(jo.isNumber()) {
 				String literal = jo.getAsString()+"^xsd:double";
 				rdf+=subject+resolvedKey+"\""+literal+"\".\n";
 			}else if(jo.isBoolean()) {
 				String literal = jo.getAsString()+"^xsd:boolean";
 				rdf+=subject+resolvedKey+"\""+literal+"\".\n";
-			}else {// if(jo.isString()) { //default
+			}else {
 				String value = jo.getAsString();
 				if(value.contains("\"")) {
 					rdf+=subject+resolvedKey+"'"+jo.getAsString()+"'.\n";
@@ -109,17 +94,14 @@ public class JSONfromToRDF {
 	}
 
 	public List<String> RDFtoJson(List<Bindings> binings,String s,String p,String o, String e) throws Exception {
-//		JsonObject json = new JsonObject();
-//		ArrayList<ConvertingField> rootField = new ArrayList<ConvertingField>();
-//		HashMap<String,ArrayList<ConvertingField>> map = new HashMap<String,ArrayList<ConvertingField>>();
-		HashMap<String,EntityConverter> ecmap =new HashMap<String,EntityConverter> ();
+		HashMap<String,EntityContainer> ecmap =new HashMap<String,EntityContainer> ();
 		for (Bindings bind : binings) {
 			String entityGraph = bind.getRDFTerm(e).getValue();
-			EntityConverter ec;
+			EntityContainer ec;
 			if(ecmap.containsKey(entityGraph)) {
 				ec= ecmap.get(entityGraph);
 			}else {
-				ec= new EntityConverter();
+				ec= new EntityContainer();
 				ecmap.put(entityGraph,ec);
 			}
 			String subject = bind.getRDFTerm(s).getValue();
@@ -142,7 +124,7 @@ public class JSONfromToRDF {
 		}
 		List<String> ris = new ArrayList<String>();
 		for (String key : ecmap.keySet()) {
-			EntityConverter ec=ecmap.get(key);
+			EntityContainer ec=ecmap.get(key);
 			JsonObject json  =new JsonObject();
 			for (int x =0; x<ec.getRootField().size();x++) {
 				resolve(ec.getRootField().get(x),ec.getMap(),json);
@@ -153,52 +135,7 @@ public class JSONfromToRDF {
 		return ris;
 	}
 	
-//	public String RDFtoJsonSingleEntity(List<Bindings> binings) throws Exception {
-//		return RDFtoJsonSingleEntity(binings,"s","p","o");
-//	}
-//	public String RDFtoJsonSingleEntity(List<Bindings> binings,String s,String p,String o) throws Exception {
-//		JsonObject json = new JsonObject();
-//		ArrayList<ConvertingField> rootField = new ArrayList<ConvertingField>();
-//		HashMap<String,ArrayList<ConvertingField>> map = new HashMap<String,ArrayList<ConvertingField>>();
-//		ArrayList<EntityConverter> ec =new 	ArrayList<EntityConverter> ();
-//		for (Bindings bind : binings) {
-//			String subject = bind.getRDFTerm(s).getValue();
-//			ConvertingField field = new ConvertingField(
-//					bind.getRDFTerm(p).getValue(),
-//					bind.getRDFTerm(o)
-//				);
-//			if(subject.compareTo(SPARQLConstant.root)==0) {
-//				rootField.add(field);
-//			}else {
-//				if(map.containsKey(subject)){
-//					map.get(subject).add(field);
-//				}else {
-//					ArrayList<ConvertingField> fieldList = new ArrayList<ConvertingField>();
-//					fieldList.add(field);
-//					map.put(subject, fieldList);
-//				}
-//			}
-//		
-//		}
-//		
-//		for (int x =0; x<rootField.size();x++) {
-//			resolve(rootField.get(x),map,json);
-//		}
-//		return json.toString();
-//	}
-//	
-//	
 	private void resolve(ConvertingField field,HashMap<String,ArrayList<ConvertingField>> map,JsonObject acc) throws Exception {
-//		if(field.isId()){
-//			JsonElement element = new JsonPrimitive(field.getValueAsString());
-//			acc.add("@id", element);
-//		}else if(field.isType()) {
-//			JsonElement element = new JsonPrimitive(field.getValueAsString());
-//			acc.add("@type", element);
-//		}else if(field.isContext()) {
-//			JsonElement element = new JsonPrimitive(field.getValueAsString());
-//			acc.add("@context", element);
-//		}else 
 		if(field.isJsonObject()){
 			ArrayList<ConvertingField> bNodes = map.get(field.getAsBlankNodeString());
 			if(field.fromArrayElement()) {
@@ -251,7 +188,6 @@ public class JSONfromToRDF {
 	private void resolve(ConvertingField field,HashMap<String,ArrayList<ConvertingField>> map,JsonArray acc) throws Exception {
 		if(field.isJsonArrayElement()) {
 			//we can force to have the right order on the array -->getArrayPos
-	
 			if(field.isBlankNode()) {
 				List<ConvertingField> bn =map.get(field.getAsBlankNodeString());
 				if(bn.size()!=1) {
@@ -401,29 +337,15 @@ public class JSONfromToRDF {
 		}
 		
 	}
-	private class EntityConverter{
-		private JsonObject json = new JsonObject();
+	private class EntityContainer{
 		private ArrayList<ConvertingField> rootField = new ArrayList<ConvertingField>();
 		private HashMap<String,ArrayList<ConvertingField>> map = new HashMap<String,ArrayList<ConvertingField>>();
-		public JsonObject getJson() {
-			return json;
-		}
-		public void setJson(JsonObject json) {
-			this.json = json;
-		}
 		public ArrayList<ConvertingField> getRootField() {
 			return rootField;
-		}
-		public void setRootField(ArrayList<ConvertingField> rootField) {
-			this.rootField = rootField;
 		}
 		public HashMap<String, ArrayList<ConvertingField>> getMap() {
 			return map;
 		}
-		public void setMap(HashMap<String, ArrayList<ConvertingField>> map) {
-			this.map = map;
-		}
-		
 		
 	}
 }

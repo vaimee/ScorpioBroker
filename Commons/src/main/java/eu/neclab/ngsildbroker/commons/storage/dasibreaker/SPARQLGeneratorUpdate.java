@@ -19,12 +19,13 @@ public class SPARQLGeneratorUpdate extends SPARQLGenerator{
 		_checkConflict=checkConflict;
 	}
 
-	
-	public void insertJsonColumn(String json, String column) throws JsonLdError {
-			String sparql = "GRAPH <"+getGraph(column)+"> {\n";
-			sparql +=super._converter.jsonldToTriple(json,_key);
-			sparql +="}\n";
-			_map.put(column, sparql);
+	public void insertJsonColumn(String jsonLink, String column) throws JsonLdError {
+		String sparql = "GRAPH <"+getGraph(column)+"> {\n";
+		sparql+="<"+SPARQLConstant.NGSI_GRAPH_PREFIX+_key+"><"
+					+SPARQLConstant.NGSI_GRAPH_PREFIX+SPARQLConstant.IS_JSON_LD
+					+">'"+jsonLink+"'";
+		sparql +="}\n";
+		_map.put(column, sparql);
 	}
 	
 	public void insertTriplesColumn(String triples, String column){

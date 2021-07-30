@@ -23,7 +23,7 @@ import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JSONfromToRDF;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JfromToRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
@@ -66,31 +66,18 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 				String sparql = translateNgsildQueryToSql(qp);
 				logger.info("NGSI-LD to SPARQL: " + sparql);
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
+				QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
+				JfromToRDF converter =new JfromToRDF();
+				List<String> list=converter.RDFtoJson(resp.getBindingsResults().getBindings());
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
-					//---------------------------------WIP
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
-//					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
-//					return new ArrayList<String>();
-					throw new ResponseException("NOT IMPLEMENTED YET");
+					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
+					return new ArrayList<String>();
 				}else {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 //					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
 //					ris=new ArrayList<String>(list);
-					QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
-					JSONfromToRDF converter =new JSONfromToRDF();
-					List<String> list=converter.RDFtoJson(resp.getBindingsResults().getBindings());
-//					for (Bindings bind : resp.getBindingsResults().getBindings()) {
-//							if(bind.getVariables().contains("o")) {
-//
-//								// Decode data on other side, by processing encoded data
-//								String valueDecoded = new String(Base64.decodeBase64(bind.getRDFTerm("o").getValue()));
-//								logger.info("result of sparql query-->\n"+valueDecoded);
-//								list.add(valueDecoded);
-//							}
-//					} 
-				
-					
-//					list.add(JRSConverter.tempRDFtoJSONLD(resp.getBindingsResults()));
+					StorageReaderDAO.countHeader +=list.size();
 					return list;
 				}
 			}

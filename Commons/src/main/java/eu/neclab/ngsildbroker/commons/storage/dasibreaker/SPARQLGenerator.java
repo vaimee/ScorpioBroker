@@ -11,7 +11,6 @@ public class SPARQLGenerator {
 		_converter= new JRSConverter(table);
 	}
 	
-
 	
 	//----------------------------------SETTERS and GETTERS
 	public String getTable() {
