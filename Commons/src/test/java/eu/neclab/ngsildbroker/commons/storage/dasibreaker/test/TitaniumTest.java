@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Test;
@@ -33,20 +35,6 @@ public class TitaniumTest extends JRSConverter {
 	}
 	
 	
-
-	@Test
-	public void testRDFtoJSONLD() throws JsonLdError{
-		System.out.println("---------------------------------TEST: testRDFtoJSONLD");
-		
-//		String rdf=super.jsonldToTriple(josn_ld_01, "this.is.a.test");
-//		System.out.println("rdf:\n"+rdf);
-		
-		String turtle = "<http://this.is.a.test_e5a84522-7231-479f-b82b-be2fe4599d6b> <https://uri.etsi.org/ngsi-ld/coordinates> \"1.33903E1\".\n"
-				+ "<http://this.is.a.test_e5a84522-7231-479f-b82b-be2fe4599d6b> <https://uri.etsi.org/ngsi-ld/coordinates> \"5.25075E1\".";
-		JsonArray json_ld =  super.rdfToJsonLd(turtle);
-		Consumer<JsonValue> print = x -> System.out.println(x.toString());
-		json_ld.forEach(print);
-	}
 	@Test
 	public void testTitanium() throws Exception{
 		System.out.println("---------------------------------TEST: testJSONLDtoRDFtoJSONLD");
@@ -107,63 +95,69 @@ public class TitaniumTest extends JRSConverter {
 			assertTrue("INSERT DATA",!sg.executeUpdate(sparql).isError());
 			sparql="SELECT ?e ?s ?p ?o {GRAPH <g2> { ?s ?p ?o} GRAPH ?e { ?s ?p ?o}}";
 			QueryResponse qr = (QueryResponse)sg.executeQuery(sparql);
-			System.out.println("---------------------------------To json-ld:\\n"+tw.RDFtoJson(qr.getBindingsResults().getBindings()));
+			List<String> jsonLDexpanded= tw.RDFtoJson(qr.getBindingsResults().getBindings());
+			System.out.println("---------------------------------To json-ld:\\n"+jsonLDexpanded);
+			List<String> contexts= new ArrayList<String>();
+			contexts.add("https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld");
+			List<String>  compacts = tw.compact(jsonLDexpanded, contexts);
+
+			System.out.println("---------------------------------To json-ld COMPACTS:\\n"+compacts);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	@Test
-	public void testJSONLDtoRDFtoJSONLD_direct() throws JsonLdError{
-		System.out.println("---------------------------------TEST: testJSONLDtoRDFtoJSONLD_direct");
-		String jsonld = "{\n"
-				+ "    \"id\": \"urn:ngsi-ld:Building:storeProva94\",\n"
-				+ "    \"type\": \"Building\",\n"
-				+ "    \"category\": {\n"
-				+ "    	\"type\": \"Property\",\n"
-				+ "        \"value\": [\"commercial\"]\n"
-				+ "    },\n"
-				+ "    \"address\": {\n"
-				+ "        \"type\": \"Property\",\n"
-				+ "        \"value\": {\n"
-				+ "            \"streetAddress\": \"Friedrichstraße 44\",\n"
-				+ "            \"addressRegion\": \"Berlin\",\n"
-				+ "            \"addressLocality\": \"Kreuzberg\",\n"
-				+ "            \"postalCode\": \"10969\"\n"
-				+ "        },\n"
-				+ "        \"verified\": {\n"
-				+ "			\"type\": \"Property\",\n"
-				+ "			\"value\": true\n"
-				+ "		}\n"
-				+ "    },\n"
-				+ "     \"location\": {\n"
-				+ "        \"type\": \"GeoProperty\",\n"
-				+ "        \"value\": {\n"
-				+ "             \"type\": \"Point\",\n"
-				+ "              \"coordinates\": [13.3903, 52.5075]\n"
-				+ "        }\n"
-				+ "    },\n"
-				+ "    \"name\": {\n"
-				+ "        \"type\": \"Property\",\n"
-				+ "        \"value\": \"Checkpoint Markt\"\n"
-				+ "    },\n"
-				+ "    \"@context\": [\n"
-				+ "        \"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\"\n"
-				+ "    ]\n"
-				+ "}";
-		Reader targetReader = new StringReader(jsonld);
-		Document document = JsonDocument.of(targetReader);
-		RdfDataset rdf = JsonLd.toRdf(document).get();
-		Document document2 = RdfDocument.of(rdf);
-		JsonArray ris = JsonLd.fromRdf(document2).get();
-		String jsonld_str= super.resolveJsonBlankNode(ris);
-		System.out.println("jsonld_str-->"+jsonld_str);
-//		Consumer<JsonValue> print = x -> System.out.println(x.toString());
-//		ris.forEach(print);
-				
-	}
-	
+//	@Test
+//	public void testJSONLDtoRDFtoJSONLD_direct() throws JsonLdError{
+//		System.out.println("---------------------------------TEST: testJSONLDtoRDFtoJSONLD_direct");
+//		String jsonld = "{\n"
+//				+ "    \"id\": \"urn:ngsi-ld:Building:storeProva94\",\n"
+//				+ "    \"type\": \"Building\",\n"
+//				+ "    \"category\": {\n"
+//				+ "    	\"type\": \"Property\",\n"
+//				+ "        \"value\": [\"commercial\"]\n"
+//				+ "    },\n"
+//				+ "    \"address\": {\n"
+//				+ "        \"type\": \"Property\",\n"
+//				+ "        \"value\": {\n"
+//				+ "            \"streetAddress\": \"Friedrichstraße 44\",\n"
+//				+ "            \"addressRegion\": \"Berlin\",\n"
+//				+ "            \"addressLocality\": \"Kreuzberg\",\n"
+//				+ "            \"postalCode\": \"10969\"\n"
+//				+ "        },\n"
+//				+ "        \"verified\": {\n"
+//				+ "			\"type\": \"Property\",\n"
+//				+ "			\"value\": true\n"
+//				+ "		}\n"
+//				+ "    },\n"
+//				+ "     \"location\": {\n"
+//				+ "        \"type\": \"GeoProperty\",\n"
+//				+ "        \"value\": {\n"
+//				+ "             \"type\": \"Point\",\n"
+//				+ "              \"coordinates\": [13.3903, 52.5075]\n"
+//				+ "        }\n"
+//				+ "    },\n"
+//				+ "    \"name\": {\n"
+//				+ "        \"type\": \"Property\",\n"
+//				+ "        \"value\": \"Checkpoint Markt\"\n"
+//				+ "    },\n"
+//				+ "    \"@context\": [\n"
+//				+ "        \"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\"\n"
+//				+ "    ]\n"
+//				+ "}";
+//		Reader targetReader = new StringReader(jsonld);
+//		Document document = JsonDocument.of(targetReader);
+//		RdfDataset rdf = JsonLd.toRdf(document).get();
+//		Document document2 = RdfDocument.of(rdf);
+//		JsonArray ris = JsonLd.fromRdf(document2).get();
+//		String jsonld_str= super.resolveJsonBlankNode(ris);
+//		System.out.println("jsonld_str-->"+jsonld_str);
+////		Consumer<JsonValue> print = x -> System.out.println(x.toString());
+////		ris.forEach(print);
+//				
+//	}
+//	
 	
 	
 	

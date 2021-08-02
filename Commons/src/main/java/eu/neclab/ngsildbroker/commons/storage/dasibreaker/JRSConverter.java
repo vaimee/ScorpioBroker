@@ -107,32 +107,7 @@ public class JRSConverter {
 //		sparql+="}};\n";
 //		return sparql;
 //	}
-	public String resolveJsonBlankNode(JsonArray json) {
-		JsonBlankNodeResolver jsnr = new JsonBlankNodeResolver();
-		for (JsonValue x : json) {
-			 JsonObject jo = x.asJsonObject();
-				if(jo.containsKey("@id")) {
-					String b_name = jo.get("@id").toString();
-//					System.out.println(b_name); //ok
-					if(b_name.matches("^\"_:b[0-9]+\"$")) {
-						jsnr.put(b_name, jo);
-					}else {
-						if(!jsnr.hasRoot()) {
-							jsnr.putRoot(jo);
-						}else {
-							throw new RuntimeException("Invalid JsonArray for resolveJsonBlankNode: there is more than one root element.");
-						}
-					}
-				}else {
-					throw new RuntimeException("Invalid JsonArray for resolveJsonBlankNode: a root key is not @id.");
-				}
-		}
-		if(jsnr.hasRoot()) {
-			return jsnr.iterateOnBNodes();
-		}else {
-			throw new RuntimeException("Invalid JsonArray for resolveJsonBlankNode: no root element found.");
-		}
-	}
+	
 	public String generateCreate(String key,boolean onConflict) throws JsonLdError{
 		String sparql= "";
 		String insertData  = "INSERT DATA {\n"
@@ -243,104 +218,7 @@ public class JRSConverter {
 		return _blankNodeHasMap;
 	}
 	
-	//----------------------------------------------------------------------------------------Internal obj for support
-	private class JsonBlankNodeResolver{
-		private static final int maxIter = 1000;
-		private JsonObject _root=null; 
-		private HashMap<String,String> _b_node;
-//		private HashMap<String,Boolean> _finished;
-		public JsonBlankNodeResolver() {
-			_b_node= new HashMap<String,String>();
-//			_finished= new HashMap<String,Boolean>();
-			_root=null; 
-		}
-		public void put(String b_name, JsonObject b_node) {
-//			b_node.remove("@id");//don't work
-			JsonObjectBuilder builder =Json.createObjectBuilder();
-			for (String key : b_node.keySet()) {
-				if(key!="@id") {
-					builder.add(key, b_node.get(key));
-				}
-			}
-			String clean = builder.build().toString();
-//			System.out.println("-->:"+clean); //ok
-			_b_node.put(b_name,clean);
-//			_finished.put(b_name,false);
-		}
-		public void putRoot(JsonObject root) {
-			_root=root;
-		}
-		public boolean hasRoot() {
-			return _root!=null;
-		}
-//		public boolean hasBNode(String b_name) {
-//			return _finished.containsKey(b_name);
-//		}
-		
-		public String iterateOnBNodes() {
-			String ris ="";
-			int count =_b_node.keySet().size();
-			HashMap<String,String> finished = new HashMap<String,String>();
-			HashMap<String,String> toMod;
-			ArrayList<String> toRemove;
-			int avoidDeadLoop = 0;
-			while(finished.keySet().size()!=count && avoidDeadLoop<maxIter) {
-				avoidDeadLoop++;
-//				Set<String> keys =  _b_node.keySet();
-				toMod = new HashMap<String,String>();
-				toRemove = new ArrayList<String>();
-				for (String n_name : _b_node.keySet()) {
-					String temp = _b_node.get(n_name);
-					Boolean thisNodeIsOK=true;
-					Boolean thisNodeIsModded=false;
-					for (String n_name_finished : finished.keySet()) {
-						String match = "{\"@id\":"+n_name_finished+"}";
-						if(temp.contains(match)) {
-							temp=temp.replace(match, finished.get(n_name_finished));
-							thisNodeIsModded=true;
-						}
-			
-					}
-					for (String n_name_not_finished : _b_node.keySet()) {
-						String match = "{\"@id\":"+n_name_not_finished+"}";
-						if(temp.contains(match)) {
-							thisNodeIsOK=false;
-						}
-					}
-					if(thisNodeIsOK) {
-						finished.put(n_name, temp);
-//						_b_node.remove(n_name); //ConcurrentModificationException
-						toRemove.add(n_name);
-					}else if(thisNodeIsModded){
-						toMod.put(n_name, temp);
-//						_b_node.put(n_name, temp); //ConcurrentModificationException
-					}
-				}
-				//for ConcurrentModificationException
-				//already try with Iterator (don't work) 
-				//so need that stuff:
-				for (String needRemove : toRemove) {
-					_b_node.remove(needRemove);
-				}
-				for (String needMod : toMod.keySet()) {
-					_b_node.put(needMod, toMod.get(needMod));
-				}
-			}
-			if(finished.keySet().size()!=count) {
-				throw new RuntimeException("JsonBlankNodeResolver.iterateOnBNodes Avoid dead loop, max iter number reaced.");
-			}else {
-				ris = _root.asJsonObject().toString();
-				for (String n_name_finished : finished.keySet()) {
-					String match = "{\"@id\":"+n_name_finished+"}";
-					if(ris.contains(match)) {
-						ris=ris.replace(match, finished.get(n_name_finished));
-					}
-				}
-			}
-			return ris;
-		}
-		 
-	}
+
 	private class InternalTriple{
 		private String _s;
 		private String _p;
