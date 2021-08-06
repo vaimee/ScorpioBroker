@@ -24,10 +24,17 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.HistoryDAOSQL;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.StorageReaderDAOSQL;
 
 
+enum QueryLanguage {
+	SQL,
+	SPARQL
+}
+
+
 @Component
 public class QueryLanguageFactory {
 	
 	private final static QueryLanguage entityHandlerType = QueryLanguage.SPARQL;
+	private final static boolean useTitanium = true;
 
 	@Autowired
 	private  ApplicationContext context;
@@ -41,6 +48,14 @@ public class QueryLanguageFactory {
 		instance = this;
 	}
 
+	public static IConverterJRDF getConverterJRDF() {
+		if(useTitanium) {
+			return new TitaniumWrapper();
+//			return new TitaniumWrapperManualBN();
+		}else {
+			return new ConverterJRDF();
+		}
+	}
 	//----------------------------------------------------------------------------------------------------StorageReaderDAO
 	public  IStorageReaderDao getStorageReaderDao() {
 		return getStorageReaderDao(entityHandlerType);

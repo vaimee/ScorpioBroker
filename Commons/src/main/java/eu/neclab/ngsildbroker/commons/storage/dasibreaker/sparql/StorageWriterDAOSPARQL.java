@@ -14,7 +14,7 @@ import com.google.gson.JsonParser;
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
@@ -87,10 +87,8 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //		}
 		
 		boolean success =false;
-		JRSConverter jrs = new JRSConverter(tableName);
+		SPARQLConverter jrs = new SPARQLConverter(tableName);
 		jrs.addTriple(key, columnName, value);
-//		String triple = JRSConverter.tempJSONLDtoSparql(columnName, key, value);
-//		String sparql =JRSConverter.tempJSONLDtoSparqlGraph(tableName, key, triple);
 		String sparql="";
 		if (value != null && !value.equals("null")) {
 			try {
@@ -100,11 +98,11 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 				return false;
 			}
 		}else {
-			sparql = jrs.generateDeleteAllWhere(key);
+			sparql = jrs.generateDeleteAllByKey(key);
 		}
-		logger.info("\store--> sparql:\n" + sparql);
+		logger.info("\n store--> sparql:\n" + sparql);
 		success= !sepa.executeUpdate(sparql).isError();
-		logger.info("\store--> success:\n" + success);
+		logger.info("\n store--> success:\n" + success);
 		return success;
 	}
 
@@ -160,7 +158,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					gen.insertRawDataColumn(entityModifiedAt,DBConstants.DBCOLUMN_MODIFIED_AT);
 //					sparql+=gen.generateCreateEntity()+";\n";
 					//------------DEPRECATE
-					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY);
+					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
@@ -178,7 +176,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //						gen.insertRawDataColumn(attributeId,DBConstants.DBCOLUMN_ATTRIBUTE_ID);
 //						sparql+=gen.generateDeleteWhere(true)+";\n";
 						//------------DEPRECATE
-						JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+						SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
 						jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 						jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 						sparql+=jrs.generateDeleteAllWhere(entityId);
@@ -195,7 +193,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sparql+=gen.generateCreateEntity()+";\n";
 					//------------DEPRECATE
 					
-					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_DATA, value);
@@ -212,7 +210,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sparql+=gen.generateCreateEntity()+";\n";
 					//------------DEPRECATE
 					
-					jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY);
+					jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
 					sparql+=jrs.generateCreate(entityId,true);
@@ -233,7 +231,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sparql+=gen.generateCreateEntity()+";\n";
 					//------------DEPRECATE
 					
-					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
@@ -266,7 +264,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					//------------------------------------------------------------WARNING
 					//------------DEPRECATE
 					
-					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 					sparql+=jrs.generateDeleteAllWhere(entityId);
@@ -279,7 +277,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sparql+=gen.generateDeleteWhere(true)+";\n";
 					//------------DEPRECATE
 					
-					JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
+					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
 					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
 					sparql+=jrs.generateDeleteAllWhere(entityId);
 				}
@@ -411,7 +409,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 		
 
 //		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);
-		JRSConverter jrs = new JRSConverter(DBConstants.DBTABLE_ENTITY);
+		SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_ENTITY);
 		jrs.addTriple(key, SPARQLConstant.EXISTS_ID, key);
 		
 		String sparql = "";

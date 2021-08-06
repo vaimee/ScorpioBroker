@@ -8,10 +8,10 @@ import com.google.gson.*;
 import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 
-public class JfromToRDF {
+public class ConverterJRDF implements IConverterJRDF {
 
 	private int _blankNodeIndex;
-	public JfromToRDF() {
+	public ConverterJRDF() {
 		_blankNodeIndex=-1;
 	}
 	private int getNextBN() {

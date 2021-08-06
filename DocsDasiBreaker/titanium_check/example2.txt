@@ -1,0 +1,20 @@
+#--------------------------JSON-ld at call on DAO ====> StorageWriterDAOSQL.storeEntity.valueWithoutSysAttrs: 
+{"@type":["http://www.w3.org/ns/odrl/2/Set"],"http://www.w3.org/ns/odrl/2/permission":[{"http://www.w3.org/ns/odrl/2/action":[{"@id":"http://www.w3.org/ns/odrl/2/display"}],"http://www.w3.org/ns/odrl/2/constraint":[{"https://uri.etsi.org/ngsi-ld/default-context/comment":[{"@value":"i.e Germany"}],"http://www.w3.org/ns/odrl/2/leftOperand":[{"@id":"http://www.w3.org/ns/odrl/2/spatial"}],"http://www.w3.org/ns/odrl/2/operator":[{"@id":"http://www.w3.org/ns/odrl/2/eq"}],"http://www.w3.org/ns/odrl/2/rightOperand":[{"@value":"https://www.wikidata.org/wiki/Q183"}]}],"http://www.w3.org/ns/odrl/2/target":[{"@id":"http://example.com/asset:9898.movie"}]}],"@id":"http://example.com/policy:1012"}
+#---------------------------------------------TITANIUM (to RDF, to json-ld)
+ {"@type":["http://www.w3.org/ns/odrl/2/Set"],"http://www.w3.org/ns/odrl/2/permission":[{"http://www.w3.org/ns/odrl/2/action":[{"@id":"http://www.w3.org/ns/odrl/2/display"}],"http://www.w3.org/ns/odrl/2/constraint":[{"https://uri.etsi.org/ngsi-ld/default-context/comment":[{"@value":"i.e Germany"}],"http://www.w3.org/ns/odrl/2/leftOperand":[{"@id":"http://www.w3.org/ns/odrl/2/spatial"}],"http://www.w3.org/ns/odrl/2/operator":[{"@id":"http://www.w3.org/ns/odrl/2/eq"}],"http://www.w3.org/ns/odrl/2/rightOperand":[{"@value":"https://www.wikidata.org/wiki/Q183"}]}],"http://www.w3.org/ns/odrl/2/target":[{"@id":"http://example.com/asset:9898.movie"}]}],"@id":"http://example.com/policy:1012"}
+#---------------------------------------------TITANIUM (to RDF, to json-ld, compact)
+{
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "permission": {
+        "action": "display",
+        "constraint": {
+            "https://uri.etsi.org/ngsi-ld/default-context/comment": "i.e Germany",
+            "leftOperand": "spatial",
+            "operator": "eq",
+            "rightOperand": "https://www.wikidata.org/wiki/Q183"
+        },
+        "target": "http://example.com/asset:9898.movie"
+    },
+    "type": "Set",
+    "uid": "http://example.com/policy:1012"
+}

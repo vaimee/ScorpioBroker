@@ -20,7 +20,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
 //JSONLD-RDF-SPARQL-Converter
-public class JRSConverter {
+public class SPARQLConverter {
 
 	
 	
@@ -28,7 +28,7 @@ public class JRSConverter {
 	private HashMap<String,String> _blankNodeHasMap;
 	protected String _table;
 	private ArrayList<InternalTriple> _triples;
-	public JRSConverter(String table){
+	public SPARQLConverter(String table){
 		_table = table;
 		_blankNodeHasMap = new HashMap<String,String>();
 		_triples= new ArrayList<InternalTriple>();
@@ -77,7 +77,15 @@ public class JRSConverter {
 			return sparql;
 	}
 	
-	public String generateDeleteAllWhere(String key){
+	//---------------------DELETE
+	public String generateDeleteAllByKey(String key){
+		String sparql = "DELETE {GRAPH ?g {?s ?p ?o}}\n"+
+							"WHERE{ GRAPH ?g {?s ?p ?o}\n "+
+							"FILTER(regex(str(?g),\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+".\"))\n"
+							+"}\n";
+		return sparql;
+	}
+	public String generateDeleteAllWhere(String key){//<-------------------------NEED TEST IT
 		//testing it
 //		DELETE WHERE {
 //		  GRAPH ?g {?s ?p ?o}
@@ -108,6 +116,7 @@ public class JRSConverter {
 //		return sparql;
 //	}
 	
+	//----------------CREATED
 	public String generateCreate(String key,boolean onConflict) throws JsonLdError{
 		String sparql= "";
 		String insertData  = "INSERT DATA {\n"
@@ -264,12 +273,7 @@ public class JRSConverter {
 			return _needDataGraph!=null;
 		}
 		public String getRdfGraphTriples() throws JsonLdError {
-			//Titanium 
-//			Reader targetReader = new StringReader(_needDataGraph);
-//			Document document = JsonDocument.of(targetReader);
-//			RdfDataset rdf = JsonLd.toRdf(document).get();
-//			return rdf.toString();
-			JfromToRDF converter = new JfromToRDF();
+			IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
 			try {
 				return converter.JSONtoRDF(_needDataGraph);
 			} catch (Exception e) {

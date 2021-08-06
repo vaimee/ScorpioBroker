@@ -4,11 +4,11 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 public class SPARQLGenerator {
 
-	protected JRSConverter _converter;
+	protected SPARQLConverter _converter;
 	
 	
 	public SPARQLGenerator(String table){
-		_converter= new JRSConverter(table);
+		_converter= new SPARQLConverter(table);
 	}
 	
 	
@@ -17,11 +17,11 @@ public class SPARQLGenerator {
 		return _converter.getTable();
 	}
 
-	public JRSConverter getConverter() {
+	public SPARQLConverter getConverter() {
 		return _converter;
 	}
 
-	public void setConverter(JRSConverter converter) {
+	public void setConverter(SPARQLConverter converter) {
 		this._converter =  converter;
 	}
 	

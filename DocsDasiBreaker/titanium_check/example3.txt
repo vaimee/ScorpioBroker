@@ -1,0 +1,5 @@
+#--------------------------JSON-ld at call on DAO ====> StorageWriterDAOSQL.storeEntity.kvValue:
+{"@type":["http://www.w3.org/ns/odrl/2/Set"],"http://www.w3.org/ns/odrl/2/permission":[],"@id":"http://example.com/policy:1012"}
+#---------------------------------------------TITANIUM (to RDF, to json-ld)
+{"@id":"http://example.com/policy:1012","@type":["http://www.w3.org/ns/odrl/2/Set"]}
+#---------------------------------------------TITANIUM (to RDF, to json-ld, compact)

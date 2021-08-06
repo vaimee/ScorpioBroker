@@ -2,37 +2,22 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
-import org.springframework.util.ReflectionUtils;
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
-import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
-import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JRSConverter;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.JfromToRDF;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClauseRawData;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGeneratorQuery;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
-import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
@@ -67,7 +52,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 				logger.info("NGSI-LD to SPARQL: " + sparql);
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 				QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
-				JfromToRDF converter =new JfromToRDF();
+				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
 				List<String> list=converter.RDFtoJson(resp.getBindingsResults().getBindings());
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
@@ -182,7 +167,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 		boolean getById = qp.getId()!=null && qp.getId()!="";
 		boolean getByType = qp.getType()!=null && qp.getType()!="";
 		
-		JRSConverter jsr = new JRSConverter(DBConstants.DBTABLE_ENTITY);
+		SPARQLConverter jsr = new SPARQLConverter(DBConstants.DBTABLE_ENTITY);
 		/*---------------------------------REMEMBER (for future implements)
 		 * REMEMBER: for using && and || in in the WHERE condition, need to use USING and UNIQUE on SPARQL query
 		 * ---------------------------------REMEMBER
