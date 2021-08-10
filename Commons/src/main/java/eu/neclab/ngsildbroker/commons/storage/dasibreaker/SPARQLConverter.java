@@ -20,17 +20,17 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
 //JSONLD-RDF-SPARQL-Converter
+//with key into graph
+//DEPRECATED
 public class SPARQLConverter {
 
 	
 	
 	
-	private HashMap<String,String> _blankNodeHasMap;
 	protected String _table;
 	private ArrayList<InternalTriple> _triples;
 	public SPARQLConverter(String table){
 		_table = table;
-		_blankNodeHasMap = new HashMap<String,String>();
 		_triples= new ArrayList<InternalTriple>();
 	}
 	
@@ -223,10 +223,7 @@ public class SPARQLConverter {
 	}
 
 
-	public HashMap<String, String> getBlankNodeHasMap() {
-		return _blankNodeHasMap;
-	}
-	
+
 
 	private class InternalTriple{
 		private String _s;
@@ -274,6 +271,12 @@ public class SPARQLConverter {
 		}
 		public String getRdfGraphTriples() throws JsonLdError {
 			IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
+			//--------------------WIP
+			//--------------------WIP
+			//here we need context and type of the entity,
+			//taken from the ngsi-ld query
+			//--------------------WIP
+			//--------------------WIP
 			try {
 				return converter.JSONtoRDF(_needDataGraph);
 			} catch (Exception e) {

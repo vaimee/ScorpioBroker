@@ -1,6 +1,10 @@
-package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
+package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
 import java.util.ArrayList;
+
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLClause;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 public class SPARQLGeneratorQuery extends SPARQLGenerator {
 
 
@@ -96,7 +100,55 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		return sparql;
 	}
 	
-
+	/*
+	 * jsonb_params are about the json-ld attributes, we are filtering ngsi-ld entities
+	 * by their json attribute
+	 * 
+	 * ngsi_param are abount the ngsi-ld georel attributes and temporal attributes
+	 */
+	public String generateSparqlGetByAttr(IParam jsonb_params, IParam ngsi_param) {
+		//------------------------------NOT TESTED YET
+		//------------------------------NOT TESTED YET
+		//------------------------------NOT TESTED YET
+		//------------------------------NOT TESTED YET
+		/*
+		   SELECT ?e ?s ?p ?o{
+			  		GRAPH ?e { ?s ?p ?o}
+			    {
+			      SELECT DISTINCT ?e { GRAPH ?e { ?s1 ?p1 ?o1. ?s2 ?p2 ?o2 }
+			
+			      FILTER( ... )
+			      } 
+			
+				}
+				 GRAPH ?table { ?s_x ?collumn ?e . ?s_x ?condPred ?condObj}
+				 FILTER ( ?table ...)
+			}
+		 */
+		String paramVars = "GRAPH ?e {\n"+ jsonb_params.getVars() +"}";
+		String filter = jsonb_params.getClause();
+		String ngsi_part = "";
+		if(ngsi_param!=null) {
+			ngsi_part="GRAPH ?g {\n"+ngsi_param.getVars()+" }";
+			filter+=" && ( "+ngsi_param.getClause()+" )";
+			String regex = "\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/.+\"";
+			ngsi_part+="FILTER(regex(str(?g),\""+regex+"\"))";
+		}
+		String sparql = "SELECT ?s ?p ?o ?e {\n"
+				+ "GRAPH ?e { ?s ?p ?o}\n"
+				+ "{\n"
+				+ "SELECT DISTINCT ?e {\n"
+				+ paramVars
+				+"}\n"
+				+ "FILTER(\n"
+				+ filter
+				+")}\n"+ngsi_part+"}}";
+		return sparql;
+	}
+	
+	public String generateSparqlGetByAttr(IParam jsonb_params) {
+		return generateSparqlGetByAttr(jsonb_params,null);
+	}
 
 	
 	

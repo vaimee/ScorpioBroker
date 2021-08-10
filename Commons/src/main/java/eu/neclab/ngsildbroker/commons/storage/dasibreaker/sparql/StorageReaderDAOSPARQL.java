@@ -5,7 +5,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.ReflectionUtils;
+
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
+import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
@@ -16,6 +19,9 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.IParam;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQParam;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringRegexParam;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 
@@ -173,45 +179,60 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 		 * ---------------------------------REMEMBER
 		 */
 		
-		if(getByType) {
-//			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
-//			jsr.addTriple("?s", DBConstants.DBCOLUMN_TYPE, qp.getType());
-			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
-		}else if(getById) {
-			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
-		}else {
-			throw new ResponseException("NOT IMPLEMENTED YET");
-		}
 		
+		//-------------------------OLD (just for get by type and id, no more)
+//		if(getByType) {
+////			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
+////			jsr.addTriple("?s", DBConstants.DBCOLUMN_TYPE, qp.getType());
+//			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
+//		}else if(getById) {
+//			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
+//		}else {
+//			throw new ResponseException("NOT IMPLEMENTED YET");
+//		}
 		//---------------------------------------
+		
+		
 //		ArrayList<SPARQLClause> clauses = new ArrayList<SPARQLClause> ();
 //		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildQueryToSql <====\n");
 //		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
 //		
-//		ReflectionUtils.doWithFields(qp.getClass(), field -> {
-//			String dbColumn, sqlOperator;
+		
+		//Clauses in AND
+		IParam jsonb_params = new StringEQParam(true,0);
+		//Clauses in AND
+		IParam ngsi_params = new StringEQParam(true,1);
+		
+		ReflectionUtils.doWithFields(qp.getClass(), field -> {
+			int seed = 2;
+			String dbColumn, sqlOperator;
 //			String sqlWhereProperty = "";
-//
-//			field.setAccessible(true);
-//			String queryParameter = field.getName();
-//			Object fieldValue = field.get(qp);
-//			if (fieldValue != null) {
-//
-//				logger.trace("Query parameter:" + queryParameter);
-//				logger.info("Query parameter:" + queryParameter+"; fieldValue: "+fieldValue);
-//
-//				String queryValue = "";
-//				if (fieldValue instanceof String) {
-//					queryValue = fieldValue.toString();
-//					logger.trace("Query value: " + queryValue);
-//				}
-//
-//				switch (queryParameter) {
-//				case NGSIConstants.QUERY_PARAMETER_IDPATTERN:
-//					dbColumn = DBConstants.DBCOLUMN_ID;
-//					sqlOperator = "~";
+
+			field.setAccessible(true);
+			String queryParameter = field.getName();
+			Object fieldValue = field.get(qp);
+			if (fieldValue != null) {
+
+				logger.trace("Query parameter:" + queryParameter);
+				logger.info("Query parameter:" + queryParameter+"; fieldValue: "+fieldValue);
+
+				String queryValue = "";
+				if (fieldValue instanceof String) {
+					queryValue = fieldValue.toString();
+					logger.trace("Query value: " + queryValue);
+				}
+
+				switch (queryParameter) {
+				case NGSIConstants.QUERY_PARAMETER_IDPATTERN:
+					dbColumn = DBConstants.DBCOLUMN_ID;
+//					sqlOperator = "~"; //~ is the regular expression operator
 //					sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
-//					break;
+					IParam paramIdPatter = new StringRegexParam(true, seed);
+					seed++;
+					String predicate = "";//<<<-----------------WIP
+					paramIdPatter.addParam(predicate, queryValue);
+					ngsi_params.addParam(paramIdPatter);
+					break;
 //				case NGSIConstants.QUERY_PARAMETER_TYPE:
 //				case NGSIConstants.QUERY_PARAMETER_ID:
 //
@@ -256,13 +277,13 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 //				case NGSIConstants.QUERY_PARAMETER_QUERY:
 //					sqlWhereProperty = queryValue;
 //					break;
-//				}
+				}
 //				fullSqlWhereProperty.append(sqlWhereProperty);
 //				if (!sqlWhereProperty.isEmpty())
 //					fullSqlWhereProperty.append(" AND ");
-//			}
-//		});
-//
+			}
+		});
+		return ""; //WIP
 //		String tableDataColumn;
 //		if (qp.getKeyValues()) {
 //			if (qp.getIncludeSysAttrs()) {
