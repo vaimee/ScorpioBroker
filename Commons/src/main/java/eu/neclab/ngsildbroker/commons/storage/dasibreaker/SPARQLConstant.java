@@ -5,7 +5,7 @@ import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 public class SPARQLConstant {
 	
 	public static final String FOR_INTERNAL_USE = "internaluse";
-	public static final String EXISTS_ID = "existsid";
+//	public static final String EXISTS_ID = "existsid";
 	public static final String ENTITY_TYPE = "entityType";
 	public static final String ENTITY_CREATED_AT = "entityCreatedAt";
 	public static final String ENTITY_MODIFIED_AT = "entityModifiedAt";

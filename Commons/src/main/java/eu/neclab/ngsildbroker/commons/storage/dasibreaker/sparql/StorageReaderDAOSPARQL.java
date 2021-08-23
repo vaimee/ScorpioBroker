@@ -170,10 +170,9 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 	 */
 	public String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
 //		SPARQLGeneratorQuery gen = new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY);
-		boolean getById = qp.getId()!=null && qp.getId()!="";
-		boolean getByType = qp.getType()!=null && qp.getType()!="";
-		
-		SPARQLConverter jsr = new SPARQLConverter(DBConstants.DBTABLE_ENTITY);
+//		boolean getById = qp.getId()!=null && qp.getId()!="";
+//		boolean getByType = qp.getType()!=null && qp.getType()!="";
+//		SPARQLConverter jsr = new SPARQLConverter(DBConstants.DBTABLE_ENTITY);
 		/*---------------------------------REMEMBER (for future implements)
 		 * REMEMBER: for using && and || in in the WHERE condition, need to use USING and UNIQUE on SPARQL query
 		 * ---------------------------------REMEMBER
@@ -205,7 +204,7 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 		
 		ReflectionUtils.doWithFields(qp.getClass(), field -> {
 			int seed = 2;
-			String dbColumn, sqlOperator;
+//			String dbColumn, sqlOperator;
 //			String sqlWhereProperty = "";
 
 			field.setAccessible(true);
@@ -223,21 +222,43 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 				}
 
 				switch (queryParameter) {
-				case NGSIConstants.QUERY_PARAMETER_IDPATTERN:
-					dbColumn = DBConstants.DBCOLUMN_ID;
+				case NGSIConstants.QUERY_PARAMETER_IDPATTERN: //NOT TESTED YET
+//					dbColumn = DBConstants.DBCOLUMN_ID;
 //					sqlOperator = "~"; //~ is the regular expression operator
 //					sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
 					IParam paramIdPatter = new StringRegexParam(true, seed);
 					seed++;
-					String predicate = "";//<<<-----------------WIP
-					paramIdPatter.addParam(predicate, queryValue);
+					paramIdPatter.addParam(
+							SPARQLConverter.generateUri(DBConstants.DBCOLUMN_ID),
+							queryValue);
 					ngsi_params.addParam(paramIdPatter);
 					break;
-//				case NGSIConstants.QUERY_PARAMETER_TYPE:
-//				case NGSIConstants.QUERY_PARAMETER_ID:
-//
-//					//-----------------------------------------------------------DONE
-////					dbColumn = queryParameter;
+				case NGSIConstants.QUERY_PARAMETER_TYPE://NOT TESTED YET
+				case NGSIConstants.QUERY_PARAMETER_ID://NOT TESTED YET
+					IParam paramTypeOrID;
+					String predicate;
+					if(queryParameter.compareTo(NGSIConstants.QUERY_PARAMETER_TYPE)==0) {
+						predicate = SPARQLConverter.generateUri(DBConstants.DBCOLUMN_TYPE);
+					}else {
+						predicate = SPARQLConverter.generateUri(DBConstants.DBCOLUMN_ID);
+					}
+					if (queryValue.indexOf(",") == -1) {
+						//just one type
+						paramTypeOrID = new StringEQParam(true, seed);
+						seed++;
+						paramTypeOrID.addParam(
+								predicate,
+								queryValue);
+					}else {
+						//more than one type, we need OR operator
+						paramTypeOrID = new StringEQParam(false, seed);
+						seed++;
+						for (String value : queryValue.split(",")) {
+							paramTypeOrID.addParam(predicate, value);
+						}
+						
+					}
+//					dbColumn = queryParameter;
 //					if (queryValue.indexOf(",") == -1) {
 ////						sqlOperator = "=";
 ////						sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
@@ -252,9 +273,19 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 //						}
 //					}
 //					break;
-//				case NGSIConstants.QUERY_PARAMETER_ATTRS:
+				case NGSIConstants.QUERY_PARAMETER_ATTRS://NOT TESTED YET
+//---------------------WIP 
+					//need inspect the queryValue structure
+					//hipotesis 01 (just one level of param)
+					//{ "paramName" : "paramValue", "anotherParamName": "paramValue" }
+					//hipotesis 02 more level of param
+					//{ "paramName" : { "secondLevel": "paramValue"}, "anotherParamName": "paramValue" }
+					
+					
+//					jsonb_params.add()
+					
 //					dbColumn = "data";
-//					sqlOperator = "?";
+//					sqlOperator = "?"; // ? is JSONB operator to check whether an object contains a given key
 //					if (queryValue.indexOf(",") == -1) {
 //						sqlWhereProperty = dbColumn + " " + sqlOperator + "'" + queryValue + "'";
 //					} else {

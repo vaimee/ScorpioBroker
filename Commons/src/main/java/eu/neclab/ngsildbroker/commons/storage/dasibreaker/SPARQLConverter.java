@@ -45,14 +45,14 @@ public class SPARQLConverter {
 		if(needDataGraph) {
 			v=SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+key;
 			it= new InternalTriple(
-					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+">",
-					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+column+">",
+					generateUri(key),
+					generateUri(column),
 					v,
 					value);
 		}else {
 			it = new InternalTriple(
-					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+key+">",
-					"<"+SPARQLConstant.NGSI_GRAPH_PREFIX+column+">",
+					generateUri(key),
+					generateUri(column),
 					"'"+value+"'");
 		}
 		if(!justCreate) {
@@ -177,11 +177,11 @@ public class SPARQLConverter {
 
 		String sparql = "SELECT ?e WHERE{\n";
 		sparql+="GRAPH ?g1 {\n";
-		sparql+=	"?s1 <"+SPARQLConstant.NGSI_GRAPH_PREFIX+ targetColumn+"> ?e.\n";
+		sparql+=	"?s1 "+generateUri(targetColumn)+" ?e.\n";
 		sparql+="}{\n";
 		sparql+=	"SELECT ?g1 ?s1 WHERE { \n";
 		sparql+=		"GRAPH ?g1 {\n";
-		sparql+=			" ?s1 <"+SPARQLConstant.NGSI_GRAPH_PREFIX+searchColumn+"> '"+searchValue+"'.\n";
+		sparql+=			" ?s1 "+ generateUri(searchColumn)+" '"+searchValue+"'.\n";
 		sparql+=		"} FILTER(regex(str(?g1),\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+".\"))\n";
 		sparql+="}}}\n";
 		
@@ -223,6 +223,9 @@ public class SPARQLConverter {
 	}
 
 
+	public static String generateUri(String scorpio_content) {
+		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content+">";
+	}
 
 
 	private class InternalTriple{

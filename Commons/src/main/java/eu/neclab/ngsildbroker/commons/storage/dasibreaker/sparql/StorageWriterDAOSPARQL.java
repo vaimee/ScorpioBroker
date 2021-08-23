@@ -159,7 +159,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //					sparql+=gen.generateCreateEntity()+";\n";
 					//------------DEPRECATE
 					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
@@ -177,7 +177,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 //						sparql+=gen.generateDeleteWhere(true)+";\n";
 						//------------DEPRECATE
 						SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
-						jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+						jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 						jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 						sparql+=jrs.generateDeleteAllWhere(entityId);
 					}
@@ -194,7 +194,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------DEPRECATE
 					
 					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_DATA, value);
 					sparql+=jrs.generateCreate(entityId,true);
@@ -211,7 +211,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------DEPRECATE
 					
 					jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
 					sparql+=jrs.generateCreate(entityId,true);
 					
@@ -232,7 +232,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------DEPRECATE
 					
 					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_TYPE, entityType);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_CREATED_AT, entityCreatedAt);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_MODIFIED_AT, entityModifiedAt);
@@ -265,7 +265,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------DEPRECATE
 					
 					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ATTRIBUTE_ID, attributeId);
 					sparql+=jrs.generateDeleteAllWhere(entityId);
 				} else if (entityId != null) {
@@ -278,7 +278,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 					//------------DEPRECATE
 					
 					SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_TEMPORALENTITY_ATTRIBUTEINSTANCE);
-					jrs.addTriple(entityId, SPARQLConstant.EXISTS_ID, entityId);
+					jrs.addTriple(entityId, DBConstants.DBCOLUMN_ID, entityId);
 					sparql+=jrs.generateDeleteAllWhere(entityId);
 				}
 			}
@@ -410,7 +410,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 
 //		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);
 		SPARQLConverter jrs = new SPARQLConverter(DBConstants.DBTABLE_ENTITY);
-		jrs.addTriple(key, SPARQLConstant.EXISTS_ID, key);
+		jrs.addTriple(key, DBConstants.DBCOLUMN_ID, key);
 		
 		String sparql = "";
 		if (value != null && !value.equals("null")) {

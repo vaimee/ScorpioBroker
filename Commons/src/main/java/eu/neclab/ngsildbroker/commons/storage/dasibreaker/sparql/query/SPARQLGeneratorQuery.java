@@ -115,14 +115,16 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		   SELECT ?e ?s ?p ?o{
 			  		GRAPH ?e { ?s ?p ?o}
 			    {
-			      SELECT DISTINCT ?e { GRAPH ?e { ?s1 ?p1 ?o1. ?s2 ?p2 ?o2 }
-			
-			      FILTER( ... )
-			      } 
+			    	####jsonb_params#####
+				      SELECT DISTINCT ?e { 
+					      GRAPH ?e { ?s1 ?p1 ?o1. ?s2 ?p2 ?o2 }
+					      FILTER( ... )
+				      } 
 			
 				}
-				 GRAPH ?table { ?s_x ?collumn ?e . ?s_x ?condPred ?condObj}
-				 FILTER ( ?table ...)
+					####ngsi_param#####
+					 GRAPH ?table { ?s_x ?collumn ?e . ?s_x ?condPred ?condObj}
+					 FILTER ( ?table ...)
 			}
 		 */
 		String paramVars = "GRAPH ?e {\n"+ jsonb_params.getVars() +"}";
