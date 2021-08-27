@@ -33,9 +33,7 @@ public class TitaniumSelfTest {
 			+ "  \"@context\": {\n"
 			+ "    \"dcterms\": \"http://purl.org/dc/terms/\",\n"
 			+ "    \"ex\": \"http://example.org/vocab#\",\n"
-			+ "    \"ex:contains\": {\n"
-			+ "      \"@type\": \"@id\"\n"
-			+ "    }\n"
+			+ "    \"ex:contains\": {\"@type\": \"@id\"}\n"
 			+ "  },\n"
 			+ "  \"@graph\": [\n"
 			+ "    {\n"
@@ -54,18 +52,19 @@ public class TitaniumSelfTest {
 			+ "      \"@id\": \"http://example.org/test#chapter\",\n"
 			+ "      \"@type\": \"ex:Chapter\",\n"
 			+ "      \"dcterms:description\": \"Fun\",\n"
-			+ "      \"dcterms:title\": \"Chapter One\"\n"
+			+ "      \"dcterms:title\": \"Chapter One\",\n"
+			+ "      \"ex:act\": \"ex:ActOne\"\n"
 			+ "    }\n"
 			+ "  ]\n"
 			+ "}";
 	
-	private static final String context = "{\"@context\": {\n"
+	private static final String context = "{\n"
+			+ "  \"@context\": {\n"
 			+ "    \"dcterms\": \"http://purl.org/dc/terms/\",\n"
-			+ "    \"ex\": \"http://example.org/vocab#\",\n"
-			+ "    \"ex:contains\": {\n"
-			+ "      \"@type\": \"@id\"\n"
-			+ "    }\n"
-			+ "  }}";
+			+ "    \"ex\": \"http://example.org/vocab#\"\n"
+			+ "  },\n"
+			+ "  \"@type\": \"http://example.org/vocab#Library\""
+			+ "}";
 	
 	@Test
 	public void testTitaniumNoRDF() throws Exception{
@@ -75,9 +74,35 @@ public class TitaniumSelfTest {
 
 		Reader targetReaderContext = new StringReader(context);
 		Document context = JsonDocument.of(targetReaderContext);
-		String framed_out = JsonLd.compact(document,context).compactToRelative(false)
-			      .get().toString();//compact seams work as frame in this case
-		System.out.println("Compact_out:\n\n\n"+framed_out);
+		String compacted_out = JsonLd.compact(document,context).compactToRelative(false)
+			      .get().toString();
+		System.out.println("Compact_out:\n\n\n"+compacted_out);
+
+		String framed_out = JsonLd.frame(document,context).get().toString();
+		System.out.println("Framed_out:\n\n\n"+framed_out);
+		//that work!
+		//expected:
+//		{
+//			  "@context": {
+//			    "dcterms": "http://purl.org/dc/terms/",
+//			    "ex": "http://example.org/vocab#"
+//			  },
+//			  "@id": "http://example.org/test/#library",
+//			  "@type": "ex:Library",
+//			  "ex:contains": {
+//			    "@id": "http://example.org/test#book",
+//			    "@type": "ex:Book",
+//			    "ex:contains": {
+//			      "@id": "http://example.org/test#chapter",
+//			      "@type": "ex:Chapter",
+//			      "ex:act": "ex:ActOne",
+//			      "dcterms:description": "Fun",
+//			      "dcterms:title": "Chapter One"
+//			    },
+//			    "dcterms:contributor": "Writer",
+//			    "dcterms:title": "My Book"
+//			  }
+//			}
 	}
 	
 	

@@ -8,7 +8,9 @@ public interface IParam {
 	void addParam(IParam param);
 	String getClause();
 	String getVars();
+	String getVars(String s);
 	int getSeed();
 	boolean needBrackets();
+	boolean needFilter();
 	
 }

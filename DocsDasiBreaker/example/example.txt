@@ -1,0 +1,23 @@
+#context: 
+https://json-ld.org/contexts/person.jsonld
+
+#Create entity 1
+
+{
+    "id": "http://people/People1",
+    "type": "Person",
+   	"name": "Pluto",
+    "nickname": "PlutoIsTheBest",
+ 	"image":"https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.conquistedellavoro.it%2Fcultura%2Fpluto-compie-90-anni-1.2618212&psig=AOvVaw22dRtt20YGxpX6pJQ0QeVt&ust=1630155825058000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDMwemh0fICFQAAAAAdAAAAABAJ",
+  	"telephone":"333 33333333",
+    "@context": [
+       "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+      "https://json-ld.org/contexts/person.jsonld"
+    ]
+}
+
+#frame
+{
+	"@type":"Person",
+	"@context":  "https://json-ld.org/contexts/person.jsonld"
+}

@@ -1,11 +1,15 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +32,10 @@ import jakarta.json.JsonValue;
 
 public class TitaniumWrapper implements IConverterJRDF {
 	private static HashMap<String,Document> contextMap = new HashMap<String,Document> ();
-	
+	private String _frame=null;
 	public TitaniumWrapper() {
 	}
+	
 	public String JSONtoRDF(String json) throws Exception {
 //		System.out.println("\n--------------------JSON converter:\n"+json);
 		Reader targetReader = new StringReader(json);
@@ -89,7 +94,18 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else if(bind.getRDFTerm(o).isLiteral()) {
 //				object="\""+sanitizeLiteral(object)+"\""; 
 //				object="'"+object+"'";
-				object="\""+object+"\"";
+				//Titanium didn't allow single quotes as literal delimiter
+				//and didn't work if the literal contains double quotes
+//				if(object.contains("\"")) {
+//					object="\""+object.replace("\"", "'")+"\"";
+//				}else {
+//					object="\""+object+"\"";
+//				}
+				if(object.contains("\"")) {
+					object="\"null\""; //DOUBLE QUOTE NOT ALLOWED FOR NOW
+				}else {
+					object="\""+object+"\"";
+				}
 			}else if(bind.getRDFTerm(o).isBNode()) {
 				if(bnodes.containsKey(object)) {
 					object=bnodes.get(object);
@@ -123,25 +139,31 @@ public class TitaniumWrapper implements IConverterJRDF {
 			Reader targetReader = new StringReader(rdf_triples);
 			//read N-Quads or turtle
 			RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
-			//covert to json-ld
-			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).get());
-			Reader targetReaderFrame = new StringReader(getFrame(notFramed));
-			Document frame = JsonDocument.of(targetReaderFrame);
-			ris.add(JsonLd.frame(notFramed, frame).get().toString());
-//			ris.add(JsonLd.fromRdf(doc).get().toString());
+			if(_frame!=null) {
+				//covert to json-ld
+				Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).get());
+				//if there is the frame, we will frame the jsonld
+				Reader targetReaderFrame = new StringReader(_frame);
+				Document frame = JsonDocument.of(targetReaderFrame);
+				ris.add(JsonLd.frame(notFramed, frame).get().toString());
+			}else {
+				//convert to json-ld and didn't frame it
+				ris.add(JsonLd.fromRdf(doc).get().toString());
+			}
 		}
 		return ris;
 	}
 	
-	private String getFrame(Document notFramed) {
-		String frame ="{\"@context\":[\""+
-						notFramed.getContextUrl()
-				+"\"],"
-				+"\"type\":\""+
-						notFramed.getContentType()
-				+"\"}";
-		return frame;
-	}
+//	private String getFrame(Document notFramed) {
+//		String frame ="{\"@context\":[\""+
+//						notFramed.getContextUrl()
+//				+"\"],"
+//				+"\"type\":\""+
+//						notFramed.getContentType()
+//				+"\"}";
+//		return frame;
+//	}
+	
 	public List<String> compact(List<String> jsonLDs,String contexts) throws JsonLdError{
 		List<String> ris = new ArrayList<String>();
 		Reader targetReaderContext = new StringReader(contexts);
@@ -174,4 +196,88 @@ public class TitaniumWrapper implements IConverterJRDF {
 		return turtle;
 	}
 	
+	public void setFrame(String type, String context) {
+		if(type!=null 
+				&& type.trim().length()>0 
+				&& context!=null 
+				&& context.trim().length()>0
+		) {
+			String cleannedType = type;
+			if(type.contains("#")) {
+				cleannedType=type.split("#")[1];
+			}
+			this._frame=
+					"{ \"@context\":" 
+							+context +",\n"
+					+"\"@type\":\""+
+							cleannedType
+					+"\"}";
+			System.out.println("TitaniumWrapper.setFrame('"+type+"','"+context+"'): "+ this._frame);
+		}else {
+			this._frame=null;
+		}
+		
+		
+//		if(type!=null && context!=null) {
+//
+//				String ctx = getUrlContents(context.replace("\"", ""));
+//				ctx= ctx.trim().substring(1, ctx.trim().length()-2);
+//	            this._frame=
+//						"{ "
+//								+ctx +",\n"
+//						+"\"@type\":\""+
+//						type
+//						+"\"}";
+//	        System.out.println("TitaniumWrapper.setFrame('"+type+"','"+context+"'): "+ this._frame);
+//	    
+//		}else {
+//			this._frame=null;
+//		}
+		
+//		
+//		if(type!=null) {
+//			String cleannedType = type;
+//			if(type.contains("#")) {
+//				cleannedType=type.split("#")[1];
+//			}
+//			this._frame=
+//					"{ \"@context\":\"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\",\n"
+//					+"\"@type\":\""+
+//							cleannedType
+//					+"\"}";
+//			System.out.println("TitaniumWrapper.setFrame('"+type+"','"+context+"'): "+ this._frame);
+//		}else {
+//			this._frame=null;
+//		}
+
+		
+		
+	}
+	
+//	 private static String getUrlContents(String theUrl)  
+//	  {  
+//	    StringBuilder content = new StringBuilder();  
+//	  // Use try and catch to avoid the exceptions  
+//	    try  
+//	    {  
+//	      URL url = new URL(theUrl); // creating a url object  
+//	      URLConnection urlConnection = url.openConnection(); // creating a urlconnection object  
+//	  
+//	      // wrapping the urlconnection in a bufferedreader  
+//	      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));  
+//	      String line;  
+//	      // reading from the urlconnection using the bufferedreader  
+//	      while ((line = bufferedReader.readLine()) != null)  
+//	      {  
+//	        content.append(line + "\n");  
+//	      }  
+//	      bufferedReader.close();  
+//	    }  
+//	    catch(Exception e)  
+//	    {  
+//	      e.printStackTrace();  
+//	    }  
+//	    return content.toString();  
+//	  } 
+	 
 }

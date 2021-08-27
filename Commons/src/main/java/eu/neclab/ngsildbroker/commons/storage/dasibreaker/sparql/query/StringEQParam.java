@@ -59,6 +59,9 @@ public class StringEQParam implements IParam {
 		return clause;
 	}
 
+	public boolean needFilter() {
+		return predicates.size()+params.size()>0;
+	}
 	protected String generateClauseAt(int x) {
 		return 	"str(?o"+_seed+"_"+x+")=\""+values.get(x)+"\" ";
 	}
@@ -79,9 +82,26 @@ public class StringEQParam implements IParam {
 		for (IParam param : params) {
 			vars+=param.getVars();
 		}
+		if(vars.length()==0) {
+			return "?sANY ?pANY ?oANY";
+		}
 		return vars;
 	}
-
+	@Override
+	public String getVars(String s) {
+		String vars ="";
+		for (int x =0 ;x<predicates.size();x++) {
+			String varID = _seed+"_"+x;
+			vars+="?"+s+" " + predicates.get(x)+ " ?o"+varID+".\n";
+		}
+		for (IParam param : params) {
+			vars+=param.getVars(s);
+		}
+		if(vars.length()==0) {
+			return "?sANY ?pANY ?oANY";
+		}
+		return vars;
+	}
 	@Override
 	public int getSeed() {
 		// TODO Auto-generated method stub

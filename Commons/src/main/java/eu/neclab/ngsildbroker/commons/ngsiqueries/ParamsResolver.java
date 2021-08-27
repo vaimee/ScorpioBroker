@@ -32,6 +32,7 @@ import eu.neclab.ngsildbroker.commons.datatypes.Subscription;
 import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.ldcontext.ContextResolverBasic;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 import eu.neclab.ngsildbroker.commons.tools.HttpUtils;
 
 @Component
@@ -112,7 +113,8 @@ public class ParamsResolver {
 			boolean temporalEntityFormat) throws ResponseException {
 		logger.trace("call getStorageManagerJsonQuery method ::");
 		try {
-			QueryParams qp = new QueryParams();
+			// new QueryParams();
+			QueryParams qp =QueryLanguageFactory.getInstance().getQueryParam(linkHeaders);
 			Iterator<String> it = ngsildQueryParams.keySet().iterator();
 			while (it.hasNext()) {
 				String queryParameter = it.next();

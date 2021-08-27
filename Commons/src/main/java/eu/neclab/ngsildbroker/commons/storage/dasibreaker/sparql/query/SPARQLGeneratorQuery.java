@@ -106,7 +106,7 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 	 * 
 	 * ngsi_param are abount the ngsi-ld georel attributes and temporal attributes
 	 */
-	public String generateSparqlGetByAttr(IParam jsonb_params, IParam ngsi_param) {
+	public String generateSparqlGetByAttr(IParam jsonb_params,String jsonbCollumn, IParam ngsi_params) {
 		//------------------------------NOT TESTED YET
 		//------------------------------NOT TESTED YET
 		//------------------------------NOT TESTED YET
@@ -123,18 +123,34 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 			
 				}
 					####ngsi_param#####
-					 GRAPH ?table { ?s_x ?collumn ?e . ?s_x ?condPred ?condObj}
+					 GRAPH ?table { 
+						 ?s_x ?collumn ?e . 
+						 ?s_x ?condPred ?condObj
+					 }
 					 FILTER ( ?table ...)
 			}
 		 */
-		String paramVars = "GRAPH ?e {\n"+ jsonb_params.getVars() +"}";
-		String filter = jsonb_params.getClause();
-		String ngsi_part = "";
-		if(ngsi_param!=null) {
-			ngsi_part="GRAPH ?g {\n"+ngsi_param.getVars()+" }";
-			filter+=" && ( "+ngsi_param.getClause()+" )";
+		String ngsi_part = "?s \n";
+		if(ngsi_params!=null) {
+			String json_b_link = "?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+jsonbCollumn+"> ?e.\n";
+			ngsi_part="GRAPH ?g {\n"+
+					json_b_link +
+					ngsi_params.getVars("subject")
+				+" }";
+//			filter+=" && ( "+ngsi_params.getClause()+" )";
 			String regex = "\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/.+\"";
-			ngsi_part+="FILTER(regex(str(?g),\""+regex+"\"))";
+			if(ngsi_params.needFilter()) {
+				ngsi_part+="FILTER(regex(str(?g),"+regex+") && ("+ngsi_params.getClause()+"))";
+			}else {
+				ngsi_part+="FILTER(regex(str(?g),"+regex+"))";
+			}
+		}
+
+		String paramVars = "GRAPH ?e {\n"+ jsonb_params.getVars() +"}";
+		String filter = "";
+		if(jsonb_params.needFilter()) {
+			filter = "FILTER(\n";
+			filter += jsonb_params.getClause()+")";
 		}
 		String sparql = "SELECT ?s ?p ?o ?e {\n"
 				+ "GRAPH ?e { ?s ?p ?o}\n"
@@ -142,14 +158,13 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 				+ "SELECT DISTINCT ?e {\n"
 				+ paramVars
 				+"}\n"
-				+ "FILTER(\n"
 				+ filter
-				+")}\n"+ngsi_part+"}}";
+				+"}\n"+ngsi_part+"}";
 		return sparql;
 	}
 	
-	public String generateSparqlGetByAttr(IParam jsonb_params) {
-		return generateSparqlGetByAttr(jsonb_params,null);
+	public String generateSparqlGetByAttr(IParam jsonb_params,String jsonbCollumn) {
+		return generateSparqlGetByAttr(jsonb_params,jsonbCollumn,null);
 	}
 
 	

@@ -1,13 +1,13 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
+import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.CSourceDAOSPARQL;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.EntityInfoDAOSPARQL;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.EntityStorageReaderDAOSPARQL;
@@ -183,5 +183,28 @@ public class QueryLanguageFactory {
 				return subscriptionInfoDAOSQL;
 			}
 			
+		}
+		//----------------------------------------------------------------------------------------------------QueryParams
+	
+		public QueryParams getQueryParam(List<Object> linkHeaders) {
+			if(entityHandlerType==QueryLanguage.SPARQL) {
+
+				String contexts="";
+				if(linkHeaders.size()>1) {
+					contexts="[";
+					for (int x =0; x<linkHeaders.size();x++) {
+						if(x>0) {
+							contexts+=",";
+						}
+						contexts+="\""+linkHeaders.get(x).toString()+"\"";
+					}
+					contexts+="]";
+				}else if(linkHeaders.size()==1){
+					contexts="\""+linkHeaders.get(0).toString()+"\"";
+				}
+				return new QueryParamsWithContext(contexts);
+			}else {
+				return new QueryParams();
+			}
 		}
 }

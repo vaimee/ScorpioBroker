@@ -17,9 +17,12 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryParamsWithContext;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.IParam;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.SPARQLGeneratorQuery;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringRegexParam;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
@@ -59,6 +62,10 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 				QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
+				if(converter instanceof TitaniumWrapper && qp instanceof QueryParamsWithContext) {
+					String context = ((QueryParamsWithContext)qp).getContext();
+					((TitaniumWrapper)converter).setFrame(qp.getType(), context);
+				}
 				List<String> list=converter.RDFtoJson(resp.getBindingsResults().getBindings());
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
@@ -258,6 +265,7 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 						}
 						
 					}
+					ngsi_params.addParam(paramTypeOrID);
 //					dbColumn = queryParameter;
 //					if (queryValue.indexOf(",") == -1) {
 ////						sqlOperator = "=";
@@ -314,23 +322,31 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 //					fullSqlWhereProperty.append(" AND ");
 			}
 		});
-		return ""; //WIP
-//		String tableDataColumn;
-//		if (qp.getKeyValues()) {
-//			if (qp.getIncludeSysAttrs()) {
-//				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
-//			} else { // without sysattrs at root level (entity createdat/modifiedat)
+		String tableDataColumn;
+		if (qp.getKeyValues()) {
+			if (qp.getIncludeSysAttrs()) {
+				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
+			} else { // without sysattrs at root level (entity createdat/modifiedat) 
+				//------WIP
+				//------WIP
+				//------WIP
+				//------WIP
 //				tableDataColumn = DBConstants.DBCOLUMN_KVDATA + " - '" + NGSIConstants.NGSI_LD_CREATED_AT + "' - '"
 //						+ NGSIConstants.NGSI_LD_MODIFIED_AT + "'";
-//			}
-//		} else {
-//			if (qp.getIncludeSysAttrs()) {
-//				tableDataColumn = DBConstants.DBCOLUMN_DATA;
-//			} else {
-//				tableDataColumn = DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS; // default request
-//			}
-//		}
-//
+				System.out.println("NOT IMPLEMENTED YET:  without sysattrs at root level (entity createdat/modifiedat)");
+				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
+			}
+		} else {
+			if (qp.getIncludeSysAttrs()) {
+				tableDataColumn = DBConstants.DBCOLUMN_DATA;
+			} else {
+				tableDataColumn = DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS; // default request
+			}
+		}
+		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY)
+				.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params);
+
+		//-------------------------------------------------WIP: NEED LOOK to the following code (not implemented in SAPRQL YET)
 //		String dataColumn = tableDataColumn;
 //		if (qp.getAttrs() != null) {
 //			String expandedAttributeList = "'" + NGSIConstants.JSON_LD_ID + "','" + NGSIConstants.JSON_LD_TYPE + "','"
@@ -358,7 +374,7 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 //		if(offSet != -1) {
 //			sqlQuery += "OFFSET " + offSet + " "; 
 //		}
-//		// order by ?
+		// order by ?
 //		String sparql = gen.generateSelect(clauses); 
 //		return sparql;
 	}
