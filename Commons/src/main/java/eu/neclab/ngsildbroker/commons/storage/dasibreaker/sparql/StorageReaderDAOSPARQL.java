@@ -27,12 +27,15 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQP
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringRegexParam;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
+import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
+import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
 	private final static Logger logger = LogManager.getLogger(StorageReaderDAOSPARQL.class);
 	
 	private SepaGateway sepa;
+	
 	public void init() {
 		try {
 			sepa= new SepaGateway();
@@ -43,13 +46,19 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 	}
 	
 
-	
+
+	//---------------------------------WIP
+	//---------------------------------WIP
+	//---------------------------------WIP
+	//---------------------------------WIP
+	//---------------------------------WIP
 	public List<String> query(QueryParams qp) {
-		//---------------------------------WIP
-		//---------------------------------WIP
-		//---------------------------------WIP
-		//---------------------------------WIP
-		//---------------------------------WIP
+		/*
+		 * the piggyBackType var allow us to take the type of the requested entity 
+		 * in the same query used to get the entity
+		 * the type is needed for use Titanium framing in case of a query without the type
+		 */
+		String piggyBackType=null;
 		try {
 			if(qp.getCheck()!=null) {
 				//---------------------------------WIP
@@ -60,13 +69,20 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 				String sparql = translateNgsildQueryToSql(qp);
 				logger.info("NGSI-LD to SPARQL: " + sparql);
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
-				QueryResponse resp=(QueryResponse)sepa.executeQuery(sparql);
+				BindingsResults binds=((QueryResponse)sepa.executeQuery(sparql)).getBindingsResults();
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
 				if(converter instanceof TitaniumWrapper && qp instanceof QueryParamsWithContext) {
 					String context = ((QueryParamsWithContext)qp).getContext();
-					((TitaniumWrapper)converter).setFrame(qp.getType(), context);
+					String type = qp.getType();
+					if(type==null && binds.getBindings().size()>0) {
+						RDFTerm t = binds.getBindings().get(0).getRDFTerm("type");
+						if(t!=null) {
+							type=t.getValue();
+						}
+					}
+					((TitaniumWrapper)converter).setFrame(type, context);
 				}
-				List<String> list=converter.RDFtoJson(resp.getBindingsResults().getBindings());
+				List<String> list=converter.RDFtoJson(binds.getBindings());
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
@@ -344,7 +360,7 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 			}
 		}
 		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY)
-				.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params);
+				.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
 
 		//-------------------------------------------------WIP: NEED LOOK to the following code (not implemented in SAPRQL YET)
 //		String dataColumn = tableDataColumn;

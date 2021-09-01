@@ -37,7 +37,12 @@ public class SepaGateway {
 	}
 	
 	public Response executeUpdate(String sparql) {	
-			String prefix_sparql=SPARQLConstant.RDF_PREFIX+"\n" + sparql;
+		
+			String prefix_sparql=SPARQLConstant.XSD_PREFIX
+								+SPARQLConstant.RDF_PREFIX
+								+SPARQLConstant.NGSI_PREFIX
+								+"\n" + sparql;
+			
 			UpdateRequest req = new UpdateRequest(
 					httpMethod_u,
 					scheme,
@@ -58,7 +63,11 @@ public class SepaGateway {
 
 	public Response executeQuery(String sparql) {	
 
-			String prefix_sparql=SPARQLConstant.RDF_PREFIX+"\n" + sparql;
+			String prefix_sparql=SPARQLConstant.XSD_PREFIX
+								+SPARQLConstant.RDF_PREFIX
+								+SPARQLConstant.NGSI_PREFIX
+								+"\n" + sparql;
+			
 			QueryRequest req = new QueryRequest(
 					httpMethod_q,
 					scheme,

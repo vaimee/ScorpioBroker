@@ -30,41 +30,19 @@ public class TitaniumSelfTest {
 
 
 	private static final String in="{\n"
-			+ "  \"@context\": {\n"
-			+ "    \"dcterms\": \"http://purl.org/dc/terms/\",\n"
-			+ "    \"ex\": \"http://example.org/vocab#\",\n"
-			+ "    \"ex:contains\": {\"@type\": \"@id\"}\n"
-			+ "  },\n"
-			+ "  \"@graph\": [\n"
-			+ "    {\n"
-			+ "      \"@id\": \"http://example.org/test/#library\",\n"
-			+ "      \"@type\": \"ex:Library\",\n"
-			+ "      \"ex:contains\": \"http://example.org/test#book\"\n"
-			+ "    },\n"
-			+ "    {\n"
-			+ "      \"@id\": \"http://example.org/test#book\",\n"
-			+ "      \"@type\": \"ex:Book\",\n"
-			+ "      \"dcterms:contributor\": \"Writer\",\n"
-			+ "      \"dcterms:title\": \"My Book\",\n"
-			+ "      \"ex:contains\": \"http://example.org/test#chapter\"\n"
-			+ "    },\n"
-			+ "    {\n"
-			+ "      \"@id\": \"http://example.org/test#chapter\",\n"
-			+ "      \"@type\": \"ex:Chapter\",\n"
-			+ "      \"dcterms:description\": \"Fun\",\n"
-			+ "      \"dcterms:title\": \"Chapter One\",\n"
-			+ "      \"ex:act\": \"ex:ActOne\"\n"
-			+ "    }\n"
-			+ "  ]\n"
+			+ "    \"id\": \"http://people/People1\",\n"
+			+ "    \"type\": \"Person\",\n"
+			+ "   	\"name\": \"Pluto\",\n"
+			+ "    \"nickname\": \"PlutoIsTheBest\",\n"
+			+ " 	\"image\":\"https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.conquistedellavoro.it%2Fcultura%2Fpluto-compie-90-anni-1.2618212&psig=AOvVaw22dRtt20YGxpX6pJQ0QeVt&ust=1630155825058000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDMwemh0fICFQAAAAAdAAAAABAJ\",\n"
+			+ "  	\"telephone\":33333333333,\n"
+			+ "    \"@context\": [\n"
+			+ "       \"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld\",\n"
+			+ "      \"https://json-ld.org/contexts/person.jsonld\"\n"
+			+ "    ]\n"
 			+ "}";
 	
-	private static final String context = "{\n"
-			+ "  \"@context\": {\n"
-			+ "    \"dcterms\": \"http://purl.org/dc/terms/\",\n"
-			+ "    \"ex\": \"http://example.org/vocab#\"\n"
-			+ "  },\n"
-			+ "  \"@type\": \"http://example.org/vocab#Library\""
-			+ "}";
+	private static final String frame = "{\"@context\":\"https://json-ld.org/contexts/person.jsonld\", \"@type\": \"Person\"}";
 	
 	@Test
 	public void testTitaniumNoRDF() throws Exception{
@@ -72,7 +50,7 @@ public class TitaniumSelfTest {
 		Reader targetReader = new StringReader(in);
 		Document document = JsonDocument.of(targetReader);
 
-		Reader targetReaderContext = new StringReader(context);
+		Reader targetReaderContext = new StringReader(frame);
 		Document context = JsonDocument.of(targetReaderContext);
 		String compacted_out = JsonLd.compact(document,context).compactToRelative(false)
 			      .get().toString();
@@ -80,29 +58,7 @@ public class TitaniumSelfTest {
 
 		String framed_out = JsonLd.frame(document,context).get().toString();
 		System.out.println("Framed_out:\n\n\n"+framed_out);
-		//that work!
-		//expected:
-//		{
-//			  "@context": {
-//			    "dcterms": "http://purl.org/dc/terms/",
-//			    "ex": "http://example.org/vocab#"
-//			  },
-//			  "@id": "http://example.org/test/#library",
-//			  "@type": "ex:Library",
-//			  "ex:contains": {
-//			    "@id": "http://example.org/test#book",
-//			    "@type": "ex:Book",
-//			    "ex:contains": {
-//			      "@id": "http://example.org/test#chapter",
-//			      "@type": "ex:Chapter",
-//			      "ex:act": "ex:ActOne",
-//			      "dcterms:description": "Fun",
-//			      "dcterms:title": "Chapter One"
-//			    },
-//			    "dcterms:contributor": "Writer",
-//			    "dcterms:title": "My Book"
-//			  }
-//			}
+
 	}
 	
 	
