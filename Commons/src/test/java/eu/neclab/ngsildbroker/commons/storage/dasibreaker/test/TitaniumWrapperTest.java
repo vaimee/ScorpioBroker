@@ -7,9 +7,11 @@ import java.io.StringReader;
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.rdf.RdfDataset;
 
 
@@ -41,10 +43,15 @@ public class TitaniumWrapperTest  {
 		Reader targetReader = new StringReader(in);
 		Document document = JsonDocument.of(targetReader);
 		RdfDataset rdfdataset = JsonLd.toRdf(document).get();
+		
+
+		JsonLdOptions options = new JsonLdOptions();
+		options.setUseNativeTypes(true);
+		
 		Document document2 = RdfDocument.of(rdfdataset);
 		Reader targetReaderContext = new StringReader(frame);
 		Document context = JsonDocument.of(targetReaderContext);
-		Document jsondocument = JsonDocument.of(JsonLd.fromRdf(document2).get());
+		Document jsondocument = JsonDocument.of(JsonLd.fromRdf(document2).options(options).get());
 		System.out.println(JsonLd.frame(jsondocument,context).get().toString());
 		
 		

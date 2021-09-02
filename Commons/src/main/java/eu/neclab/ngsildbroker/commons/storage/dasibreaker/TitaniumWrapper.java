@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
 import com.apicatalog.jsonld.document.RdfDocument;
@@ -159,16 +160,20 @@ public class TitaniumWrapper implements IConverterJRDF {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
 		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
+
+		JsonLdOptions options = new JsonLdOptions();
+		options.setUseNativeTypes(true);
+		
 		if(_frame!=null) {
 			//covert to json-ld
-			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).get());
+			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).options(options).get());
 			//if there is the frame, we will frame the jsonld
 			Reader targetReaderFrame = new StringReader(_frame);
 			Document frame = JsonDocument.of(targetReaderFrame);
 			return JsonLd.frame(notFramed, frame).get().toString();
 		}else {
 			//convert to json-ld and didn't frame it
-			return JsonLd.fromRdf(doc).get().toString();
+			return JsonLd.fromRdf(doc).options(options).get().toString();
 		}
 	}
 

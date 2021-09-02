@@ -1,6 +1,8 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeSet;
 
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.protocol.SPARQL11Properties.QueryHTTPMethod;
@@ -12,10 +14,12 @@ import it.unibo.arces.wot.sepa.commons.response.Response;
 
 public class SepaGateway {
 
+	
+	
 	protected SPARQL11Protocol client=null;
 	protected UpdateHTTPMethod httpMethod_u = UpdateHTTPMethod.POST;
 	protected QueryHTTPMethod httpMethod_q = QueryHTTPMethod.POST;
-	protected String host="localhost";
+	protected String host="localhost"; //default--> sepa and then take it from environment vars
 	protected int port=8000;
 	//private String authorization;//not implemented yet
 	protected String scheme = "http";
@@ -26,7 +30,19 @@ public class SepaGateway {
 	protected String ontology ="http://dasi.breaker.ngsi.ontology/"; 
 
 	public SepaGateway() throws SEPASecurityException {
-			client= new SPARQL11Protocol();
+	    Map<String, String> env = System.getenv();
+	  
+    	if(env.get("sepaHost")!=null) {
+    		host= env.get("sepaHost");
+    	}
+    	if(env.get("sepaPort")!=null) {
+    		port= Integer.parseInt(env.get("sepaPort"));
+    	}
+    	if(env.get("sepaScheme")!=null) {
+    		scheme= env.get("sepaScheme");
+    	}
+    	
+		client= new SPARQL11Protocol();
 	}
 	
 	public String getGraph() {
