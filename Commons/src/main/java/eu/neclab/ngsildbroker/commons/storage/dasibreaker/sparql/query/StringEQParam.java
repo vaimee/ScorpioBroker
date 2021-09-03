@@ -42,9 +42,12 @@ public class StringEQParam implements IParam {
 		String clause ="";
 		for (int x =0 ;x<predicates.size();x++) {
 			clause+=generateClauseAt(x);
-			if(x>0 && x<predicates.size()-1) {
+			if(x<predicates.size()-1) {
 				clause+=operator;
 			}
+		}
+		if(params.size()>0 && clause.length()>0) {
+			clause+=operator;
 		}
 		for (int x =0; x<params.size();x++) {
 			if(params.get(x).needBrackets()) {
@@ -52,7 +55,7 @@ public class StringEQParam implements IParam {
 			}else {
 				clause+=params.get(x).getClause();
 			}
-			if(x>0 && x<params.size()-1) {
+			if(x<params.size()-1) {
 				clause+=operator;
 			}
 		}

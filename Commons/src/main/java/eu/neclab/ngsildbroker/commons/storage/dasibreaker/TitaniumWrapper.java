@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 
 import com.apicatalog.jsonld.JsonLd;
@@ -113,15 +115,17 @@ public class TitaniumWrapper implements IConverterJRDF {
 				
 				that format is valid only for ngsi data-type NOT for XSD
 				*/
-				if(object.contains("\"")) {
-					object="\"null\""; //DOUBLE QUOTE NOT ALLOWED FOR NOW
-				}else {
+				
+				
+//				if(containsDoubleQuotesEncoding(object)) {
+//					object=decodeDoubleQuotes(object);
+//				}else {
 					String dataType= literal.getDatatype();
 					object="\""+object+"\"";
 					if(dataType!=null ){//&& dataType.startsWith(SPARQLConstant.NGSI_PREFIX_START)){
 						object+="^^<"+dataType+">";
 					}
-				}
+//				}
 				
 				
 			}else if(bind.getRDFTerm(o).isBNode()) {
@@ -150,7 +154,12 @@ public class TitaniumWrapper implements IConverterJRDF {
 			for(String triple :nquads.get(key)) {
 				rdf_triples+=triple+".\n";
 			}	
-			ris.add(nQuadsToJson(rdf_triples));
+			String jsonStr = nQuadsToJson(rdf_triples);
+			if(containsDoubleQuotesEncoding(jsonStr)) {
+				ris.add(decodeDoubleQuotes(jsonStr));
+			}else {
+				ris.add( nQuadsToJson(rdf_triples));
+			}
 		}
 		return ris;
 	}
@@ -201,31 +210,18 @@ public class TitaniumWrapper implements IConverterJRDF {
 			String p= "<"+iterable_element.getPredicate().getValue()+">";
 			String o =  iterable_element.getObject().getValue();
 			if(iterable_element.getObject().isLiteral()) {
-
-				o = "\""+o+"\""; //"'"+o+"'";
+				if(o.contains("\"")){
+					o = "\""+encodeDoubleQuotes(o)+"\""; 
+					//no data-type, so string as default
+				}else {
+					o = "\""+o+"\""; 
+					//For literals with XSD  and ngsi data-type, 
+					//the type will be preserved
+					 String dataType = ((RdfLiteral)iterable_element.getObject()).getDatatype();
+					 o+="^^<"+dataType+">";
+				}
 				
-				//For literals with XSD  and ngsi data-type, 
-				//the type will be preserved
-				 String dataType = ((RdfLiteral)iterable_element.getObject()).getDatatype();
-				 o+="^^<"+dataType+">";
-//				 String clennedDataType="";
-//				 if(dataType.startsWith(SPARQLConstant.XSD_PREFIX_START)) {
-//					 clennedDataType = dataType.substring(SPARQLConstant.XSD_PREFIX_START.length());
-//					 o+="^^"+SPARQLConstant.XSD_PREFIX_SUB+clennedDataType+ " ";
-//				 }else if(dataType.startsWith(SPARQLConstant.NGSI_PREFIX_START)){
-//					 clennedDataType = dataType.substring(SPARQLConstant.NGSI_PREFIX_START.length());
-//					 o+="^^"+SPARQLConstant.NGSI_PREFIX_SUB+clennedDataType+ " ";
-//				 }
-				 
-				 //DEPRECATEd
-//				 else if(dataType.compareTo(NGSIConstants.NGSI_LD_DATE_TIME)==0) {
-//					 clennedDataType = "xsd:dateTime";
-//				 }else if(dataType.compareTo(NGSIConstants.NGSI_LD_DATE)==0) {
-//					 clennedDataType = "xsd:date";
-//				 }else if(dataType.compareTo(NGSIConstants.NGSI_LD_TIME)==0) {
-//					 clennedDataType = "xsd:time";
-//				 }
-				
+			
 			}else if(!iterable_element.getObject().isBlankNode()) {
 				o = "<"+o+">";
 			}
@@ -238,27 +234,63 @@ public class TitaniumWrapper implements IConverterJRDF {
 		this._frame=frame;
 	}
 	public void setFrame(String type, String context) {
-		if(type!=null 
-				&& type.trim().length()>0 
-				&& context!=null 
-				&& context.trim().length()>0
-		) {
-			String cleannedType = type;
-			if(type.contains("#")) {
-				cleannedType=type.split("#")[1];
+		if(type!=null && type.trim().length()>0) {
+			if(context!=null && context.trim().length()>0) {
+				String cleannedType = type;
+				if(type.contains("#")) {
+					cleannedType=type.split("#")[1];
+				}
+				this._frame=
+						"{ \"@context\":" 
+								+context +",\n"
+						+"\"@type\":\""+
+								cleannedType
+						+"\"}";
+			}else {
+				String cleannedType = type;
+				if(type.contains("#")) {
+					cleannedType=type.split("#")[1];
+				}
+				this._frame=
+						"{\"@type\":\""+
+								cleannedType
+						+"\"}";
 			}
-			this._frame=
-					"{ \"@context\":" 
-							+context +",\n"
-					+"\"@type\":\""+
-							cleannedType
-					+"\"}";
+			
 		}else {
 			this._frame=null;
 		}
 		
 
 		
+	}
+	
+	
+	/*
+	 * Resolving Titanium double quotes problem
+	 */
+	protected String encodingFlag = "DoubleQuotesEncoding_";
+	protected String encodeDoubleQuotes(String str) {
+//		return str.replace("\"", "\\\"");
+		byte[] bytesEncoded = Base64.encodeBase64(str.getBytes());
+		return encodingFlag+ new String(bytesEncoded);
+	}
+	protected String decodeDoubleQuotes(String str) {
+		String temp  ="";
+		String sub[] =str.split("\""+encodingFlag);
+		temp+=sub[0];
+		String sub2[] = sub[1].split("\"",2);
+		byte[] valueDecoded = Base64.decodeBase64(sub2[0]);
+		if(containsDoubleQuotesEncoding(sub2[1])) {
+			temp+="\""+new String(valueDecoded).replace("\"", "\\\"")+ "\""+decodeDoubleQuotes(sub2[1]);
+		}else {
+			temp+="\""+new String(valueDecoded).replace("\"", "\\\"")+"\""+ sub2[1];
+		}
+		return temp;
+//		return new String(Base64.decodeBase64(str.substring(encodingFlag.length())));
+	}
+	protected boolean containsDoubleQuotesEncoding(String str) {
+		return str.contains(encodingFlag);
 	}
 	
 	 

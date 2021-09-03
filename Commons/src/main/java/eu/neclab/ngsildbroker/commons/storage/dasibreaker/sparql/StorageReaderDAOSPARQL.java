@@ -35,10 +35,12 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	private final static Logger logger = LogManager.getLogger(StorageReaderDAOSPARQL.class);
 	
 	private SepaGateway sepa;
+	private int seed =2;
 	
 	public void init() {
 		try {
 			sepa= new SepaGateway();
+			 seed =2;
 		} catch (SEPASecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -224,9 +226,8 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 		IParam jsonb_params = new StringEQParam(true,0);
 		//Clauses in AND
 		IParam ngsi_params = new StringEQParam(true,1);
-		
 		ReflectionUtils.doWithFields(qp.getClass(), field -> {
-			int seed = 2;
+
 //			String dbColumn, sqlOperator;
 //			String sqlWhereProperty = "";
 
@@ -359,6 +360,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 				tableDataColumn = DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS; // default request
 			}
 		}
+		
+//		if(tableDataColumn.compareTo(DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS)==0) {
+//			tableDataColumn=
+//			
+//		}
 		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY)
 				.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
 
