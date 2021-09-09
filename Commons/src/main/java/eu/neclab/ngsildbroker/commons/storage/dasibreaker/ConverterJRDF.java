@@ -348,4 +348,9 @@ public class ConverterJRDF implements IConverterJRDF {
 		}
 		
 	}
+	@Override
+	public List<String> RDFtoJson(List<Bindings> binings, String filterBy) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

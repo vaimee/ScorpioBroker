@@ -8,4 +8,5 @@ public interface IConverterJRDF {
 
 	String JSONtoRDF(String json) throws Exception ;
 	List<String> RDFtoJson(List<Bindings> binings) throws Exception ;
+	List<String> RDFtoJson(List<Bindings> binings,String filterBy) throws Exception ;
 }

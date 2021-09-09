@@ -3,20 +3,20 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringEQParam implements IParam {
+public class HasAttrsParam implements IParam {
 
 	
 	protected List<String> predicates;
-	protected List<String> values;
+//	protected List<String> values; // no need
 
 	protected List<IParam> params; 
 	protected String operator;
 	
 	protected int _seed=0;
 	
-	public StringEQParam(boolean and,int seed){
+	public HasAttrsParam(boolean and,int seed){
 		predicates= new ArrayList<String>();
-		values = new ArrayList<String>();
+//		values = new ArrayList<String>();
 		params = new ArrayList<IParam>();
 		if(and) {
 			operator = " && ";
@@ -26,9 +26,13 @@ public class StringEQParam implements IParam {
 		_seed=seed;
 	}
 	
+	public void addParam(String predicate) {
+		predicates.add(predicate);
+	}
+	
 	public void addParam(String predicate, String value) {
 		predicates.add(predicate);
-		values.add(value);
+		//values.add(value); //no need
 	}
 	
 	@Override
@@ -40,15 +44,6 @@ public class StringEQParam implements IParam {
 	@Override
 	public String getClause() {
 		String clause ="";
-		for (int x =0 ;x<predicates.size();x++) {
-			clause+=generateClauseAt(x);
-			if(x<predicates.size()-1) {
-				clause+=operator;
-			}
-		}
-		if(params.size()>0 && clause.length()>0) {
-			clause+=operator;
-		}
 		for (int x =0; x<params.size();x++) {
 			if(params.get(x).needBrackets()) {
 				clause+="("+params.get(x).getClause()+")";
@@ -63,21 +58,15 @@ public class StringEQParam implements IParam {
 	}
 
 	public boolean needFilter() {
-		for ( IParam iParam : params) {
-			if(iParam.needFilter()) {
-				return true;
-			}
-		}
-		return predicates.size()>0;
+		return params.size()>0;
 	}
 	protected String generateClauseAt(int x) {
-		return 	"str(?o"+_seed+"_"+x+")=\""+values.get(x)+"\" ";
+		return 	"";
 	}
 	
 	@Override
 	public boolean needBrackets() {
-		// TODO Auto-generated method stub
-		return predicates.size()>1;
+		return false;
 	}
 	
 	@Override
@@ -95,15 +84,16 @@ public class StringEQParam implements IParam {
 		}
 		return vars;
 	}
+	
 	@Override
 	public String getVars(String s) {
 		String vars ="";
 		for (int x =0 ;x<predicates.size();x++) {
 			String varID = _seed+"_"+x;
-			vars+="?"+s+" " + predicates.get(x)+ " ?o"+varID+".\n";
+			vars+="?s"+varID+" " + predicates.get(x)+ " ?o"+varID+".\n";
 		}
 		for (IParam param : params) {
-			vars+=param.getVars(s);
+			vars+=param.getVars("?"+s);
 		}
 		if(vars.length()==0) {
 			return "?sANY ?pANY ?oANY";

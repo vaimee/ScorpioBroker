@@ -33,9 +33,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 import it.unibo.arces.wot.sepa.commons.sparql.RDFTermLiteral;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 public class TitaniumWrapper implements IConverterJRDF {
 	private static HashMap<String,Document> contextMap = new HashMap<String,Document> ();
@@ -52,11 +54,19 @@ public class TitaniumWrapper implements IConverterJRDF {
 	}
 	
 	public List<String> RDFtoJson(List<Bindings> binings) throws Exception {
-		return RDFtoJson(binings,"s","p","o","e");
+		return RDFtoJson(binings,null,"s","p","o","e");
 	}
-
-	
+	@Override
+	public List<String> RDFtoJson(List<Bindings> binings, String filterBy) throws Exception {
+		return RDFtoJson(binings,filterBy,"s","p","o","e");
+	}
 	public List<String> RDFtoJson(List<Bindings> binings,String s,String p,String o, String e) throws Exception {
+		return RDFtoJson(binings,null,"s","p","o","e");
+	}
+	
+
+
+	public List<String> RDFtoJson(List<Bindings> binings,String filterBy,String s,String p,String o, String e) throws Exception {
 		List<String> ris = new ArrayList<String>();
 		HashMap<String,List<String>> nquads = new HashMap<String,List<String>>();
 		HashMap<String,String> bnodes = new HashMap<String,String>();
@@ -154,18 +164,18 @@ public class TitaniumWrapper implements IConverterJRDF {
 			for(String triple :nquads.get(key)) {
 				rdf_triples+=triple+".\n";
 			}	
-			String jsonStr = nQuadsToJson(rdf_triples);
+			String jsonStr = nQuadsToJson(rdf_triples,filterBy);
 			if(containsDoubleQuotesEncoding(jsonStr)) {
 				ris.add(decodeDoubleQuotes(jsonStr));
 			}else {
-				ris.add( nQuadsToJson(rdf_triples));
+				ris.add( nQuadsToJson(rdf_triples,filterBy));
 			}
 		}
 		return ris;
 	}
 	
 	
-	public String nQuadsToJson(String nQuads) throws JsonLdError {
+	public String nQuadsToJson(String nQuads,String filterBy) throws JsonLdError {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
 		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
@@ -179,13 +189,70 @@ public class TitaniumWrapper implements IConverterJRDF {
 			//if there is the frame, we will frame the jsonld
 			Reader targetReaderFrame = new StringReader(_frame);
 			Document frame = JsonDocument.of(targetReaderFrame);
-			return JsonLd.frame(notFramed, frame).get().toString();
+			JsonObject jo = JsonLd.frame(notFramed, frame).get();
+			if(filterBy==null) {
+				return jo.toString();
+			}else {
+				return filter(jo,filterBy).toString();
+			}
 		}else {
 			//convert to json-ld and didn't frame it
-			return JsonLd.fromRdf(doc).options(options).get().toString();
+			JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
+			if(filterBy==null) {
+				return ja.toString();
+			}else {
+				JsonArrayBuilder ris =  Json.createArrayBuilder();
+				for (int x = 0;x<ja.size();x++) {
+					ris.add(filter(ja.getJsonObject(x),filterBy));
+				}
+				return ris.toString();
+			}
 		}
 	}
 
+	protected JsonObject filter(JsonObject obj,String filterBy) {
+		JsonObjectBuilder ris =  Json.createObjectBuilder();
+		boolean idDone = false;
+		boolean typeDone = false;
+		if(filterBy.indexOf(",")>-1) {
+			for (String  attr : filterBy.split(",")) {
+				if(attr.compareTo("@id")==0) {
+					idDone=true;
+				}else if (attr.compareTo("@type")==0){
+					typeDone=true;
+				}
+				JsonValue jv = obj.get(attr);
+				if(jv.getValueType()==ValueType.OBJECT ) {
+					ris.add(attr,jv.asJsonObject());
+				}else if (jv.getValueType()==ValueType.ARRAY) {
+					ris.add(attr,jv.asJsonArray());
+				}else {
+					ris.add(attr,jv);
+				}
+			}
+		}else {
+			if(filterBy.compareTo("@id")==0) {
+				idDone=true;
+			}else if (filterBy.compareTo("@type")==0){
+				typeDone=true;
+			}
+			JsonValue jv = obj.get(filterBy);
+			if(jv.getValueType()==ValueType.OBJECT ) {
+				ris.add(filterBy,jv.asJsonObject());
+			}else if (jv.getValueType()==ValueType.ARRAY) {
+				ris.add(filterBy,jv.asJsonArray());
+			}else {
+				ris.add(filterBy,jv);
+			}
+		}
+		if(!idDone) {
+			ris.add("@id",obj.get("@id"));
+		}
+		if(!typeDone) {
+			ris.add("@type",obj.get("@type"));
+		}
+		return ris.build();
+	}
 	
 	public List<String> compact(List<String> jsonLDs,String contexts) throws JsonLdError{
 		List<String> ris = new ArrayList<String>();
@@ -292,6 +359,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 	protected boolean containsDoubleQuotesEncoding(String str) {
 		return str.contains(encodingFlag);
 	}
-	
+
+
 	 
 }

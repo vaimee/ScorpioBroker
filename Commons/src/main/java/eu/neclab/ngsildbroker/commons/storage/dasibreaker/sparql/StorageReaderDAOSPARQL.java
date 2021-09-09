@@ -21,6 +21,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryParamsWithContext
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.HasAttrsParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.IParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.SPARQLGeneratorQuery;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQParam;
@@ -73,6 +74,8 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 				BindingsResults binds=((QueryResponse)sepa.executeQuery(sparql)).getBindingsResults();
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
+				//that if need to be removed, TitaniumWrapperBN too
+				//and setFrame need to be added to its interface
 				if(converter instanceof TitaniumWrapper && qp instanceof QueryParamsWithContext) {
 					String context = ((QueryParamsWithContext)qp).getContext();
 					String type = qp.getType();
@@ -84,7 +87,14 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 					}
 					((TitaniumWrapper)converter).setFrame(type, context);
 				}
-				List<String> list=converter.RDFtoJson(binds.getBindings());
+				List<String> list;
+				if(qp.getAttrs()!=null &&  qp.getAttrs().length()>0) {
+					// in that case (QUERY_PARAMETER_ATTRS)
+					// we need filter jsons
+					list=converter.RDFtoJson(binds.getBindings(),qp.getAttrs());
+				}else {
+					list=converter.RDFtoJson(binds.getBindings());
+				}
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
@@ -226,6 +236,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 		IParam jsonb_params = new StringEQParam(true,0);
 		//Clauses in AND
 		IParam ngsi_params = new StringEQParam(true,1);
+		//context
+		String context=((QueryParamsWithContext)qp).getContext();
+		if(context==null || context.length()<1) {
+			context  = "https://uri.etsi.org/ngsi-ld/default-context/";
+		}
 		ReflectionUtils.doWithFields(qp.getClass(), field -> {
 
 //			String dbColumn, sqlOperator;
@@ -257,8 +272,8 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 							queryValue);
 					ngsi_params.addParam(paramIdPatter);
 					break;
-				case NGSIConstants.QUERY_PARAMETER_TYPE://NOT TESTED YET
-				case NGSIConstants.QUERY_PARAMETER_ID://NOT TESTED YET
+				case NGSIConstants.QUERY_PARAMETER_TYPE:
+				case NGSIConstants.QUERY_PARAMETER_ID:
 					IParam paramTypeOrID;
 					String predicate;
 					if(queryParameter.compareTo(NGSIConstants.QUERY_PARAMETER_TYPE)==0) {
@@ -297,19 +312,20 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //							clauses.add(c);
 //						}
 //					}
-//					break;
-				case NGSIConstants.QUERY_PARAMETER_ATTRS://NOT TESTED YET
-//---------------------WIP 
+					break;
+				case NGSIConstants.QUERY_PARAMETER_ATTRS:
 					//need inspect the queryValue structure
 					//hipotesis 01 (just one level of param)
 					//{ "paramName" : "paramValue", "anotherParamName": "paramValue" }
 					//hipotesis 02 more level of param
 					//{ "paramName" : { "secondLevel": "paramValue"}, "anotherParamName": "paramValue" }
 					
+					//example 
+//					  const queryParams = {
+//					            type: 'T_Query',
+//					            attrs: 'P100'
+//					        };
 					
-//					jsonb_params.add()
-					
-//					dbColumn = "data";
 //					sqlOperator = "?"; // ? is JSONB operator to check whether an object contains a given key
 //					if (queryValue.indexOf(",") == -1) {
 //						sqlWhereProperty = dbColumn + " " + sqlOperator + "'" + queryValue + "'";
@@ -317,8 +333,21 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //						sqlWhereProperty = "("+dbColumn + " " + sqlOperator + " '"
 //								+ queryValue.replace(",", "' OR " + dbColumn + " " + sqlOperator + "'") + "')";
 //					}
-//					break;
-//				case NGSIConstants.QUERY_PARAMETER_GEOREL:
+
+					
+					//working on h01
+					HasAttrsParam hap = new HasAttrsParam(true,seed);
+					if (queryValue.indexOf(",") == -1) {
+						hap.addParam("<"+queryValue+">");
+					} else {
+						for (String qv : queryValue.split(",")) {
+							hap.addParam("<"+qv+">");
+						}
+					}
+					jsonb_params.addParam(hap);
+					seed++;
+					break;
+				case NGSIConstants.QUERY_PARAMETER_GEOREL:
 //					if (fieldValue instanceof GeoqueryRel) {
 //						GeoqueryRel gqr = (GeoqueryRel) fieldValue;
 //						logger.trace("Georel value " + gqr.getGeorelOp());
@@ -329,10 +358,10 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //							e.printStackTrace();
 //						}
 //					}
-//					break;
-//				case NGSIConstants.QUERY_PARAMETER_QUERY:
+					break;
+				case NGSIConstants.QUERY_PARAMETER_QUERY:
 //					sqlWhereProperty = queryValue;
-//					break;
+					break;
 				}
 //				fullSqlWhereProperty.append(sqlWhereProperty);
 //				if (!sqlWhereProperty.isEmpty())
