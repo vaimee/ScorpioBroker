@@ -43,7 +43,11 @@ public class SPARQLConverter {
 		boolean needDataGraph=Arrays.asList(SPARQLConstant.JSON_COLUMNS).contains(column);
 		InternalTriple it ;
 		if(needDataGraph) {
-			v=SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+key;
+			String filteredKey = key;
+			if(key.startsWith("http://")) {
+				filteredKey=key.substring(7);
+			}
+			v=SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+column+"/"+filteredKey;
 			it= new InternalTriple(
 					generateUri(key),
 					generateUri(column),
@@ -62,7 +66,11 @@ public class SPARQLConverter {
 	}
 	
 	protected String getGraph(String key) {
-		return SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+key;
+		String filteredKey = key;
+		if(key.startsWith("http://")) {
+			filteredKey=key.substring(7);
+		}
+		return SPARQLConstant.NGSI_GRAPH_PREFIX+_table+"/"+filteredKey;
 	}
 	//-------------------------------------------------------------------------UPDATE
 	protected String genereteDeleteWhereOf(int index,String key) {

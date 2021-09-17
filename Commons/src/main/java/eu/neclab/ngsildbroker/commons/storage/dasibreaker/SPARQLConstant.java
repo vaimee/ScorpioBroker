@@ -16,7 +16,7 @@ public class SPARQLConstant {
 	public static final String SPARQL_COLUMN = "ngsitosparql";
 
 	public static final String HAS_DATA = "hasData";
-	public static final String NGSI_GRAPH_PREFIX = "http://ngsi/";
+	public static final String NGSI_GRAPH_PREFIX = "http://localhost:3000/ngsi/";//"http://ngsi/";
 	public static final String BLANK_NODE =NGSI_GRAPH_PREFIX+"blanknode/";
 	
 	public static final String RDF_PREFIX ="PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
