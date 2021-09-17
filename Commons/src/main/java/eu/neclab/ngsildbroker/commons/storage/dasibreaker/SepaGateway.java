@@ -21,7 +21,7 @@ public class SepaGateway {
 	protected QueryHTTPMethod httpMethod_q = QueryHTTPMethod.POST;
 	protected String host="localhost"; //default--> sepa and then take it from environment vars
 	protected int port=8000;
-	//private String authorization;//not implemented yet
+//	private String authorization;//not implemented yet
 	protected String scheme = "http";
 	protected int timeOut =60000;
 	
@@ -68,7 +68,7 @@ public class SepaGateway {
 					prefix_sparql,
 					new HashSet<String>(),
 					new HashSet<String>(),
-					null,
+					null,//---------------
 					timeOut,
 					1);
 			
