@@ -34,6 +34,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 	private SepaGateway sepa;
 	
 	public StorageWriterDAOSPARQL() {
+		logger.info("\n DAO setted on SPARQL");
 		try {
 			this.sepa= new SepaGateway();
 		} catch (SEPASecurityException e) {
