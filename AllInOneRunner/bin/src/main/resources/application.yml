@@ -290,4 +290,3 @@ security:
     # for keycloak configure
       userInfoUri: http://172.30.64.120:3000/user
 
-
