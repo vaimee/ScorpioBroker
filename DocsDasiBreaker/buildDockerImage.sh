@@ -1,0 +1,3 @@
+cd ..
+sudo mvn clean package -DskipTests
+sudo docker build -f dockerfile4maven --build-arg BUILD_DIR_SCS="SpringCloudModules/config-server" --build-arg BUILD_DIR_SES="SpringCloudModules/eureka" --build-arg BUILD_DIR_SGW="SpringCloudModules/gateway" --build-arg BUILD_DIR_SCR="AllInOneRunner" --build-arg JAR_FILE_BUILD_SCS="config-server-1.0.0-SNAPSHOT.jar" --build-arg JAR_FILE_BUILD_SES="eureka-server-1.0.0-SNAPSHOT.jar" --build-arg JAR_FILE_BUILD_SGW="gateway-1.0.0-SNAPSHOT.jar" --build-arg JAR_FILE_BUILD_SCR="AllInOneRunner-1.0.0-SNAPSHOT.jar" --build-arg JAR_FILE_RUN_SCS="config-serverjar" --build-arg JAR_FILE_RUN_SES="eureka-server.jar" --build-arg JAR_FILE_RUN_SGW="gateway.jar" --build-arg JAR_FILE_RUN_SCR="AllInOneRunner.jar" --no-cache -t vaimee/scorpio:1.0.0_$1 .

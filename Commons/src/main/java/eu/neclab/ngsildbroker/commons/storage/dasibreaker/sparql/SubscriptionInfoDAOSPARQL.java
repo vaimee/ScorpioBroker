@@ -10,6 +10,12 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ISubscriptionInfoDAO;
 
 @Repository
 public class SubscriptionInfoDAOSPARQL extends StorageReaderDAOSPARQL  implements ISubscriptionInfoDAO{
+	
+	public SubscriptionInfoDAOSPARQL() {
+		super();
+		super.init();
+	}
+	
 	public Set<String> getAllIds() {
 		return null;
 	}

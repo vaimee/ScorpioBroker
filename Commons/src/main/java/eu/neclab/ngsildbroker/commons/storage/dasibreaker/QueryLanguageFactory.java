@@ -34,7 +34,6 @@ enum QueryLanguage {
 public class QueryLanguageFactory {
 	
 	private final static QueryLanguage entityHandlerType = QueryLanguage.SPARQL;
-	private final static boolean useTitanium = true;
 
 	@Autowired
 	private  ApplicationContext context;
@@ -49,12 +48,7 @@ public class QueryLanguageFactory {
 	}
 
 	public static IConverterJRDF getConverterJRDF() {
-		if(useTitanium) {
-			return new TitaniumWrapper();
-//			return new TitaniumWrapperManualBN();
-		}else {
-			return new ConverterJRDF();
-		}
+		return new TitaniumWrapper();
 	}
 	//----------------------------------------------------------------------------------------------------StorageReaderDAO
 	public  IStorageReaderDao getStorageReaderDao() {

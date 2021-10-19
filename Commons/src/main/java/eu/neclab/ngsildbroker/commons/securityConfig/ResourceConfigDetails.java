@@ -6,8 +6,30 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @Configuration
 public class ResourceConfigDetails {
-	@Autowired
-	SecurityConfig securityConfig;
+	
+	
+//	SecurityConfig lines are commented for error:
+	
+/*
+	***************************
+	APPLICATION FAILED TO START
+	***************************
+
+	Description:
+
+	Field securityConfig in eu.neclab.ngsildbroker.commons.securityConfig.ResourceConfigDetails required a bean of type 'eu.neclab.ngsildbroker.commons.securityConfig.SecurityConfig' that could not be found.
+
+	The injection point has the following annotations:
+		- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+	Action:
+
+	Consider defining a bean of type 'eu.neclab.ngsildbroker.commons.securityConfig.SecurityConfig' in your configuration.
+*/
+	
+//	@Autowired
+//	SecurityConfig securityConfig;
 
 	public void ngbSecurityConfig(HttpSecurity http) throws Exception {
 //		if (securityConfig.getSecEnabled().equalsIgnoreCase("true")) {

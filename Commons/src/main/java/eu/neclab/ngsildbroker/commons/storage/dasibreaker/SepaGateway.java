@@ -2,7 +2,6 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeSet;
 
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.protocol.SPARQL11Properties.QueryHTTPMethod;
@@ -14,6 +13,14 @@ import it.unibo.arces.wot.sepa.commons.response.Response;
 
 public class SepaGateway {
 
+	
+	private static SepaGateway instance=null;
+	public static SepaGateway getInstance() throws SEPASecurityException {
+		if(instance==null) {
+			instance=new SepaGateway();
+		}
+		return instance;
+	}
 	
 	
 	protected SPARQL11Protocol client=null;

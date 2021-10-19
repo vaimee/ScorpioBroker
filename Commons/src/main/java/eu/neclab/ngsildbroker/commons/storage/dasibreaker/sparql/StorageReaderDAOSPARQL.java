@@ -41,7 +41,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	public void init() {
 		try {
 			sepa= new SepaGateway();
-			 seed =2;
+			seed =2;
 		} catch (SEPASecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -347,7 +347,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 					jsonb_params.addParam(hap);
 					seed++;
 					break;
-				case NGSIConstants.QUERY_PARAMETER_GEOREL:
+				case NGSIConstants.QUERY_PARAMETER_GEOREL: //-----------------------WIP
 //					if (fieldValue instanceof GeoqueryRel) {
 //						GeoqueryRel gqr = (GeoqueryRel) fieldValue;
 //						logger.trace("Georel value " + gqr.getGeorelOp());
@@ -358,9 +358,19 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //							e.printStackTrace();
 //						}
 //					}
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_GEOREL}-> fieldValue:" + fieldValue);
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET");
 					break;
-				case NGSIConstants.QUERY_PARAMETER_QUERY:
+				case NGSIConstants.QUERY_PARAMETER_QUERY: //-----------------------WIP
 //					sqlWhereProperty = queryValue;
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_QUERY}-> queryValue:" + queryValue);
+					logger.trace("NOT IMPLEMENTED YET");
+					logger.trace("NOT IMPLEMENTED YET");
 					break;
 				}
 //				fullSqlWhereProperty.append(sqlWhereProperty);
@@ -371,16 +381,16 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 		String tableDataColumn;
 		if (qp.getKeyValues()) {
 			if (qp.getIncludeSysAttrs()) {
-				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
+				tableDataColumn= DBConstants.DBCOLUMN_KVDATA;
 			} else { // without sysattrs at root level (entity createdat/modifiedat) 
-				//------WIP
-				//------WIP
-				//------WIP
-				//------WIP
-//				tableDataColumn = DBConstants.DBCOLUMN_KVDATA + " - '" + NGSIConstants.NGSI_LD_CREATED_AT + "' - '"
-//						+ NGSIConstants.NGSI_LD_MODIFIED_AT + "'";
-				System.out.println("NOT IMPLEMENTED YET:  without sysattrs at root level (entity createdat/modifiedat)");
-				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;
+				//tableDataColumn= new String[]{DBConstants.DBCOLUMN_KVDATA,NGSIConstants.NGSI_LD_CREATED_AT,NGSIConstants.NGSI_LD_MODIFIED_AT};
+				/*-------------WIP
+				 * HERE NEED MODIFY generateSparqlGetByAttr() and add 
+				 * NGSIConstants.NGSI_LD_CREATED_AT,NGSIConstants.NGSI_LD_MODIFIED_AT
+				 * as SPARQL QUERY UNION, with the goal to add that 2 json-ld values 
+				 * to the original json-ld contained in DBConstants.DBCOLUMN_KVDATA linked graph
+				 */
+				tableDataColumn = DBConstants.DBCOLUMN_KVDATA; 
 			}
 		} else {
 			if (qp.getIncludeSysAttrs()) {
@@ -390,14 +400,15 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 			}
 		}
 		
-//		if(tableDataColumn.compareTo(DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS)==0) {
-//			tableDataColumn=
-//			
-//		}
 		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY)
-				.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
+					.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
 
-		//-------------------------------------------------WIP: NEED LOOK to the following code (not implemented in SAPRQL YET)
+		/*---------------The following code is replaced by the filter on the json in case of query with Attrs
+		 * FOR THE FUTURE: 
+		 * is possible to replace the actual "general" sparql query followed by the Attrs filter
+		 * with a specific qsparql query that have an additional FILTER clause to filter the triples 
+		 * corresponding to the json fields of Attrs (warning: need iterate on blank nodes) 
+		 */
 //		String dataColumn = tableDataColumn;
 //		if (qp.getAttrs() != null) {
 //			String expandedAttributeList = "'" + NGSIConstants.JSON_LD_ID + "','" + NGSIConstants.JSON_LD_TYPE + "','"
@@ -409,6 +420,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //			dataColumn = "(SELECT jsonb_object_agg(key, value) FROM jsonb_each(" + tableDataColumn + ") WHERE key IN ( "
 //					+ expandedAttributeList + "))";
 //		}
+		
+		//-----------------------------------WIP: NEED LOOK to the following code (not implemented in SAPRQL YET)
+		
 //		String sqlQuery = "SELECT " + dataColumn + " as data FROM " + DBConstants.DBTABLE_ENTITY + " ";
 //		if (fullSqlWhereProperty.length() > 0) {
 //			sqlQuery += "WHERE " + fullSqlWhereProperty.toString() + " 1=1 ";
