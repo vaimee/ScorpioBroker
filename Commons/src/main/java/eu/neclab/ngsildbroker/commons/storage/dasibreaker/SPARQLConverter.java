@@ -24,8 +24,7 @@ import jakarta.json.JsonValue;
 //DEPRECATED
 public class SPARQLConverter {
 
-	
-	
+
 	
 	protected String _table;
 	private ArrayList<InternalTriple> _triples;
@@ -93,6 +92,7 @@ public class SPARQLConverter {
 							+"}\n";
 		return sparql;
 	}
+	
 	public String generateDeleteAllWhere(String key){//<-------------------------NEED TEST IT
 		//testing it
 //		DELETE WHERE {
@@ -115,6 +115,7 @@ public class SPARQLConverter {
 		sparql+="}\n"+sparql_2+"};\n";
 		return sparql;
 	}
+	
 //	public String generateDeleteAllWhere(String key,int basedOnIndex){
 //		//DELETE WHERE{ GRAPH ?g {?s ?p ?o} GRAPH <g> {<s5><p5><o5>}}
 //		String sparql = "DELETE WHERE{ GRAPH ?g {?s ?p ?o}\n";
@@ -232,7 +233,12 @@ public class SPARQLConverter {
 
 
 	public static String generateUri(String scorpio_content) {
-		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content+">";
+		//filter for avoid double http:// inside uri
+		if(scorpio_content.startsWith("http://")){
+			return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content.substring(7)+">";
+		}else {
+			return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content+">";
+		}
 	}
 
 

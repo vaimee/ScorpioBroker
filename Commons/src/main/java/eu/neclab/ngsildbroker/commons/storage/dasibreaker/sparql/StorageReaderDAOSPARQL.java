@@ -11,6 +11,7 @@ import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
+import eu.neclab.ngsildbroker.commons.datatypes.QueryTerm;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
@@ -56,6 +57,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	//---------------------------------WIP
 	//---------------------------------WIP
 	public List<String> query(QueryParams qp) {
+		long startTime = System.nanoTime();
 		/*
 		 * the piggyBackType var allow us to take the type of the requested entity 
 		 * in the same query used to get the entity
@@ -72,7 +74,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 				String sparql = translateNgsildQueryToSql(qp);
 				logger.info("NGSI-LD to SPARQL: " + sparql);
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
+				
+				long startTime2 = System.nanoTime();
 				BindingsResults binds=((QueryResponse)sepa.executeQuery(sparql)).getBindingsResults();
+				System.out.println("Real Query time: "  +(System.nanoTime() - startTime2)/1000000 +"ms");
+				
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
 				//that if need to be removed, TitaniumWrapperBN too
 				//and setFrame need to be added to its interface
@@ -104,6 +110,10 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();
 //					ris=new ArrayList<String>(list);
 					StorageReaderDAO.countHeader +=list.size();
+
+					long endTime = System.nanoTime();
+					long duration = (endTime - startTime)/1000000; 
+					System.out.println("TOT query time: "  +duration +"ms");
 					return list;
 				}
 			}
@@ -358,19 +368,20 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //							e.printStackTrace();
 //						}
 //					}
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_GEOREL}-> fieldValue:" + fieldValue);
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_GEOREL}-> fieldValue:" + fieldValue);
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
 					break;
 				case NGSIConstants.QUERY_PARAMETER_QUERY: //-----------------------WIP
+					QueryTerm ngsiQuery = (QueryTerm)fieldValue;
 //					sqlWhereProperty = queryValue;
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_QUERY}-> queryValue:" + queryValue);
-					logger.trace("NOT IMPLEMENTED YET");
-					logger.trace("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_QUERY}-> queryValue:" + queryValue);
+					logger.info("NOT IMPLEMENTED YET");
+					logger.info("NOT IMPLEMENTED YET");
 					break;
 				}
 //				fullSqlWhereProperty.append(sqlWhereProperty);
@@ -379,6 +390,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 			}
 		});
 		String tableDataColumn;
+		//String agregateColumn[];
 		if (qp.getKeyValues()) {
 			if (qp.getIncludeSysAttrs()) {
 				tableDataColumn= DBConstants.DBCOLUMN_KVDATA;
@@ -390,7 +402,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 				 * as SPARQL QUERY UNION, with the goal to add that 2 json-ld values 
 				 * to the original json-ld contained in DBConstants.DBCOLUMN_KVDATA linked graph
 				 */
-				tableDataColumn = DBConstants.DBCOLUMN_KVDATA; 
+				//agregateColumn=new String[]{NGSIConstants.NGSI_LD_CREATED_AT,NGSIConstants.NGSI_LD_MODIFIED_AT};
+				/*
+				 * the TABLE DBCOLUMN_KVDATA hasn't NGSI_LD_CREATED_AT or  NGSI_LD_MODIFIED_AT column insert
+				 */
+				tableDataColumn = DBConstants.DBCOLUMN_KVDATA;//DBConstants.DBCOLUMN_KVDATA; 
 			}
 		} else {
 			if (qp.getIncludeSysAttrs()) {
@@ -400,8 +416,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 			}
 		}
 		
-		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY)
-					.generateSparqlGetByAttr(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
+	
 
 		/*---------------The following code is replaced by the filter on the json in case of query with Attrs
 		 * FOR THE FUTURE: 
@@ -421,14 +436,15 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //					+ expandedAttributeList + "))";
 //		}
 		
-		//-----------------------------------WIP: NEED LOOK to the following code (not implemented in SAPRQL YET)
-		
+	
 //		String sqlQuery = "SELECT " + dataColumn + " as data FROM " + DBConstants.DBTABLE_ENTITY + " ";
 //		if (fullSqlWhereProperty.length() > 0) {
 //			sqlQuery += "WHERE " + fullSqlWhereProperty.toString() + " 1=1 ";
 //		}
-//		int limit = qp.getLimit();
-//		int offSet = qp.getOffSet();
+		
+	
+		int limit =qp.getLimit();
+		int offSet =qp.getOffSet();
 //				
 //		if(limit == 0) {
 //            sqlQuery += "";           
@@ -439,9 +455,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 //		if(offSet != -1) {
 //			sqlQuery += "OFFSET " + offSet + " "; 
 //		}
-		// order by ?
-//		String sparql = gen.generateSelect(clauses); 
-//		return sparql;
+		
+		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY,offSet,limit)
+				.generateSparqlQuery(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
 	}
 
 	// TODO: SQL input sanitization

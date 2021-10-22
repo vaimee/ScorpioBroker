@@ -443,7 +443,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 			
 			//--------------WIP (this part need to be managed directly from "value" json-ld)
 			JsonObject jsonObject = new JsonParser().parse(value).getAsJsonObject();
-			String type = jsonObject.get("@type").isJsonNull()?"noTyep": jsonObject.get("@type").getAsString();
+			String type = jsonObject.get("@type").isJsonNull()?"noType": jsonObject.get("@type").getAsString();
 			jrs.addTriple(key, DBConstants.DBCOLUMN_TYPE, type);//this will be inferred from the json-ld
 			//so from the respective triple when we will found a RDF-JSONLD converter (titanium is not good)
 			try {

@@ -1,10 +1,19 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -29,7 +38,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 public class TitaniumWrapper implements IConverterJRDF {
-	private static HashMap<String,Document> contextMap = new HashMap<String,Document> ();
+	private static HashMap<String,String> contextMap = new HashMap<String,String> ();
 	private String _frame=null;
 	public TitaniumWrapper() {
 	}
@@ -60,6 +69,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 		HashMap<String,List<String>> nquads = new HashMap<String,List<String>>();
 		HashMap<String,String> bnodes = new HashMap<String,String>();
 		int bnodesIndex = 0;
+		long startTime1 = System.nanoTime();
 		for (Bindings bind : binings) {
 			String entityGraph = bind.getRDFTerm(e).getValue();
 			String subject = bind.getRDFTerm(s).getValue();
@@ -148,18 +158,25 @@ public class TitaniumWrapper implements IConverterJRDF {
 				nquads.put(entityGraph,triples);
 			}
 		}
+		System.out.println("RDFtoJson triple builder: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
+		startTime1 = System.nanoTime();
 		for (String key : nquads.keySet()) {
 			String rdf_triples= "";
 			for(String triple :nquads.get(key)) {
 				rdf_triples+=triple+".\n";
 			}	
+
+			long startTime = System.nanoTime();
 			String jsonStr = nQuadsToJson(rdf_triples,filterBy);
+			System.out.println("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+			
 			if(containsDoubleQuotesEncoding(jsonStr)) {
 				ris.add(decodeDoubleQuotes(jsonStr));
 			}else {
-				ris.add( nQuadsToJson(rdf_triples,filterBy));
+				ris.add(jsonStr);
 			}
 		}
+		System.out.println("RDFtoJson nQuadsToJson for["+nquads.keySet().size()+"]: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
 		return ris;
 	}
 	
@@ -178,7 +195,11 @@ public class TitaniumWrapper implements IConverterJRDF {
 			//if there is the frame, we will frame the jsonld
 			Reader targetReaderFrame = new StringReader(_frame);
 			Document frame = JsonDocument.of(targetReaderFrame);
+			
+			long startTime = System.nanoTime();
 			JsonObject jo = JsonLd.frame(notFramed, frame).get();
+			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+			
 			if(filterBy==null) {
 				return jo.toString();
 			}else {
@@ -199,6 +220,10 @@ public class TitaniumWrapper implements IConverterJRDF {
 		}
 	}
 
+//	public JsonObject frame() {
+//		return JsonLd.frame(notFramed, frame).get();
+//	}
+	
 	protected JsonObject filter(JsonObject obj,String filterBy) {
 		JsonObjectBuilder ris =  Json.createObjectBuilder();
 		boolean idDone = false;
@@ -292,25 +317,66 @@ public class TitaniumWrapper implements IConverterJRDF {
 	public void setFrame(String type, String context) {
 		if(type!=null && type.trim().length()>0) {
 			if(context!=null && context.trim().length()>0) {
+				String sanitizzeURL = context.trim();
+				if(sanitizzeURL.startsWith("\"")) {
+					sanitizzeURL=sanitizzeURL.substring(1,sanitizzeURL.length()-2);
+				}
+				String downloadedContext="";
+				if(contextMap.containsKey(sanitizzeURL)) {
+					downloadedContext=contextMap.get(sanitizzeURL);
+				}else {
+					//----------------------------------------------RESOLVING URI
+				    try {
+				    	HttpURLConnection connection = (HttpURLConnection) new URL(sanitizzeURL).openConnection();
+				    	InputStream inputStream = connection.getInputStream();
+				        downloadedContext = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+				        	        .lines()
+				        	        .collect(Collectors.joining("\n")).trim();
+				        inputStream.close();
+				        if(downloadedContext.startsWith("{")) {
+							downloadedContext=downloadedContext.substring(1,downloadedContext.length()-2);
+						}
+						contextMap.put(sanitizzeURL, downloadedContext);
+			             
+			        }
+			        catch (MalformedURLException e) {
+			            System.out.println("Malformed URL: " + e.getMessage());
+			        }
+			        catch (IOException e) {
+			            System.out.println("I/O Error: " + e.getMessage());
+			        }
+				}
+
 				String cleannedType = type;
 				if(type.contains("#")) {
 					cleannedType=type.split("#")[1];
 				}
-				this._frame=
-						"{ \"@context\":" 
-								+context +",\n"
-						+"\"@type\":\""+
-								cleannedType
-						+"\"}";
+				if(downloadedContext.length()==0) {
+					//if we can't resolve for some reason the context here
+					//we forward the URI resolve to Titanium 
+					//(warning: Titanium will not cache the context)
+					this._frame=
+							"{ \"@context\":" 
+									+context +",\n" //maybe is ok to use sanitizzeURL too?
+							+"\"@type\":\""+
+									cleannedType
+							+"\"}";
+				}else {
+					this._frame="{ " +downloadedContext +",\n"
+							+"\"@type\":\""+
+									cleannedType
+							+"\"}";
+					
+				}
+				
 			}else {
 				String cleannedType = type;
 				if(type.contains("#")) {
 					cleannedType=type.split("#")[1];
 				}
-				this._frame=
-						"{\"@type\":\""+
+				this._frame="{\"@type\":\""+
 								cleannedType
-						+"\"}";
+							+"\"}";
 			}
 			
 		}else {
