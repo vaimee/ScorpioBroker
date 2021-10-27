@@ -26,6 +26,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.HasAttrsP
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.IParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.SPARQLGeneratorQuery;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQParam;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.NGSIQueryParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringRegexParam;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
@@ -374,14 +375,11 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 					logger.info("NOT IMPLEMENTED YET");
 					logger.info("NOT IMPLEMENTED YET");
 					break;
-				case NGSIConstants.QUERY_PARAMETER_QUERY: //-----------------------WIP
-					QueryTerm ngsiQuery = (QueryTerm)fieldValue;
-//					sqlWhereProperty = queryValue;
-					logger.info("NOT IMPLEMENTED YET");
-					logger.info("NOT IMPLEMENTED YET");
-					logger.info("NOT IMPLEMENTED YET {NGSIConstants.QUERY_PARAMETER_QUERY}-> queryValue:" + queryValue);
-					logger.info("NOT IMPLEMENTED YET");
-					logger.info("NOT IMPLEMENTED YET");
+				case NGSIConstants.QUERY_PARAMETER_QUERY:
+					IParam ngsiQuery = resolveNGSIQuery(qp.getQueryTerm());
+					if(ngsiQuery!=null) {
+						jsonb_params.addParam(ngsiQuery);
+					}
 					break;
 				}
 //				fullSqlWhereProperty.append(sqlWhereProperty);
@@ -472,6 +470,17 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	public String translateNgsildGeoqueryToPostgisQuery(GeoqueryRel georel, String geometry, String coordinates,
 			String geoproperty) throws ResponseException {
 		return this.translateNgsildGeoqueryToPostgisQuery(georel, geometry, coordinates, geoproperty, null);
+	}
+	
+	
+	protected IParam resolveNGSIQuery(QueryTerm ngsiQuery) {
+		IParam ngsiParam=new NGSIQueryParam(seed, ngsiQuery);
+		seed++;
+		while(ngsiQuery.hasNext()) {
+			ngsiParam.addParam(new NGSIQueryParam(seed, ngsiQuery));
+			seed++;
+		}
+		return ngsiParam;
 	}
 
 	

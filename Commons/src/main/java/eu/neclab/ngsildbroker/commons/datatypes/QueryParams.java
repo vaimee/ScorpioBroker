@@ -2,6 +2,9 @@ package eu.neclab.ngsildbroker.commons.datatypes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class QueryParams {
@@ -24,6 +27,9 @@ public class QueryParams {
 	@SerializedName("q")
 	@Expose
 	private String q;
+	@SerializedName("queryTerm")
+	@Expose
+	private QueryTerm queryTerm;
 	@SerializedName("georel")
 	@Expose
 	private GeoqueryRel georel;
@@ -146,6 +152,16 @@ public class QueryParams {
 
 	public void setQ(String q) {
 		this.q = q;
+	}
+	
+
+	public void setQ(QueryTerm q,boolean temporalEntityFormat) throws ResponseException {
+		this.q = q.toSql(includeSysAttrs);
+		this.queryTerm = q;
+	}
+	
+	public QueryTerm getQueryTerm()  {
+		return this.queryTerm;
 	}
 
 	public QueryParams withQ(String q) {

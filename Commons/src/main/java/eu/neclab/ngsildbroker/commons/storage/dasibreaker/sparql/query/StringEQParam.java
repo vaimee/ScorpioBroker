@@ -70,6 +70,7 @@ public class StringEQParam implements IParam {
 		}
 		return predicates.size()>0;
 	}
+	
 	protected String generateClauseAt(int x) {
 		return 	"str(?o"+_seed+"_"+x+")=\""+values.get(x)+"\" ";
 	}
@@ -95,6 +96,7 @@ public class StringEQParam implements IParam {
 		}
 		return vars;
 	}
+	
 	@Override
 	public String getVars(String s) {
 		String vars ="";
@@ -110,6 +112,7 @@ public class StringEQParam implements IParam {
 		}
 		return vars;
 	}
+	
 	@Override
 	public int getSeed() {
 		// TODO Auto-generated method stub

@@ -415,6 +415,12 @@ public class QueryTerm {
 	public String getAttribute() {
 		return attribute;
 	}
+	
+	public String getExpandAttribute() throws ResponseException {
+
+		return paramsResolver.expandAttribute(this.getAttribute(), linkHeaders);
+
+	}
 
 	public void setAttribute(String attribute) {
 		this.attribute = attribute;

@@ -204,7 +204,7 @@ public class ParamsResolver {
 					qp.setEndTime(endTime);
 					break;
 				case NGSIConstants.QUERY_PARAMETER_QUERY:
-					qp.setQ(queryParser.parseQuery(queryValue, linkHeaders).toSql(temporalEntityFormat));
+					qp.setQ(queryParser.parseQuery(queryValue, linkHeaders),temporalEntityFormat);
 					break;
 				case NGSIConstants.QUERY_PARAMETER_OPTIONS:
 					List<String> options = Arrays.asList(queryValue.split(","));

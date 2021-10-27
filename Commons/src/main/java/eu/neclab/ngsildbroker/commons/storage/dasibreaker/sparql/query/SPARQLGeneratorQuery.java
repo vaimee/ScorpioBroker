@@ -98,8 +98,8 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 				+ "{\n"
 				+ "SELECT DISTINCT ?e {\n"
 				+ paramVars
-				+"}\n"
 				+ filter
+				+"}\n"
 				+"}\n"+ngsi_part+"}";
 		
 		//----------------------------LIMIT AND OFFSET
