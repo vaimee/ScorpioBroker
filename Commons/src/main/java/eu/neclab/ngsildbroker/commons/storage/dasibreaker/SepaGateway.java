@@ -16,6 +16,7 @@ public class SepaGateway {
 	
 	private static SepaGateway instance=null;
 	public static SepaGateway getInstance() throws SEPASecurityException {
+		System.out.println("\n###############################\n DAO setted on SPARQL\n###############################\n");
 		if(instance==null) {
 			instance=new SepaGateway();
 		}
@@ -36,7 +37,7 @@ public class SepaGateway {
 	protected String graph ="http://dasi.breaker.project/"; 
 	protected String ontology ="http://dasi.breaker.ngsi.ontology/"; 
 
-	public SepaGateway() throws SEPASecurityException {
+	private SepaGateway() throws SEPASecurityException {
 	    Map<String, String> env = System.getenv();
 	  
     	if(env.get("sepaHost")!=null) {

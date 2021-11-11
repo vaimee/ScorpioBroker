@@ -33,27 +33,32 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 	 * ngsi_param are about the ngsi-ld georel attributes and temporal attributes
 	 * 
 	 */
-	public String generateSparqlQuery(IParam jsonb_params,String jsonbCollumn, IParam ngsi_params, boolean needPiggyType) {
+	public String generateSparqlQuery(IParam jsonb_params,String jsonbColumn, IParam ngsi_params, boolean needPiggyType) {
 		
 		/*
 		   SELECT ?e ?s ?p ?o ?type { 
 			  		GRAPH ?e { ?s ?p ?o}
 			    {
-			    	####jsonb_params#####
+			    	
 				      SELECT DISTINCT ?e { 
+				      	  ####jsonb_params#####
 					      GRAPH ?e { ?s1 ?p1 ?o1. ?s2 ?p2 ?o2 }
 					      FILTER( ... )
+					      
+					      
+					     ####ngsi_param#####
+						 GRAPH ?table { 
+							 ?s_x ?collumn ?e . 
+							 ?s_x ?collumnType ?type . 
+							 ?s_x ?condPred ?condObj
+						 }
+						 FILTER ( ?table ...)
 				      } 
-			
+					  LIMIT 1 OFFSET 0
 				}
-					####ngsi_param#####
-					 GRAPH ?table { 
-						 ?s_x ?collumn ?e . 
-						 ?s_x ?collumnType ?type . 
-						 ?s_x ?condPred ?condObj
-					 }
-					 FILTER ( ?table ...)
+				
 			}
+
 		 */
 		//--------------
 		String piggyTypeVar ="";
@@ -63,28 +68,29 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 			piggyTypeTriple=" ?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+DBConstants.DBCOLUMN_TYPE+"> ?type.\n";
 		}
 		//--------------
-		
+
+		String regexTable = SPARQLGenerator.generateURIRegex("?g", ".*", super._table, null);
 		String ngsi_part = "";//before fix: "?s \n";
 		if(ngsi_params!=null) {
-			String json_b_link = "?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+jsonbCollumn+"> ?e.\n";
+			String json_b_link = "?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+jsonbColumn+"> ?e.\n";
 			ngsi_part="GRAPH ?g {\n"+
 					json_b_link +
 					piggyTypeTriple + //void or not void, following needPiggyType false or true
 					ngsi_params.getVars("subject")
 				+" }";
-//			filter+=" && ( "+ngsi_params.getClause()+" )";
-			String regex = "\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/.+\"";
 			if(ngsi_params.needFilter()) {
-				ngsi_part+="FILTER(regex(str(?g),"+regex+") && ("+ngsi_params.getClause()+"))";
+				ngsi_part+="FILTER("+regexTable+" && ("+ngsi_params.getClause()+"))";
 			}else {
-				ngsi_part+="FILTER(regex(str(?g),"+regex+"))";
+				ngsi_part+="FILTER("+regexTable+")";
 			}
 		}else if(needPiggyType) {
+
+			String jsonbColumnLink = SPARQLGenerator.generateScorpioUri(jsonbColumn);
 			ngsi_part="GRAPH ?g {\n"+
-					"?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+jsonbCollumn+"> ?e.\n"
+					"?subject "+jsonbColumnLink+" ?e.\n"
 					+piggyTypeTriple
-				+" }"
-				+"FILTER(regex(str(?g),\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/.+\"))";
+					+" }"
+					+"FILTER("+regexTable+")";
 		}
 
 		String paramVars = "GRAPH ?e {\n"+ jsonb_params.getVars() +"}";
@@ -96,22 +102,32 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		String sparql = "SELECT ?s ?p ?o ?e "+ piggyTypeVar +"{\n"
 				+ "GRAPH ?e { ?s ?p ?o}\n"
 				+ "{\n"
-				+ "SELECT DISTINCT ?e {\n"
-				+ paramVars
-				+ filter
-				+"}\n"
-				+"}\n"+ngsi_part+"}";
+				+ "SELECT DISTINCT ?e ?type {\n"
+				+ paramVars		+"\n"
+				+ filter 		+"\n"
+				+ ngsi_part		+"\n"
+				+"}\n";
 		
-		//----------------------------LIMIT AND OFFSET
-		if(useOrderBy && (offset>=0 || limit>0)) {
-			sparql+="\nORDER BY ?e";
-		}
-		if(limit>0) {
-			sparql+=" LIMIT "+limit;
-		}
-		if(offset>=0) {
-			sparql+=" OFFSET "+offset;
-		}
+				//----------------------------LIMIT AND OFFSET
+				/*OFFSET and LIMIT need to be on "SELECT DISTINCT ?e"
+				 * to limit the number of the entities, for each ?e 
+				 * we will have an entity
+				 * "ORDER BY ?e" is not necessary in that case
+				 */
+				if(useOrderBy && (offset>=0 || limit>0)) {
+					//for future needs?
+					sparql+=" ORDER BY ?e";
+				}
+				if(limit>0) {
+					sparql+=" LIMIT "+limit;
+				}
+				if(offset>=0) {
+					sparql+=" OFFSET "+offset;
+				}
+
+				//----------------------------ngsi_part
+				sparql+="\n}}";
+
 		return sparql;
 	}
 	
@@ -119,10 +135,10 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 	 * in case of columns data that need to be aggregate with the json-ld
 	 * (seams no need)
 	 */
-	public String generateSparqlQuery(IParam jsonb_params,String jsonbCollumns,String[] agregateCollumns, IParam ngsi_params, boolean needPiggyType) {
+	public String generateSparqlQuery(IParam jsonb_params,String jsonbColumns,String[] agregateCollumns, IParam ngsi_params, boolean needPiggyType) {
 		
 		if(agregateCollumns.length<1) {
-			return generateSparqlQuery(jsonb_params,jsonbCollumns,ngsi_params,needPiggyType);
+			return generateSparqlQuery(jsonb_params,jsonbColumns,ngsi_params,needPiggyType);
 		}
 		/*
 		 * 
@@ -165,8 +181,8 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		return "";
 	}
 	
-	public String generateSparqlQuery(IParam jsonb_params,String jsonbCollumn, boolean needPiggyType) {
-		return generateSparqlQuery(jsonb_params,jsonbCollumn,null, needPiggyType);
+	public String generateSparqlQuery(IParam jsonb_params,String jsonbColumn, boolean needPiggyType) {
+		return generateSparqlQuery(jsonb_params,jsonbColumn,null, needPiggyType);
 	}
 
 	

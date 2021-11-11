@@ -5,26 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import com.apicatalog.jsonld.JsonLd;
-import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
-import com.apicatalog.jsonld.document.RdfDocument;
-import com.apicatalog.rdf.RdfDataset;
-
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ConverterJRDF;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
-import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonValue;
 
 public class TitaniumSelfTestQuotes {
 

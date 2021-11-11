@@ -27,7 +27,10 @@ import com.apicatalog.rdf.RdfDataset;
 import com.apicatalog.rdf.RdfLiteral;
 import com.apicatalog.rdf.RdfNQuad;
 
+import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
+import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
+import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 import it.unibo.arces.wot.sepa.commons.sparql.RDFTermLiteral;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -167,7 +170,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}	
 
 			long startTime = System.nanoTime();
-			String jsonStr = nQuadsToJson(rdf_triples,filterBy);
+			String jsonStr = nQuadsToJson(rdf_triples,filterBy,true);
 			System.out.println("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
 			
 			if(containsDoubleQuotesEncoding(jsonStr)) {
@@ -180,8 +183,17 @@ public class TitaniumWrapper implements IConverterJRDF {
 		return ris;
 	}
 	
-	
-	public String nQuadsToJson(String nQuads,String filterBy) throws JsonLdError {
+	/*
+	 * nQuads				-->	RDF quads of a query sparql 
+	 * 							(with the appropriate structure to convert them into json-ld)
+	 * filterBy				-->	is the Attrs filter of json-ld fields,
+	 * 							we will extract only that specific fields
+	 * 							(id and type are special field and will be keep)
+	 * forceToJsonObject	-->	In same case we need just one Entity and so in the upper level
+	 * 							we need a JsonObject, not a JsonArray
+	 * 							(i think that is always necessary as "true", there is no case that needs "forceToJsonObject=false")
+	 */
+	public String nQuadsToJson(String nQuads,String filterBy,boolean forceToJsonObject) throws JsonLdError {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
 		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
@@ -199,7 +211,8 @@ public class TitaniumWrapper implements IConverterJRDF {
 			long startTime = System.nanoTime();
 			JsonObject jo = JsonLd.frame(notFramed, frame).get();
 			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
-			
+			//here forceToJsonObject is useless,
+			//the result is already an JsonObject
 			if(filterBy==null) {
 				return jo.toString();
 			}else {
@@ -209,11 +222,29 @@ public class TitaniumWrapper implements IConverterJRDF {
 			//convert to json-ld and didn't frame it
 			JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
 			if(filterBy==null) {
-				return ja.toString();
+				if(forceToJsonObject) {
+					if(ja.size()>0) {
+						return ja.get(0).toString();
+					}else {
+						return "";
+					}
+				}else {
+					return ja.toString();
+				}
 			}else {
 				JsonArrayBuilder ris =  Json.createArrayBuilder();
 				for (int x = 0;x<ja.size();x++) {
-					ris.add(filter(ja.getJsonObject(x),filterBy));
+					if(forceToJsonObject) {
+						return filter(ja.getJsonObject(x),filterBy).toString();
+					}else {
+						ris.add(filter(ja.getJsonObject(x),filterBy));
+					}
+				}
+				if(forceToJsonObject) {
+					//if we are here, it means that
+					//we not enter in the upper "for" because ja.size()<1
+					//there is not any entity
+					return "";
 				}
 				return ris.toString();
 			}
@@ -319,7 +350,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 			if(context!=null && context.trim().length()>0) {
 				String sanitizzeURL = context.trim();
 				if(sanitizzeURL.startsWith("\"")) {
-					sanitizzeURL=sanitizzeURL.substring(1,sanitizzeURL.length()-2);
+					sanitizzeURL=sanitizzeURL.substring(1,sanitizzeURL.length()-1);
 				}
 				String downloadedContext="";
 				if(contextMap.containsKey(sanitizzeURL)) {
@@ -401,20 +432,41 @@ public class TitaniumWrapper implements IConverterJRDF {
 		String temp  ="";
 		String sub[] =str.split("\""+encodingFlag);
 		temp+=sub[0];
-		String sub2[] = sub[1].split("\"",2);
-		byte[] valueDecoded = Base64.decodeBase64(sub2[0]);
-		if(containsDoubleQuotesEncoding(sub2[1])) {
-			temp+="\""+new String(valueDecoded).replace("\"", "\\\"")+ "\""+decodeDoubleQuotes(sub2[1]);
-		}else {
-			temp+="\""+new String(valueDecoded).replace("\"", "\\\"")+"\""+ sub2[1];
+		for(int x =1;x<sub.length;x++) {
+			String sub2[] = sub[x].split("\"",2);
+			byte[] valueDecoded = Base64.decodeBase64(sub2[0]);
+			temp+="\""+new String(valueDecoded).replace("\"", "\\\"")+"\""+sub2[1];
 		}
 		return temp;
-//		return new String(Base64.decodeBase64(str.substring(encodingFlag.length())));
 	}
 	protected boolean containsDoubleQuotesEncoding(String str) {
 		return str.contains(encodingFlag);
 	}
 
+	
+	public List<String> getJsonLD(QueryParams qp,BindingsResults binds) throws Exception{
+		//and setFrame need to be added to its interface
+		if(qp instanceof QueryParamsWithContext) {
+			String context = ((QueryParamsWithContext)qp).getContext();
+			String type = qp.getType();
+			if(type==null && binds.getBindings().size()>0) {
+				RDFTerm t = binds.getBindings().get(0).getRDFTerm("type");
+				if(t!=null) {
+					type=t.getValue();
+				}
+			}
+			this.setFrame(type, context);
+		}
+		List<String> list;
+		if(qp.getAttrs()!=null &&  qp.getAttrs().length()>0) {
+			// in that case (QUERY_PARAMETER_ATTRS)
+			// we need filter jsons
+			list=this.RDFtoJson(binds.getBindings(),qp.getAttrs());
+		}else {
+			list=this.RDFtoJson(binds.getBindings());
+		}
+		return list;
+	}
 
 	 
 }

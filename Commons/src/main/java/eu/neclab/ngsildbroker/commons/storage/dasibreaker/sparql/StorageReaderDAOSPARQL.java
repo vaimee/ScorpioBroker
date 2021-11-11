@@ -14,14 +14,12 @@ import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryTerm;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConverter;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageReaderDao;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryParamsWithContext;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.HasAttrsParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.IParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.SPARQLGeneratorQuery;
@@ -29,9 +27,10 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringEQP
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.NGSIQueryParam;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query.StringRegexParam;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
+import it.unibo.arces.wot.sepa.commons.response.ErrorResponse;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
+import it.unibo.arces.wot.sepa.commons.response.Response;
 import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
-import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
@@ -42,7 +41,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	
 	public void init() {
 		try {
-			sepa= new SepaGateway();
+			sepa= SepaGateway.getInstance();
 			seed =2;
 		} catch (SEPASecurityException e) {
 			// TODO Auto-generated catch block
@@ -73,35 +72,45 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 				throw new ResponseException("NOT IMPLEMENTED YET");
 			}else {
 				String sparql = translateNgsildQueryToSql(qp);
-				logger.info("NGSI-LD to SPARQL: " + sparql);
+				logger.info("NGSI-LD to SPARQL:\n" + sparql);
 				//SqlRowSet result = readerJdbcTemplate.queryForRowSet(sqlQuery);
 				
 				long startTime2 = System.nanoTime();
-				BindingsResults binds=((QueryResponse)sepa.executeQuery(sparql)).getBindingsResults();
-				System.out.println("Real Query time: "  +(System.nanoTime() - startTime2)/1000000 +"ms");
 				
-				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
-				//that if need to be removed, TitaniumWrapperBN too
-				//and setFrame need to be added to its interface
-				if(converter instanceof TitaniumWrapper && qp instanceof QueryParamsWithContext) {
-					String context = ((QueryParamsWithContext)qp).getContext();
-					String type = qp.getType();
-					if(type==null && binds.getBindings().size()>0) {
-						RDFTerm t = binds.getBindings().get(0).getRDFTerm("type");
-						if(t!=null) {
-							type=t.getValue();
-						}
-					}
-					((TitaniumWrapper)converter).setFrame(type, context);
-				}
-				List<String> list;
-				if(qp.getAttrs()!=null &&  qp.getAttrs().length()>0) {
-					// in that case (QUERY_PARAMETER_ATTRS)
-					// we need filter jsons
-					list=converter.RDFtoJson(binds.getBindings(),qp.getAttrs());
+				Response res=sepa.executeQuery(sparql);
+				boolean success= !res.isError();
+				BindingsResults binds;
+				if(success) {
+					binds=((QueryResponse)res).getBindingsResults();
+					System.out.println("Real Query time: "  +(System.nanoTime() - startTime2)/1000000 +"ms");
 				}else {
-					list=converter.RDFtoJson(binds.getBindings());
+					System.err.print(((ErrorResponse)res).getError());
+					return new ArrayList<String>();
 				}
+				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
+				//and setFrame need to be added to its interface
+//			if(converter instanceof TitaniumWrapper && qp instanceof QueryParamsWithContext) {
+//				String context = ((QueryParamsWithContext)qp).getContext();
+//				String type = qp.getType();
+//				if(type==null && binds.getBindings().size()>0) {
+//					RDFTerm t = binds.getBindings().get(0).getRDFTerm("type");
+//					if(t!=null) {
+//						type=t.getValue();
+//					}
+//				}
+//				((TitaniumWrapper)converter).setFrame(type, context);
+//			}
+//			List<String> list;
+//			if(qp.getAttrs()!=null &&  qp.getAttrs().length()>0) {
+//				// in that case (QUERY_PARAMETER_ATTRS)
+//				// we need filter jsons
+//				list=converter.RDFtoJson(binds.getBindings(),qp.getAttrs());
+//			}else {
+//				list=converter.RDFtoJson(binds.getBindings());
+//			}
+
+				List<String> list=converter.getJsonLD(qp,binds);
+				
 				if(qp.getLimit() == 0 &&  qp.getCountResult() == true) {
 //					List<String> list = readerJdbcTemplate.queryForList(sqlQuery,String.class);
 					StorageReaderDAO.countHeader = StorageReaderDAO.countHeader+list.size();	
@@ -224,25 +233,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 		 * ---------------------------------REMEMBER
 		 */
 		
-		
-		//-------------------------OLD (just for get by type and id, no more)
-//		if(getByType) {
-////			return gen.generateSparqlGetByType(qp.getType(),DBConstants.DBCOLUMN_DATA);
-////			jsr.addTriple("?s", DBConstants.DBCOLUMN_TYPE, qp.getType());
-//			return jsr.generateGetEntity(DBConstants.DBCOLUMN_TYPE,  qp.getType(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
-//		}else if(getById) {
-//			return jsr.generateGetEntity(SPARQLConstant.EXISTS_ID,  qp.getId(), DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS);
-//		}else {
-//			throw new ResponseException("NOT IMPLEMENTED YET");
-//		}
-		//---------------------------------------
-		
-		
-//		ArrayList<SPARQLClause> clauses = new ArrayList<SPARQLClause> ();
-//		logger.info("\ncall on DAO ====> StorageReaderDAOSQL.translateNgsildQueryToSql <====\n");
-//		StringBuilder fullSqlWhereProperty = new StringBuilder(70);
-//		
-		
+
 		//Clauses in AND
 		IParam jsonb_params = new StringEQParam(true,0);
 		//Clauses in AND
@@ -279,7 +270,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 					IParam paramIdPatter = new StringRegexParam(true, seed);
 					seed++;
 					paramIdPatter.addParam(
-							SPARQLConverter.generateUri(DBConstants.DBCOLUMN_ID),
+							SPARQLGenerator.generateScorpioUri(DBConstants.DBCOLUMN_ID),
 							queryValue);
 					ngsi_params.addParam(paramIdPatter);
 					break;
@@ -288,9 +279,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 					IParam paramTypeOrID;
 					String predicate;
 					if(queryParameter.compareTo(NGSIConstants.QUERY_PARAMETER_TYPE)==0) {
-						predicate = SPARQLConverter.generateUri(DBConstants.DBCOLUMN_TYPE);
+						predicate = SPARQLGenerator.generateScorpioUri(DBConstants.DBCOLUMN_TYPE);
 					}else {
-						predicate = SPARQLConverter.generateUri(DBConstants.DBCOLUMN_ID);
+						predicate = SPARQLGenerator.generateScorpioUri(DBConstants.DBCOLUMN_ID);
 					}
 					if (queryValue.indexOf(",") == -1) {
 						//just one type
@@ -309,20 +300,6 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 						
 					}
 					ngsi_params.addParam(paramTypeOrID);
-//					dbColumn = queryParameter;
-//					if (queryValue.indexOf(",") == -1) {
-////						sqlOperator = "=";
-////						sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
-//						clauses.add(new SPARQLClauseRawData(queryParameter, queryValue));
-//					} else {
-////						sqlOperator = "IN";
-////						sqlWhereProperty = dbColumn + " " + sqlOperator + " ('" + queryValue.replace(",", "','") + "')";
-//						for (String value : queryValue.split(",")) {
-//							SPARQLClauseRawData c = new SPARQLClauseRawData(queryParameter, value);
-//							c.setAnd(false);
-//							clauses.add(c);
-//						}
-//					}
 					break;
 				case NGSIConstants.QUERY_PARAMETER_ATTRS:
 					//need inspect the queryValue structure
@@ -476,8 +453,10 @@ import it.unibo.arces.wot.sepa.commons.sparql.RDFTerm;
 	protected IParam resolveNGSIQuery(QueryTerm ngsiQuery) {
 		IParam ngsiParam=new NGSIQueryParam(seed, ngsiQuery);
 		seed++;
-		while(ngsiQuery.hasNext()) {
-			ngsiParam.addParam(new NGSIQueryParam(seed, ngsiQuery));
+		QueryTerm next= ngsiQuery;
+		while(next.hasNext()) {
+			next= ngsiQuery.getNext();
+			ngsiParam.addParam(new NGSIQueryParam(seed, next));
 			seed++;
 		}
 		return ngsiParam;

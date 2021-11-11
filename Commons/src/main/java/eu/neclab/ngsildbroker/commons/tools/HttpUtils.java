@@ -962,6 +962,7 @@ public final class HttpUtils {
 	public ResponseEntity<byte[]> generateReply(HttpServletRequest request, String reply,
 			HashMap<String, List<String>> additionalHeaders, List<Object> additionalContext, boolean forceArrayResult)
 			throws ResponseException {
+		//String tempAuth = request.getHeader("Authorization");
 		List<Object> requestAtContext = getAtContext(request);
 		if (additionalContext != null) {
 			requestAtContext.addAll(additionalContext);

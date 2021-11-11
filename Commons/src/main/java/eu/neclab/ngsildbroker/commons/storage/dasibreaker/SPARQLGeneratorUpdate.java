@@ -4,204 +4,96 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.apicatalog.jsonld.JsonLdError;
 
+
 public class SPARQLGeneratorUpdate extends SPARQLGenerator{
 
-
-	private String _key;
-//	private String _key_name;
-	private boolean _checkConflict;
-	private HashMap<String,String> _map;
-	
-	public SPARQLGeneratorUpdate(String table, String key,boolean checkConflict){
+	public SPARQLGeneratorUpdate(String table) {
 		super(table);
-		_map=new HashMap<String,String>();
-		_key=key;
-		_checkConflict=checkConflict;
+		// TODO Auto-generated constructor stub
 	}
 
-	public void insertJsonColumn(String jsonLink, String column) throws JsonLdError {
-		String sparql = "GRAPH <"+getGraph(column)+"> {\n";
-		sparql+="<"+SPARQLConstant.NGSI_GRAPH_PREFIX+_key+"><"
-					+SPARQLConstant.NGSI_GRAPH_PREFIX+SPARQLConstant.IS_JSON_LD
-					+">'"+jsonLink+"'";
-		sparql +="}\n";
-		_map.put(column, sparql);
+
+
+	
+	//-------------------------------------------------------------------------UPDATE
+	protected String genereteDeleteWhereOf(int index,String key) {
+			String sparql_2= "";
+			InternalTriple it = super._triples.get(index);
+			if(it.needDataGraph()) {
+				sparql_2="GRAPH <"+it.getO()+"> {?s1 ?p1 ?o1}\n";
+			}
+			String sparql= "DELETE WHERE {\n"+"GRAPH <"+getGraph(key)+"> {\n"+
+					it.getTriple(true)+
+					"}"+sparql_2+"};\n";
+			return sparql;
 	}
 	
-	public void insertTriplesColumn(String triples, String column){
-		String sparql = "GRAPH <"+getGraph(column)+"> {\n";
-		sparql +=triples;
-		sparql +="}\n";
-		_map.put(column, sparql);
+	//---------------------DELETE
+	public String generateDeleteAllByKey(String key){
+		String regex = generateURIRegex("?g", key, _table, null); //maybe ".*" instead null
+		String sparql = "DELETE {GRAPH ?g {?s ?p ?o}}\n"+
+							"WHERE{ GRAPH ?g {?s ?p ?o}\n "+
+//OLD						"FILTER(regex(str(?g),\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+_table+".\"))\n"
+							"FILTER("+regex+")\n"
+							+"}\n";
+		return sparql;
 	}
 	
-	public void insertRawDataColumn(String rawData, String column){
-		String sparql = "GRAPH <"+getGraph(column)+"> {\n";
-		sparql +="<"+SPARQLConstant.FOR_INTERNAL_USE+"><"+SPARQLConstant.HAS_RAW_DATA+">'"+rawData+"'.\n";
-		sparql +="}\n";
-		_map.put(column, sparql);
-	}
-	
-//	public String generateSelect() {
-//		//   FILTER regex(?name, "^ali", "i") }
-//		
-//	}
-	
-	protected String generateInsertData() {
-		String sparql ="INSERT DATA {\n";
-		for (String mapKey : _map.keySet()) {
-			sparql+=_map.get(mapKey)+"\n";
-		}
-//		if(_checkConflict) {
-//			sparql+="GRAPH <"+SPARQLConstant.SPARQL_CHECK_CONFLICT+"> {\n";
-//			for (String mapKey : _map.keySet()) {
-//				sparql +="<"+_key+"> <"+SPARQLConstant.+"> <"+mapKey+">.\n";
-//			}
-//			sparql +="}\n";
+	public String generateDeleteAllWhere(String key){//<-------------------------NEED TEST IT
+		//testing it
+//		DELETE WHERE {
+//		  GRAPH ?g {?s ?p ?o}
+//		  GRAPH <g> { <s><p><o>}
+//		  GRAPH <g> {<sg><pg>?g2}
+//		  GRAPH ?g2{?s1 ?s2 ?s3}
 //		}
-		sparql +="}";
+		String sparql = "DELETE WHERE{ GRAPH ?g {?s ?p ?o}\n";
+		String sparql_2 = "";
+		sparql+="GRAPH <"+getGraph(key)+"> {\n";
+		int x=0;
+		for (InternalTriple internalTriple : _triples) {
+			sparql+=internalTriple.getTriple(false);
+			if(internalTriple.needDataGraph()) {
+				sparql_2+="GRAPH <"+internalTriple.getO()+"> { ?s"+x+" ?p"+x+" ?o"+x+" }\n";
+				x++;
+			}
+		}
+		sparql+="}\n"+sparql_2+"};\n";
 		return sparql;
 	}
-	protected String generateDeleteAll() {
-		String sparql="GRAPH ?g {\n";
-		sparql+="?s ?p ?o.\n";
-		sparql+="}\n";
-		sparql+=" FILTER regex(str(?g),"+gnererateRegexColumn()+") \n";
-		return sparql;
-	}
-	public String generateDeleteWhere(boolean deleteAll) {
-		String sparql ="DELETE WHERE {\n";
-		//deleteAll-->false--> is for ON CONFLICT DO UPDATE
-		if(deleteAll) {
-			sparql+=generateDeleteAll();
-		}else {
-			for (String mapKey : _map.keySet()) {
-				if(mapKey.compareTo(SPARQLConstant.SPARQL_COLUMN)==0) {
-					//don't NEED (for new skip)
-//					sparql+="GRAPH <"+getGraph(mapKey)+">{\n"
-//							+ "<> <> <>."
-//							+ "?s ?p ?o.}\n";
-				}else {
-					sparql+="GRAPH <"+getGraph(mapKey)+">{?s ?p ?o}\n";
+	
+
+	//----------------CREATED
+	public String generateCreate(String key,boolean onConflict) throws JsonLdError{
+		String sparql= "";
+		String insertData  = "INSERT DATA {\n"
+								+"GRAPH <"+getGraph(key)+"> {\n";
+		String deleteWhere ="";
+		String sparql_data_graph = "";
+		boolean needDelete = false;
+		for(int x = 0;x<_triples.size();x++) {
+			InternalTriple triple = _triples.get(x);
+			insertData+=triple.getTriple(false);
+			if(triple.needDataGraph()) {
+				sparql_data_graph+="GRAPH <"+triple.getO()+">{\n"
+						+triple.getRdfGraphTriples()+"}\n";
+			}
+			if(onConflict) {
+				if(triple.needDelete()) {
+					needDelete=true;
+					deleteWhere+=genereteDeleteWhereOf(x,key);
 				}
 			}
 		}
-		sparql +="}";
-		return sparql;
-	}
-	
-	public String generateDeleteAllWhere(ArrayList<SPARQLClause> column_value) {
-//	DELETE { GRAPH ?g {?s ?p ?o} } 
-//		WHERE{
-//			  GRAPH ?g {?s ?p ?o}
-//			  { 
-//			    SELECT ?g WHERE {
-//			      {
-//			        SELECT ?ok1 {
-//
-//			        BIND( EXISTS{
-//			            GRAPH ?g1 {
-//			              ?s1 ?p1 <o2>.
-//			              ?s1 ?p1 ?o1}}AS ?ok1)
-//
-//
-//			        BIND( EXISTS{
-//			            GRAPH ?g2 {
-//			              ?s2 ?p2 <o>.
-//			              ?s2 ?p2 ?o2}}AS ?ok2)
-//			      }
-//			      HAVING(?ok1 =true && ?ok2=true)
-//			    }
-//			      
-//			    	GRAPH ?g{?s ?p ?o}
-//			        FILTER(regex(str(?g),"^http://localhost:9999/blazegraph/namespace/kb/g.$") && ?ok1)
-//			              
-//			   }
-//			           
-//			 }
-//
-//			}
-//			           
-//			  
-		String varName = "ok";
-		String regex = gnererateRegexColumn();
-		String filter ="FILTER(regex(str(?g), "+regex+" && ?"+varName+"1)";
-		String having ="HAVING(";// HAVING(?ok1 =true && ?ok2=true)
-		String bindings ="";
-		
-		int index =0;	
-		for (SPARQLClause sparqlClause : column_value) {
-//	        BIND( EXISTS{
-//	            GRAPH ?g2 {
-//	              ?s2 ?p2 <o>.
-//	              ?s2 ?p2 ?o2}}AS ?ok2)
-			bindings+=sparqlClause.getClause(super.getTable(), _key, varName,index)+"\n";
-			having+="?"+varName+index+ "=true ";
-			if(index>0) {
-				having+="&& ";
-			}
-			index++;
+		insertData+="} "+sparql_data_graph+"};\n";
+		if(onConflict && needDelete) {
+			sparql=deleteWhere;
 		}
-		having+=")";
-		String sparql =	"DELETE { GRAPH ?g {?s ?p ?o} } \n";
-		sparql+=			"WHERE {\n";
-		sparql+=				"GRAPH ?g {?s ?p ?o}\n";
-		sparql+=					"{\n";
-		sparql+=						"SELECT ?g WHERE {\n";
-		sparql+=								"{\n";
-		sparql+=									"SELECT ?"+varName+"1 {\n";
-		sparql+=										bindings+"\n";
-		sparql+=									"}\n";
-		sparql+=									having+"\n";
-		sparql+=								"}\n";
-		sparql+=							"GRAPH ?g{?s ?p ?o}\n";
-		sparql+=							filter+"\n";
-		sparql+=						"}\n";
-		sparql+=					"}\n";
-		sparql+=			"}\n";
-		
-		
+		sparql+=insertData;
 		return sparql;
 	}
-	
-	public String generateCreateEntity() {
-		String sparql = "";
-		if(_checkConflict) {
-			sparql= generateDeleteWhere(false)+";\n";
-		}
-		sparql+= generateInsertData();
-		return sparql;
-	}
-	
-	protected String gnererateRegexColumn() {
-//		return "^http:\\/\\/parte1\\/.+\\/parte3$";
-		return "^"+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"\\/.+\\/"+_key+"$";
-	}
-	protected String getGraph(String column) {
-		return ""+SPARQLConstant.NGSI_GRAPH_PREFIX+super.getTable()+"/"+column+"/"+_key;
-	}
-
-	//-----------------------------------------setters and getters
-	
-
-	public String getKey() {
-		return _key;
-	}
-
-	public void setKey(String _key) {
-		this._key = _key;
-	}
-
-
-	public HashMap<String, String> getTableMap() {
-		return _map;
-	}
-
-
-	
-
-	public boolean isCheckConflict() {
-		return _checkConflict;
+	public String getTable() {
+		return _table;
 	}
 
 
