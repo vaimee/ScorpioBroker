@@ -42,7 +42,8 @@ import jakarta.json.JsonValue.ValueType;
 
 public class TitaniumWrapper implements IConverterJRDF {
 	private static HashMap<String,String> contextMap = new HashMap<String,String> ();
-	private String _frame=null;
+	private String _contextFrame=null;
+	private String _typeFrame = null;
 	public TitaniumWrapper() {
 	}
 	
@@ -55,21 +56,22 @@ public class TitaniumWrapper implements IConverterJRDF {
 	}
 	
 	public List<String> RDFtoJson(List<Bindings> binings) throws Exception {
-		return RDFtoJson(binings,null,"s","p","o","e");
+		return RDFtoJson(binings,null,"s","p","o","e","type");
 	}
 	@Override
 	public List<String> RDFtoJson(List<Bindings> binings, String filterBy) throws Exception {
-		return RDFtoJson(binings,filterBy,"s","p","o","e");
+		return RDFtoJson(binings,filterBy,"s","p","o","e","type");
 	}
-	public List<String> RDFtoJson(List<Bindings> binings,String s,String p,String o, String e) throws Exception {
-		return RDFtoJson(binings,null,"s","p","o","e");
+	public List<String> RDFtoJson(List<Bindings> binings,String s,String p,String o, String e,String t) throws Exception {
+		return RDFtoJson(binings,null,s,p,o,e,t);
 	}
 	
 
 
-	public List<String> RDFtoJson(List<Bindings> binings,String filterBy,String s,String p,String o, String e) throws Exception {
+	public List<String> RDFtoJson(List<Bindings> binings,String filterBy,String s,String p,String o, String e,String t) throws Exception {
 		List<String> ris = new ArrayList<String>();
 		HashMap<String,List<String>> nquads = new HashMap<String,List<String>>();
+		HashMap<String,String> piggyTipes = new HashMap<String,String>();
 		HashMap<String,String> bnodes = new HashMap<String,String>();
 		int bnodesIndex = 0;
 		long startTime1 = System.nanoTime();
@@ -78,6 +80,9 @@ public class TitaniumWrapper implements IConverterJRDF {
 			String subject = bind.getRDFTerm(s).getValue();
 			String predicate = bind.getRDFTerm(p).getValue();
 			String object = bind.getRDFTerm(o).getValue();
+			if(bind.getVariables().contains(t)) {
+				piggyTipes.put(entityGraph, bind.getRDFTerm(t).getValue());
+			}
 			if(bind.getRDFTerm(s).isURI()) {
 				subject="<"+subject+">";
 			}else if(bind.getRDFTerm(s).isBNode()) {
@@ -170,7 +175,11 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}	
 
 			long startTime = System.nanoTime();
-			String jsonStr = nQuadsToJson(rdf_triples,filterBy,true);
+			String piggyType = null;
+			if(piggyTipes.containsKey(key)) {
+				piggyTipes.get(key);
+			}
+			String jsonStr = nQuadsToJson(rdf_triples,piggyType,filterBy,true);
 			System.out.println("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
 			
 			if(containsDoubleQuotesEncoding(jsonStr)) {
@@ -193,19 +202,19 @@ public class TitaniumWrapper implements IConverterJRDF {
 	 * 							we need a JsonObject, not a JsonArray
 	 * 							(i think that is always necessary as "true", there is no case that needs "forceToJsonObject=false")
 	 */
-	public String nQuadsToJson(String nQuads,String filterBy,boolean forceToJsonObject) throws JsonLdError {
+	public String nQuadsToJson(String nQuads,String type,String filterBy,boolean forceToJsonObject) throws JsonLdError {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
 		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
 
 		JsonLdOptions options = new JsonLdOptions();
 		options.setUseNativeTypes(true);
-		
-		if(_frame!=null) {
+		String frameStr = this.generateFrame(type);
+		if(frameStr!=null) {
 			//covert to json-ld
 			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).options(options).get());
 			//if there is the frame, we will frame the jsonld
-			Reader targetReaderFrame = new StringReader(_frame);
+			Reader targetReaderFrame = new StringReader(frameStr);
 			Document frame = JsonDocument.of(targetReaderFrame);
 			
 			long startTime = System.nanoTime();
@@ -342,11 +351,21 @@ public class TitaniumWrapper implements IConverterJRDF {
 		return turtle;
 	}
 
-	public void setFrame(String frame) {
-		this._frame=frame;
-	}
+	
 	public void setFrame(String type, String context) {
 		if(type!=null && type.trim().length()>0) {
+			
+			//------------------TYPE
+			if(!type.contains(",")) {
+				if(type.contains("#")) {
+					this._typeFrame="\""+type.split("#")[1]+"\"";
+				}else {
+					this._typeFrame="\""+type+"\"";
+				}
+			}else {
+				this._typeFrame=null;
+			}
+			//------------------CONTEXT
 			if(context!=null && context.trim().length()>0) {
 				String sanitizzeURL = context.trim();
 				if(sanitizzeURL.startsWith("\"")) {
@@ -378,44 +397,54 @@ public class TitaniumWrapper implements IConverterJRDF {
 			        }
 				}
 
-				String cleannedType = type;
-				if(type.contains("#")) {
-					cleannedType=type.split("#")[1];
-				}
+				
 				if(downloadedContext.length()==0) {
 					//if we can't resolve for some reason the context here
 					//we forward the URI resolve to Titanium 
 					//(warning: Titanium will not cache the context)
-					this._frame=
-							"{ \"@context\":" 
-									+context +",\n" //maybe is ok to use sanitizzeURL too?
-							+"\"@type\":\""+
-									cleannedType
-							+"\"}";
-				}else {
-					this._frame="{ " +downloadedContext +",\n"
-							+"\"@type\":\""+
-									cleannedType
-							+"\"}";
+					this._contextFrame= "\"@context\":" +context;
+					//maybe is ok to use sanitizzeURL too?
 					
+				}else {
+					this._contextFrame= downloadedContext;
 				}
 				
 			}else {
-				String cleannedType = type;
-				if(type.contains("#")) {
-					cleannedType=type.split("#")[1];
-				}
-				this._frame="{\"@type\":\""+
-								cleannedType
-							+"\"}";
+				this._contextFrame=null;
 			}
-			
 		}else {
-			this._frame=null;
+			this._typeFrame=null;
 		}
 		
 
 		
+	}
+	
+	protected String generateFrame() {
+		return generateFrame(null);
+	}
+	protected String generateFrame(String useThisType) {
+		if( this._typeFrame==null && useThisType==null) {
+			return null;
+		}else {
+			String typeToUse = this._typeFrame;
+			if(useThisType!=null) {
+				typeToUse = useThisType;
+			}
+			if(this._contextFrame==null ) {
+				//try to frame only with the type is not a good thing
+				return "{\"@type\":"
+						+typeToUse
+					+"}";
+			}else {
+				return "{ " 
+							+this._contextFrame 
+						+",\n\"@type\":"
+							+typeToUse
+						+"}";
+			}
+			
+		} 
 	}
 	
 	

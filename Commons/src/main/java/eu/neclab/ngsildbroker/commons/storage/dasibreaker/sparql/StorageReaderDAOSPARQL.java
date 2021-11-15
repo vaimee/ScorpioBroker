@@ -58,12 +58,6 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 	//---------------------------------WIP
 	public List<String> query(QueryParams qp) {
 		long startTime = System.nanoTime();
-		/*
-		 * the piggyBackType var allow us to take the type of the requested entity 
-		 * in the same query used to get the entity
-		 * the type is needed for use Titanium framing in case of a query without the type
-		 */
-		String piggyBackType=null;
 		try {
 			if(qp.getCheck()!=null) {
 				//---------------------------------WIP
@@ -430,9 +424,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 //		if(offSet != -1) {
 //			sqlQuery += "OFFSET " + offSet + " "; 
 //		}
-		
+		boolean needPiggyType =qp.getType()==null || qp.getType().contains(",");
 		return new SPARQLGeneratorQuery(DBConstants.DBTABLE_ENTITY,offSet,limit)
-				.generateSparqlQuery(jsonb_params,tableDataColumn, ngsi_params,qp.getType()==null);
+				.generateSparqlQuery(jsonb_params,tableDataColumn, ngsi_params,needPiggyType);
 	}
 
 	// TODO: SQL input sanitization
