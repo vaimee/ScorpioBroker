@@ -1,17 +1,17 @@
 ## Content
 
 - [Context](#Context)
-- [Create ControlUnitEntity (POST)](#Create%20ControlUnitEntity%20(POST))
-- [ControlUnitEntity RDF](#ControlUnitEntity%20RDF)
-- [Create ObservationEntity (POST)](#Create%20ObservationEntity%20(POST))
-- [ObservationEntity RDF](#ObservationEntity%20RDF)
-- [Create ObservablePropertyEntity (POST)](#Create%20ObservablePropertyEntity%20(POST))
-- [ObservablePropertyEntity RDF](#ObservablePropertyEntity%20RDF)
-- [Create SensorEntity (POST)](#Create%20SensorEntity%20(POST))
-- [SensorEntity RDF](#SensorEntity%20RDF)
-- [Create TransformerEntity (POST)](#Create%20TransformerEntity%20(POST))
-- [TransformerEntity RDF](#TransformerEntity%20RDF)
-- [Get by tipes (GET)](#Get%20by%20tipes%20(GET))
+- [Create ControlUnitEntity (POST)](#Create-ControlUnitEntity-(POST))
+- [ControlUnitEntity RDF](#ControlUnitEntity-RDF)
+- [Create ObservationEntity (POST)](#Create-ObservationEntity-(POST))
+- [ObservationEntity RDF](#ObservationEntity-RDF)
+- [Create ObservablePropertyEntity (POST)](#Create-ObservablePropertyEntity-(POST))
+- [ObservablePropertyEntity RDF](#ObservablePropertyEntity-0RDF)
+- [Create SensorEntity (POST)](#Create-SensorEntity-(POST))
+- [SensorEntity RDF](#SensorEntity-RDF)
+- [Create TransformerEntity (POST)](#Create-TransformerEntity-(POST))
+- [TransformerEntity RDF](#TransformerEntity-RDF)
+- [Get by tipes (GET)](#Get-by-tipes%-(GET))
 
 
 
