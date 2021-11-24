@@ -61,12 +61,21 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 
 	public String getEntity(String entityId) {
 		//"SELECT data FROM entity WHERE id='" + entityId + "'"
-		String graph = SPARQLGenerator.generateJsonGraphUri(DBConstants.DBTABLE_ENTITY,DBConstants.DBCOLUMN_DATA, entityId);
-		String sparql = "SELECT ?s ?p ?o ?e WHERE {\n"+
-					"GRAPH ?e { ?s ?p ?o}\n"+
-					"VALUES(?e){(<"+graph+">)}"+
-					"}";
+		
+		//###############################################WARNING
+		//The default SCORPIO use that --> DBCOLUMN_DATA 
+		
+		String graph = SPARQLGenerator.generateJsonGraphUri(DBConstants.DBTABLE_ENTITY,DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS, entityId);
+//		String sparql = "SELECT ?s ?p ?o ?e WHERE {\n"+
+//					"GRAPH ?e { ?s ?p ?o}\n"+
+//					"VALUES(?e){(<"+graph+">)}"+
+//					"}";
+		String sparql="SELECT ?s ?p ?o ?e ?type WHERE {\n"+
+			"GRAPH ?e { ?s ?p ?o}\n"+
+			"GRAPH ?e { <"+entityId+"> rdf:type ?type}\n"+
+			"VALUES(?e){(<"+graph+">)}}\n";
 		System.out.println("EntityInfoDAOSPARQL.getEntity.SPARLQ:\n"+sparql+ "\n");
+	
 		try {
 			Response res= SepaGateway.getInstance().executeQuery(sparql);
 			if(res.isError()) {

@@ -261,7 +261,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 //					dbColumn = DBConstants.DBCOLUMN_ID;
 //					sqlOperator = "~"; //~ is the regular expression operator
 //					sqlWhereProperty = dbColumn + " " + sqlOperator + " '" + queryValue + "'";
-					IParam paramIdPatter = new StringRegexParam(true, seed);
+					StringRegexParam paramIdPatter = new StringRegexParam(true, seed);
 					seed++;
 					paramIdPatter.addParam(
 							SPARQLGenerator.generateScorpioUri(DBConstants.DBCOLUMN_ID),
@@ -270,7 +270,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 					break;
 				case NGSIConstants.QUERY_PARAMETER_TYPE:
 				case NGSIConstants.QUERY_PARAMETER_ID:
-					IParam paramTypeOrID;
+					StringEQParam paramTypeOrID;
 					String predicate;
 					if(queryParameter.compareTo(NGSIConstants.QUERY_PARAMETER_TYPE)==0) {
 						predicate = SPARQLGenerator.generateScorpioUri(DBConstants.DBCOLUMN_TYPE);
@@ -347,7 +347,8 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 					logger.info("NOT IMPLEMENTED YET");
 					break;
 				case NGSIConstants.QUERY_PARAMETER_QUERY:
-					IParam ngsiQuery = resolveNGSIQuery(qp.getQueryTerm());
+					IParam ngsiQuery = resolveNGSIQuery(seed,qp.getQueryTerm(),true);
+					seed++;
 					if(ngsiQuery!=null) {
 						jsonb_params.addParam(ngsiQuery);
 					}
@@ -444,16 +445,17 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 	}
 	
 	
-	protected IParam resolveNGSIQuery(QueryTerm ngsiQuery) {
-		IParam ngsiParam=new NGSIQueryParam(seed, ngsiQuery);
-		seed++;
-		QueryTerm next= ngsiQuery;
-		while(next.hasNext()) {
-			next= ngsiQuery.getNext();
-			ngsiParam.addParam(new NGSIQueryParam(seed, next));
-			seed++;
+	protected IParam resolveNGSIQuery(int seed,QueryTerm ngsiQuery,boolean isAnd) {
+		//maybe we are over-checking
+		if(ngsiQuery!=null && 
+				(ngsiQuery.getNext()!=null ||
+				ngsiQuery.getFirstChild()!=null ||
+				(ngsiQuery.getOperator()!=null &&  ngsiQuery.getOperator().length()>0))) {
+			
+			return new NGSIQueryParam(seed,ngsiQuery,isAnd);
+		}else {
+			return null;
 		}
-		return ngsiParam;
 	}
 
 	

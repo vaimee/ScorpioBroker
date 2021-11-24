@@ -40,7 +40,7 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 			  		GRAPH ?e { ?s ?p ?o}
 			    {
 			    	
-				      SELECT DISTINCT ?e { 
+				      SELECT DISTINCT ?e ?type{ 
 				      	  ####jsonb_params#####
 					      GRAPH ?e { ?s1 ?p1 ?o1. ?s2 ?p2 ?o2 }
 					      FILTER( ... )
@@ -107,7 +107,11 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		String sparql = "SELECT ?s ?p ?o ?e "+ piggyTypeVar +"{\n"
 				+ "GRAPH ?e { ?s ?p ?o}\n"
 				+ "{\n"
-				+ "SELECT DISTINCT ?e ?type {\n"
+				+ "SELECT DISTINCT ?e";
+		if(needPiggyType) {
+			sparql+=" ?type";
+		}
+		sparql+=" {\n"
 				+ paramVars		+"\n"
 				+ filter 		+"\n"
 				+ ngsi_part		+"\n"

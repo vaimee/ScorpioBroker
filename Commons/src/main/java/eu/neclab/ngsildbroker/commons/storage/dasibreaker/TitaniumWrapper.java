@@ -42,9 +42,15 @@ import jakarta.json.JsonValue.ValueType;
 
 public class TitaniumWrapper implements IConverterJRDF {
 	private static HashMap<String,String> contextMap = new HashMap<String,String> ();
+	private static HashMap<String,Long> contextUTCMap = new HashMap<String,Long> ();
+	private static long contextAgeThreshold = 60000;//1h
 	private String _contextFrame=null;
+	private String _context=null;
 	private String _typeFrame = null;
 	public TitaniumWrapper() {
+		_context=null; 
+		_typeFrame = null;
+		_contextFrame=null;
 	}
 	
 	public String JSONtoRDF(String json) throws Exception {
@@ -69,6 +75,20 @@ public class TitaniumWrapper implements IConverterJRDF {
 
 
 	public List<String> RDFtoJson(List<Bindings> binings,String filterBy,String s,String p,String o, String e,String t) throws Exception {
+		
+		
+		//FRAMING IS a MUST!
+		//in same case SCORPIO do not propagate the context so we try to framing the entity with the core context
+		//for example in case of EntityInfoDaoSparql.getEntity
+		//core contest
+		//{"@context":"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"}
+//		if(this._context==null) {
+//			this.setFrame(null,"https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld");
+//		}
+		//BUT we can framing just with the type of the entity
+		//framing with default core context is not so good because it will replace @type and @id with type and id
+		//and this can be a problem
+		
 		List<String> ris = new ArrayList<String>();
 		HashMap<String,List<String>> nquads = new HashMap<String,List<String>>();
 		HashMap<String,String> piggyTipes = new HashMap<String,String>();
@@ -177,9 +197,9 @@ public class TitaniumWrapper implements IConverterJRDF {
 			long startTime = System.nanoTime();
 			String piggyType = null;
 			if(piggyTipes.containsKey(key)) {
-				piggyTipes.get(key);
+				piggyType=piggyTipes.get(key);
 			}
-			String jsonStr = nQuadsToJson(rdf_triples,piggyType,filterBy,true);
+			String jsonStr = nQuadsToJson(rdf_triples,piggyType,filterBy);
 			System.out.println("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
 			
 			if(containsDoubleQuotesEncoding(jsonStr)) {
@@ -202,7 +222,65 @@ public class TitaniumWrapper implements IConverterJRDF {
 	 * 							we need a JsonObject, not a JsonArray
 	 * 							(i think that is always necessary as "true", there is no case that needs "forceToJsonObject=false")
 	 */
-	public String nQuadsToJson(String nQuads,String type,String filterBy,boolean forceToJsonObject) throws JsonLdError {
+	//------------OLD
+//	public String nQuadsToJson(String nQuads,String type,String filterBy,boolean forceToJsonObject) throws JsonLdError {
+//		Reader targetReader = new StringReader(nQuads);
+//		//read N-Quads or turtle
+//		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
+//
+//		JsonLdOptions options = new JsonLdOptions();
+//		options.setUseNativeTypes(true);
+//		String frameStr = this.generateFrame(type);
+//		if(frameStr!=null) {
+//			//covert to json-ld
+//			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).options(options).get());
+//			//if there is the frame, we will frame the jsonld
+//			Reader targetReaderFrame = new StringReader(frameStr);
+//			Document frame = JsonDocument.of(targetReaderFrame);
+//
+//			long startTime = System.nanoTime();
+//			JsonObject jo = JsonLd.frame(notFramed, frame).get();
+//			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+//			//here forceToJsonObject is useless,
+//			//the result is already an JsonObject
+//			if(filterBy==null) {
+//				return jo.toString();
+//			}else {
+//				return filter(jo,filterBy).toString();
+//			}
+//		}else {
+//			//convert to json-ld and didn't frame it
+//			JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
+//			if(filterBy==null) {
+//				if(forceToJsonObject) {
+//					if(ja.size()>0) {
+//						return ja.get(0).toString();
+//					}else {
+//						return "";
+//					}
+//				}else {
+//					return ja.toString();
+//				}
+//			}else {
+//				JsonArrayBuilder ris =  Json.createArrayBuilder();
+//				for (int x = 0;x<ja.size();x++) {
+//					if(forceToJsonObject) {
+//						return filter(ja.getJsonObject(x),filterBy).toString();
+//					}else {
+//						ris.add(filter(ja.getJsonObject(x),filterBy));
+//					}
+//				}
+//				if(forceToJsonObject) {
+//					//if we are here, it means that
+//					//we not enter in the upper "for" because ja.size()<1
+//					//there is not any entity
+//					return "";
+//				}
+//				return ris.toString();
+//			}
+//		}
+//	}
+	public String nQuadsToJson(String nQuads,String type,String filterBy) throws JsonLdError {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
 		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
@@ -210,56 +288,74 @@ public class TitaniumWrapper implements IConverterJRDF {
 		JsonLdOptions options = new JsonLdOptions();
 		options.setUseNativeTypes(true);
 		String frameStr = this.generateFrame(type);
+		
+		//convert to json-ld NO FRAMING
+		JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
+		if(ja.size()==0) {// NO entity found
+			return "";
+		}
+		
+		JsonObject entity=null;
+
+		//########FRAMING	
 		if(frameStr!=null) {
 			//covert to json-ld
-			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).options(options).get());
+			Document notFramed= JsonDocument.of(ja);
 			//if there is the frame, we will frame the jsonld
 			Reader targetReaderFrame = new StringReader(frameStr);
 			Document frame = JsonDocument.of(targetReaderFrame);
-			
+
 			long startTime = System.nanoTime();
 			JsonObject jo = JsonLd.frame(notFramed, frame).get();
 			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
-			//here forceToJsonObject is useless,
-			//the result is already an JsonObject
-			if(filterBy==null) {
-				return jo.toString();
-			}else {
-				return filter(jo,filterBy).toString();
-			}
+			entity =jo;
 		}else {
-			//convert to json-ld and didn't frame it
-			JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
-			if(filterBy==null) {
-				if(forceToJsonObject) {
-					if(ja.size()>0) {
-						return ja.get(0).toString();
-					}else {
-						return "";
-					}
-				}else {
-					return ja.toString();
-				}
+			System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+		}
+			
+		
+		
+		//##########FILTERING
+		if(filterBy!=null) {
+			//for execute a filtering we need expand the entity and then compact it again
+			Document notExpanded;
+			if(entity==null) {
+				//this is not so good, not framed entity
+				notExpanded= JsonDocument.of(ja);
 			}else {
-				JsonArrayBuilder ris =  Json.createArrayBuilder();
-				for (int x = 0;x<ja.size();x++) {
-					if(forceToJsonObject) {
-						return filter(ja.getJsonObject(x),filterBy).toString();
-					}else {
-						ris.add(filter(ja.getJsonObject(x),filterBy));
-					}
-				}
-				if(forceToJsonObject) {
-					//if we are here, it means that
-					//we not enter in the upper "for" because ja.size()<1
-					//there is not any entity
+				notExpanded= JsonDocument.of(entity);
+			}
+			JsonArray expanded ;
+			if(this._context!=null) {
+				expanded=JsonLd.expand(notExpanded).context(this._context).get();
+			}else {
+				expanded=JsonLd.expand(notExpanded).get();
+			}
+			if(expanded.size()==1) {
+				return filter(expanded.getJsonObject(0),filterBy).toString();
+			}else {
+				//that is not so good, here we need to have just one ArrayObject
+				if(ja.size()==0) {
 					return "";
 				}
-				return ris.toString();
+				System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+				return filter(ja.getJsonObject(0),filterBy).toString();
+			}
+		}else {
+			if(entity!=null) {
+				return entity.toString();
+			}else {
+				if(ja.size()==0) {
+					return "";
+				}
+				System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+				return ja.getJsonObject(0).toString();
 			}
 		}
+		
+		
 	}
-
+	
 //	public JsonObject frame() {
 //		return JsonLd.frame(notFramed, frame).get();
 //	}
@@ -270,18 +366,20 @@ public class TitaniumWrapper implements IConverterJRDF {
 		boolean typeDone = false;
 		if(filterBy.indexOf(",")>-1) {
 			for (String  attr : filterBy.split(",")) {
-				if(attr.compareTo("@id")==0) {
+				if(attr.compareTo("@id")==0 || attr.compareTo("id")==0 ) {
 					idDone=true;
-				}else if (attr.compareTo("@type")==0){
+				}else if (attr.compareTo("@type")==0 || attr.compareTo("type")==0){
 					typeDone=true;
 				}
-				JsonValue jv = obj.get(attr);
-				if(jv.getValueType()==ValueType.OBJECT ) {
-					ris.add(attr,jv.asJsonObject());
-				}else if (jv.getValueType()==ValueType.ARRAY) {
-					ris.add(attr,jv.asJsonArray());
-				}else {
-					ris.add(attr,jv);
+				if(obj.containsKey(attr)) {
+					JsonValue jv = obj.get(attr);
+					if(jv.getValueType()==ValueType.OBJECT ) {
+						ris.add(attr,jv.asJsonObject());
+					}else if (jv.getValueType()==ValueType.ARRAY) {
+						ris.add(attr,jv.asJsonArray());
+					}else {
+						ris.add(attr,jv);
+					}
 				}
 			}
 		}else {
@@ -290,20 +388,34 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else if (filterBy.compareTo("@type")==0){
 				typeDone=true;
 			}
-			JsonValue jv = obj.get(filterBy);
-			if(jv.getValueType()==ValueType.OBJECT ) {
-				ris.add(filterBy,jv.asJsonObject());
-			}else if (jv.getValueType()==ValueType.ARRAY) {
-				ris.add(filterBy,jv.asJsonArray());
-			}else {
-				ris.add(filterBy,jv);
+			if(obj.containsKey(filterBy)) {
+				JsonValue jv = obj.get(filterBy);
+				if(jv.getValueType()==ValueType.OBJECT ) {
+					ris.add(filterBy,jv.asJsonObject());
+				}else if (jv.getValueType()==ValueType.ARRAY) {
+					ris.add(filterBy,jv.asJsonArray());
+				}else {
+					ris.add(filterBy,jv);
+				}
 			}
 		}
 		if(!idDone) {
-			ris.add("@id",obj.get("@id"));
+			if(obj.containsKey("@id")) {
+				ris.add("@id",obj.get("@id"));
+			}else if(obj.containsKey("id")){
+				ris.add("id",obj.get("id"));
+			}else {
+				System.out.println("Warning: TitaniumWrapper.filter, found Entity without @id/id");
+			}
 		}
 		if(!typeDone) {
-			ris.add("@type",obj.get("@type"));
+			if(obj.containsKey("@type")) {
+				ris.add("@type",obj.get("@type"));
+			}else if(obj.containsKey("type")) {
+				ris.add("type",obj.get("type"));
+			}else{
+				System.out.println("Warning: TitaniumWrapper.filter, found Entity without @type/type");
+			}
 		}
 		return ris.build();
 	}
@@ -353,9 +465,8 @@ public class TitaniumWrapper implements IConverterJRDF {
 
 	
 	public void setFrame(String type, String context) {
+		//------------------TYPE
 		if(type!=null && type.trim().length()>0) {
-			
-			//------------------TYPE
 			if(!type.contains(",")) {
 				if(type.contains("#")) {
 					this._typeFrame="\""+type.split("#")[1]+"\"";
@@ -365,55 +476,60 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else {
 				this._typeFrame=null;
 			}
-			//------------------CONTEXT
-			if(context!=null && context.trim().length()>0) {
-				String sanitizzeURL = context.trim();
-				if(sanitizzeURL.startsWith("\"")) {
-					sanitizzeURL=sanitizzeURL.substring(1,sanitizzeURL.length()-1);
-				}
-				String downloadedContext="";
-				if(contextMap.containsKey(sanitizzeURL)) {
-					downloadedContext=contextMap.get(sanitizzeURL);
-				}else {
-					//----------------------------------------------RESOLVING URI
-				    try {
-				    	HttpURLConnection connection = (HttpURLConnection) new URL(sanitizzeURL).openConnection();
-				    	InputStream inputStream = connection.getInputStream();
-				        downloadedContext = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-				        	        .lines()
-				        	        .collect(Collectors.joining("\n")).trim();
-				        inputStream.close();
-				        if(downloadedContext.startsWith("{")) {
-							downloadedContext=downloadedContext.substring(1,downloadedContext.length()-2);
-						}
-						contextMap.put(sanitizzeURL, downloadedContext);
-			             
-			        }
-			        catch (MalformedURLException e) {
-			            System.out.println("Malformed URL: " + e.getMessage());
-			        }
-			        catch (IOException e) {
-			            System.out.println("I/O Error: " + e.getMessage());
-			        }
-				}
-
-				
-				if(downloadedContext.length()==0) {
-					//if we can't resolve for some reason the context here
-					//we forward the URI resolve to Titanium 
-					//(warning: Titanium will not cache the context)
-					this._contextFrame= "\"@context\":" +context;
-					//maybe is ok to use sanitizzeURL too?
-					
-				}else {
-					this._contextFrame= downloadedContext;
-				}
-				
-			}else {
-				this._contextFrame=null;
-			}
+			
 		}else {
 			this._typeFrame=null;
+		}
+		//------------------CONTEXT
+		if(context!=null && context.trim().length()>0) {
+			String sanitizzeURL = context.trim();
+			if(sanitizzeURL.startsWith("\"")) {
+				sanitizzeURL=sanitizzeURL.substring(1,sanitizzeURL.length()-1);
+			}
+			
+			this._context= sanitizzeURL;
+			
+			String downloadedContext="";
+			if(contextMap.containsKey(sanitizzeURL) && 
+				(System.currentTimeMillis()-contextUTCMap.get(sanitizzeURL))<contextAgeThreshold) {
+				downloadedContext=contextMap.get(sanitizzeURL);
+			}else {
+				//----------------------------------------------RESOLVING URI
+			    try {
+			    	HttpURLConnection connection = (HttpURLConnection) new URL(sanitizzeURL).openConnection();
+			    	InputStream inputStream = connection.getInputStream();
+			        downloadedContext = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+			        	        .lines()
+			        	        .collect(Collectors.joining("\n")).trim();
+			        inputStream.close();
+			        if(downloadedContext.startsWith("{")) {
+						downloadedContext=downloadedContext.substring(1,downloadedContext.length()-2);
+					}
+					contextMap.put(sanitizzeURL, downloadedContext);
+					contextUTCMap.put(sanitizzeURL, System.currentTimeMillis());
+		        }
+		        catch (MalformedURLException e) {
+		            System.out.println("Malformed URL: " + e.getMessage());
+		        }
+		        catch (IOException e) {
+		            System.out.println("I/O Error: " + e.getMessage());
+		        }
+			}
+
+			if(downloadedContext.length()==0) {
+				//if we can't resolve for some reason the context here
+				//we forward the URI resolve to Titanium 
+				//(warning: Titanium will not cache the context)
+				this._contextFrame= "\"@context\":" +context;
+				//maybe is ok to use sanitizzeURL too?
+				
+			}else {
+				this._contextFrame= downloadedContext;
+			}
+			
+		}else {
+			this._contextFrame=null;
+			this._context= null;
 		}
 		
 
@@ -429,7 +545,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 		}else {
 			String typeToUse = this._typeFrame;
 			if(useThisType!=null) {
-				typeToUse = useThisType;
+				typeToUse = "\""+useThisType+"\"";
 			}
 			if(this._contextFrame==null ) {
 				//try to frame only with the type is not a good thing
@@ -444,7 +560,8 @@ public class TitaniumWrapper implements IConverterJRDF {
 						+"}";
 			}
 			
-		} 
+		}
+		
 	}
 	
 	

@@ -20,48 +20,48 @@
 monas.jsonld
 ```
 {
-"@context": {
-"monas": "https://vaimee.com/monas/",
-"ssn": "http://www.w3.org/ns/ssn/",
-"sosa": "http://www.w3.org/ns/sosa/",
-"qudt": "http://qudt.org/schema/qudt/",
-"unit": "http://qudt.org/vocab/unit/",
-"rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-"xsd": "http://www.w3.org/2001/XMLSchema#",
-"TransformerEntity": "monas:TransformerEntity",
-"ControlUnitEntity": "monas:ControlUnitEntity",
-"SensorEntity": "monas:SensorEntity",
-"ObservablePropertyEntity": "monas:ObservablePropertyEntity",
-"ObservationEntity": "monas:ObservationEntity",
-"applicableUnitProperty": {
-"@id": "qudt:applicableUnit",
-"@type": "@id"
-},
-"resultTimeProperty": {
-"@id": "sosa:resultTime",
-"@type": "xsd:dateTime"
-},
-"hasSimpleResultProperty": {
-"@id": "sosa:hasSimpleResult",
-"@type": "xsd:int"
-},
-"observesRelationship": {
-"@id": "sosa:observes",
-"@type": "@id"
-},
-"hostsRelationship": {
-"@id": "sosa:hosts",
-"@type": "@id"
-},
-"hasFeatureOfInterestRelationship": {
-"@id": "sosa:hasFeatureOfInterest",
-"@type": "@id"
-},
-"madeBySensorRelationship": {
-"@id": "sosa:madeBySensor",
-"@type": "@id"
-}
-}
+	"@context": {
+		"monas": "https://vaimee.com/monas/ngsi/",
+		"ssn": "http://www.w3.org/ns/ssn/",
+		"sosa": "http://www.w3.org/ns/sosa/",
+		"qudt": "http://qudt.org/schema/qudt/",
+		"unit": "http://qudt.org/vocab/unit/",
+		"rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"TransformerEntity": "monas:TransformerEntity",
+		"ControlUnitEntity": "monas:ControlUnitEntity",
+		"SensorEntity": "monas:SensorEntity",
+		"ObservablePropertyEntity": "monas:ObservablePropertyEntity",
+		"ObservationEntity": "monas:ObservationEntity",
+		"applicableUnitProperty": {
+			"@id": "qudt:applicableUnit",
+			"@type": "@id"
+		},
+		"resultTimeProperty": {
+			"@id": "sosa:resultTime",
+			"@type": "xsd:dateTime"
+		},
+		"hasSimpleResultProperty": {
+			"@id": "sosa:hasSimpleResult",
+			"@type": "xsd:int"
+		},
+		"observesRelationship": {
+			"@id": "sosa:observes",
+			"@type": "@id"
+		},
+		"hostsRelationship": {
+			"@id": "sosa:hosts",
+			"@type": "@id"
+		},
+		"hasFeatureOfInterestRelationship": {
+			"@id": "sosa:hasFeatureOfInterest",
+			"@type": "@id"
+		},
+		"madeBySensorRelationship": {
+			"@id": "sosa:madeBySensor",
+			"@type": "@id"
+		}
+	}
 }
 ```
 # WARNING
@@ -179,7 +179,7 @@ body:
 
 ```<https://vaimee.com/monas/ProbeDTemperature/entity/data_without_sysattrs>``` GRAPH
 
-<table><thead><tr><th>S</th><th>P</th><th>O</th></tr></thead><tbody><tr><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2FProbeDTemperature%3E">&lt;https://vaimee.com/monas/ProbeDTemperature&gt;</a></td><td class="uri"><a href="#explore:kb:%3Chttp%3A%2F%2Fqudt.org%2Fschema%2Fqudt%2FapplicableUnit%3E">&lt;http://qudt.org/schema/qudt/applicableUnit&gt;</a></td><td class="bnode">t27280</td></tr><tr><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2FProbeDTemperature%3E">&lt;https://vaimee.com/monas/ProbeDTemperature&gt;</a></td><td class="uri"><a href="#explore:kb:rdf%3Atype">rdf:type</a></td><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2FObservablePropertyEntity%3E">&lt;https://vaimee.com/monas/ObservablePropertyEntity&gt;</a></td></tr><tr><td class="bnode">t27280</td><td class="uri"><a href="#explore:kb:rdf%3Atype">rdf:type</a></td><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Furi.etsi.org%2Fngsi-ld%2FProperty%3E">&lt;https://uri.etsi.org/ngsi-ld/Property&gt;</a></td></tr></tbody></table>
+<table><thead><tr><th>S</th><th>P</th><th>O</th></tr></thead><tbody><tr><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2Fngsi%2FProbeDTemperature%3E">&lt;https://vaimee.com/monas/ngsi/ProbeDTemperature&gt;</a></td><td class="uri"><a href="#explore:kb:%3Chttp%3A%2F%2Fqudt.org%2Fschema%2Fqudt%2FapplicableUnit%3E">&lt;http://qudt.org/schema/qudt/applicableUnit&gt;</a></td><td class="bnode">t27317</td></tr><tr><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2Fngsi%2FProbeDTemperature%3E">&lt;https://vaimee.com/monas/ngsi/ProbeDTemperature&gt;</a></td><td class="uri"><a href="#explore:kb:rdf%3Atype">rdf:type</a></td><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Fvaimee.com%2Fmonas%2Fngsi%2FObservablePropertyEntity%3E">&lt;https://vaimee.com/monas/ngsi/ObservablePropertyEntity&gt;</a></td></tr><tr><td class="bnode">t27317</td><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Furi.etsi.org%2Fngsi-ld%2FhasValue%3E">&lt;https://uri.etsi.org/ngsi-ld/hasValue&gt;</a></td><td class="literal">unit:DEG_C</td></tr><tr><td class="bnode">t27317</td><td class="uri"><a href="#explore:kb:rdf%3Atype">rdf:type</a></td><td class="uri"><a href="#explore:kb:%3Chttps%3A%2F%2Furi.etsi.org%2Fngsi-ld%2FProperty%3E">&lt;https://uri.etsi.org/ngsi-ld/Property&gt;</a></td></tr></tbody></table>
 
 # Create SensorEntity (POST)
 url: 		```http://localhost:9090/ngsi-ld/v1/entities/```
@@ -257,61 +257,144 @@ headers:
 Result:
 
 ```
-[
-{
+  {
 "id": "urn:epc:id:gid:0000.1.0",
 "type": "ControlUnitEntity",
 "hostsRelationship": [
-  "_:b2",
-  "_:b3",
-  "_:b4",
-  "_:b5"
-],
-"@context": [
-  "http://loclahost/monas.jsonld",
-  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
-],
+  {
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.1"
 },
   {
-"id": "urn:epc:id:gid:13101974.0.0",
-"type": "TransformerEntity",
-"hostsRelationship": "_:b6",
-"@context": [
-  "http://loclahost/monas.jsonld",
-  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
-],
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.X"
 },
   {
-"id": "monas:ProbeDTemperature",
-"type": "ObservablePropertyEntity",
-"applicableUnitProperty": "_:b0",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Y"
+},
+  {
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Z"
+}
+],
 "@context": [
-  "http://loclahost/monas.jsonld",
+  "http://11.0.0.15/monas.jsonld",
   "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
 ],
 },
   {
 "id": "monas:observation/XYZ",
 "type": "ObservationEntity",
-"hasFeatureOfInterestRelationship": "_:b7",
-"sosa:hasSimpleResult": {
-"id": "_:b8"
+"hasFeatureOfInterestRelationship": {
+"type": "Relationship",
+"object": "urn:epc:id:gid:13101974.0.0"
 },
-"madeBySensorRelationship": "_:b9",
+"sosa:hasSimpleResult": {
+"type": "Property"
+},
+"madeBySensorRelationship": {
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.1"
+},
 "sosa:resultTime": {
-"id": "_:b10"
+"type": "Property"
 },
 "@context": [
-  "http://loclahost/monas.jsonld",
+  "http://11.0.0.15/monas.jsonld",
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+},
+  {
+"id": "urn:epc:id:gid:13101974.0.0",
+"type": "TransformerEntity",
+"hostsRelationship": {
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.1.0"
+},
+"@context": [
+  "http://11.0.0.15/monas.jsonld",
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+},
+  {
+"id": "monas:ProbeDTemperature",
+"type": "ObservablePropertyEntity",
+"applicableUnitProperty": {
+"type": "Property",
+"value": "unit:DEG_C"
+},
+"@context": [
+  "http://11.0.0.15/monas.jsonld",
+  "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+],
+},
+  {
+"@graph": [
+  {
+"id": "_:b0",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.1"
+},
+  {
+"id": "_:b1",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.X"
+},
+  {
+"id": "_:b2",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Y"
+},
+  {
+"id": "_:b3",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Z"
+},
+  {
+"id": "urn:epc:id:gid:0000.1.2",
+"type": [
+  "Relationship",
+  "ControlUnitEntity"
+],
+"hostsRelationship": [
+  {
+"id": "_:b0",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.1"
+},
+  {
+"id": "_:b1",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.X"
+},
+  {
+"id": "_:b2",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Y"
+},
+  {
+"id": "_:b3",
+"type": "Relationship",
+"object": "urn:epc:id:gid:0000.2.Z"
+}
+],
+}
+],
+"@context": [
+  "http://11.0.0.15/monas.jsonld",
   "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
 ],
 },
   {
 "id": "urn:epc:id:gid:0000.2.1",
 "type": "SensorEntity",
-"observesRelationship": "_:b1",
+"observesRelationship": {
+"type": "Relationship",
+"object": "monas:ProbeDTemperature"
+},
 "@context": [
-  "http://loclahost/monas.jsonld",
+  "http://11.0.0.15/monas.jsonld",
   "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
 ],
 }

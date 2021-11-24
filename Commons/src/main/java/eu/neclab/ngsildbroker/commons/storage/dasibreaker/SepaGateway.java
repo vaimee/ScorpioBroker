@@ -88,8 +88,9 @@ public class SepaGateway {
 	public Response executeQuery(String sparql) {	
 
 			String prefix_sparql=SPARQLConstant.XSD_PREFIX
-								+SPARQLConstant.RDF_PREFIX
+								+SPARQLConstant.RDFS_PREFIX
 								+SPARQLConstant.NGSI_PREFIX
+								+SPARQLConstant.RDF_PREFIX
 								+"\n" + sparql;
 			
 			QueryRequest req = new QueryRequest(

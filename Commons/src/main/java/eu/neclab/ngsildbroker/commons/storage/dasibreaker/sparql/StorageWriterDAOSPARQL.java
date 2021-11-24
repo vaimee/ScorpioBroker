@@ -246,7 +246,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 			
 			JsonObject jsonObject = new JsonParser().parse(value).getAsJsonObject();
 			JsonElement type = jsonObject.get("@type");
-			if(!type.isJsonNull()) {
+			if(type!=null && !type.isJsonNull()) {
 				if(type.isJsonArray()) {
 					JsonArray typeArr = jsonObject.get("@type").getAsJsonArray();
 					for (JsonElement type_element : typeArr) {

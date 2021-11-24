@@ -19,19 +19,14 @@ public class SPARQLConstant {
 	public static final String NGSI_GRAPH_PREFIX = "http://localhost:3000/ngsi/";//"http://ngsi/";
 	public static final String BLANK_NODE =NGSI_GRAPH_PREFIX+"blanknode/";
 	
-	public static final String RDF_PREFIX ="PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
-	public static final String RDF_PREFIX_START ="http://www.w3.org/2000/01/rdf-schema#";
-	public static final String RDF_PREFIX_SUB ="rdfs:";
+	public static final String RDFS_PREFIX ="PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
 	
-	public static final String XSD_PREFIX_SUB ="xsd:";
-	public static final String XSD_PREFIX_START ="http://www.w3.org/2001/XMLSchema#";
 	public static final String XSD_PREFIX ="PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
 	
 
-	public static final String NGSI_PREFIX_SUB ="ngsi:";
-	public static final String NGSI_PREFIX_START ="https://uri.etsi.org/ngsi-ld/";
 	public static final String NGSI_PREFIX ="PREFIX ngsi: <https://uri.etsi.org/ngsi-ld/>\n";
 	
+	public static final String RDF_PREFIX ="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
 	
 	public static final String[] XSD_ALLOWED ={"int","integer","float",
 			"double","boolean","decimal","long"};

@@ -1,248 +1,170 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
+
 import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryTerm;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 
+
+
 public class NGSIQueryParam extends StringEQParam {
 
 	private final static boolean useHasValueToo=true; 
+		
+	private HashMap<String,NGSIQueryTerm> terms;
+	private Integer iSeed;
+	private String _vars;
+	private String _clauses;
 	
-	private String numberOP;
-	private boolean needStrOnObj= false;
 	
 
-	public NGSIQueryParam(int seed,QueryTerm ngsiQuery){
-		super(ngsiQuery.isNextAnd(),seed);
-//		public final static String QUERY_EQUAL = "=="; 			//SPARQL---> "="
-//		public final static String QUERY_UNEQUAL = "!=";
-//		public final static String QUERY_GREATEREQ = ">=";
-//		public final static String QUERY_GREATER = ">";
-//		public final static String QUERY_LESSEQ = "<=";
-//		public final static String QUERY_LESS = "<";
-//		public final static String QUERY_PATTERNOP = "~=";		//SPARQL---> ??????? WIP
-//		public final static String QUERY_NOTPATTERNOP = "!~=";	//SPARQL---> ??????? WIP
-		switch (ngsiQuery.getOperator()){
-			case NGSIConstants.QUERY_EQUAL:
-				this.numberOP="=";
-				break;
-			case NGSIConstants.QUERY_PATTERNOP: 	//------------_NOT IMPLEMENTED
-//					Match pattern (production rule named patternOp). A matching entity shall contain the target element and the
-//					target value shall be in the L(R) of the regular pattern specified by the Query Term:
-				this.numberOP="=";
-				break;
-			case NGSIConstants.QUERY_NOTPATTERNOP:	//------------_NOT IMPLEMENTED
-//					If the target value data type is different than String then it shall be considered as not matching.
-//					Do not match pattern (production rule named notPatternOp). A matching entity shall contain the target
-//					element and the target value shall not be in the L(R) of the regular pattern specified by the Query Term:
-				this.numberOP="=";
-				break;
-			default: 
-				this.numberOP=ngsiQuery.getOperator();
-				break;
-		}
+	
+	public NGSIQueryParam(int seed,QueryTerm ngsiQuery,boolean isAnd){
+		super(isAnd,seed);
+		//this is necessary for the correct work of the method StringEQParam.getClause
+		super.predicates= new ArrayList<String>();
+		super.predicates.add("");
 		
-		String predicate;
-		//
-		/*the Attribute can be a composed json as: http://context-uri/P100.P1_P1
-		 * 
-		 *CASE 1) 	-->http://example.org/P100.P1_P1
-		 * 
-		 *CASE 2) 	-->P100.P1_P1
-		 */
-		
+		this.terms= new HashMap<String,NGSIQueryTerm>();
+		this.iSeed=0;
+		String temp[]=generateVarsAndClauses(ngsiQuery);
+		this._vars=temp[0];
+		this._clauses=temp[1];
+	}
 
-		String attribute = ngsiQuery.getAttribute();
-		String expandAttribute="";
-		try {
-			expandAttribute = ngsiQuery.getExpandAttribute();
-		} catch (ResponseException e1) {
-			/*
-			 * this can be a problem.. we are not sure if will be a CASE1 or CASE2
-			 * or a not composed json 
-			 * ex: http://context.uri.contains.points/P100
-			 * that uri cotains "." but these are not about json fields separator
-			 */
-			
-		}
-		
-
-		String piggyValue = ""; //in case of CASE2
-		
-		//checking CASE1 or CASE2
-		if(attribute.compareTo(expandAttribute)==0) { //CASE1
-			//that case is "safe" because we have full-uri 
-			//(we don't need SPARQLregex)
-			
-			//checking if the Attribute is composed
-			if(attribute.contains(".")) {//composed
-				//building the json path of the composed attribute following RDF
-				String temp[] = expandAttribute.split("\\/");
-				attribute = temp[temp.length-1];
-				String expandAttributePrefix=expandAttribute.substring(0, 
-						expandAttribute.length()-attribute.length());
-				predicate="";
-				String attrParts[] = attribute.split("\\.");
-				for(int seed3 =0;seed3<attrParts.length;seed3++) {
-					predicate+="<"+expandAttributePrefix+attrParts[seed3] + "> ";
-					if(seed3<attrParts.length-1) {
-						String bn_as_link = "?bn_"+seed + "_"+seed3;
-						predicate+=bn_as_link +".\n" +bn_as_link +" ";
-					}
-				}
-				/*Exemple:http://context-uri/P100.P1_P1
-				 * 
-				 * expandAttributePrefix="http://context-uri/"
-				 * 
-				 * attrParts=["P100","P1_P1"]
-				 * 
-				 * ####at seed3=0)
-				 * 		predicate="<http://context-uri/P100> ?bn_0_0_0 .\n ?bn_0_0_0 "
-				 * ####at seed3=1)
-				 * 		predicate="<http://context-uri/P100> ?bn_0_0_0 .\n ?bn_0_0_0 <http://context-uri/P1_P1>"
-				 */
-			}else {//not composed
-				predicate="<"+attribute+">";
+	
+	/*
+	 * using:
+	 * 
+	 * 	FIRST 	as ngsiQuery.getFirstChild()
+	 * 	NEXT 	as ngsiQuery.getNext()
+	 * 	ACTUAL 	as ngsiQuery.getOperant() ; ngsiQuery.getAttribute() 
+	 * 	R()  	as generateVarsAndClauses()
+	 * 	OP 		as ngsiQuery.getOperator()
+	 * 
+	 * CASES:
+	 * 
+	 * FIRST == NULL &&  NEXT ==NULL -->return the leaf
+	 * FIRST != NULL &&  NEXT ==NULL -->return R(FIRST)
+	 * FIRST == NULL &&  NEXT !=NULL -->return R(NEXT)
+	 * FIRST != NULL &&  NEXT !=NULL -->return (R(FIRST) OP R(NEXT))
+	 * 
+	 * EXTRA CASE:
+	 * 
+	 * FIRST == NULL && NEXT !=NULL && ACTUAL!=null -->return (R(ACTUAL) OP R(NEXT))
+	 * 
+	 * NOTE:
+	 * ACTUAL is the same of FIRST for the NGSIQueryParam logic
+	 */
+	protected String[] generateVarsAndClauses(QueryTerm ngsiQuery) {
+		QueryTerm first =ngsiQuery.getFirstChild();
+		if(ngsiQuery.hasNext()) {
+			QueryTerm next =ngsiQuery.getNext();
+			String op;
+			if(ngsiQuery.isNextAnd()) {
+				op="&&";
+			}else {
+				op="||";
 			}
-		}else {// CASE2
-			//that case is "unsafe", we realy don't know the real uri
-			//so we need SPARAL rexeg 
-			//expandAttribute is not alweys correct as full-uri 
-			//default full uri would be added as follow
-			//EX: <https://uri.etsi.org/ngsi-ld/P1> instead of <http://example.org/P1>
-			
-			//checking if the Attribute is composed
-			if(attribute.contains(".")) {//composed
-
-				String expandAttributePrefix="";
-				try {
-					expandAttributePrefix=ngsiQuery.getExpandAttribute();
-					expandAttributePrefix=expandAttributePrefix.substring(0, 
-							expandAttributePrefix.length()-attribute.length());
-				} catch (ResponseException e) {
-					//maybee here need print something or handle it with SPARQL REGEX
-					//as regex(str(?p),"*/"+ngsiQuery.getAttribute())
-					//as in the following try-catch
+			if(first==null) {
+				if(therIsActual(ngsiQuery)) {
+					return assembl(
+							generateLeaf(ngsiQuery),
+							op,
+							generateVarsAndClauses(next)
+						);
+				}else {
+					return generateVarsAndClauses(next);
 				}
-				predicate="";
-				String attrParts[] = attribute.split("\\.");
-				for(int seed3 =0;seed3<attrParts.length;seed3++) {
-					predicate+="?pv_"+seed +"_"+seed3;
-					piggyValue+=" && regex(str(?pv_"+seed +"_"+seed3+"),\".+"+attrParts[seed3]+"$\")";
-					if(seed3<attrParts.length-1) {
-						String bn_as_link = "?bn_"+seed + "_"+seed3;
-						predicate+=bn_as_link +".\n" +bn_as_link +" ";
-					}
-				}
-				/*Exemple:http://context-uri/P100.P1_P1
-				 * 
-				 * expandAttributePrefix="http://context-uri/"
-				 * 
-				 * attrParts=["P100","P1_P1"]
-				 * 
-				 * ####at seed3=0)
-				 * 		predicate="?pv_0_0_0 ?bn_0_0_0 .\n ?bn_0_0_0 "
-				 * ####at seed3=1)
-				 * 		predicate="?pv_0_0_0 ?bn_0_0_0 .\n ?bn_0_0_0 ?pv_0_0_1"
-				 * 
-				 * piggyValue=" && regex(str(?pv_0_0_0),".+P100$") && regex(str(?pv_0_0_1),".+P1_P1$")"
-				 */
-				
-			}else {//attribute is not composed
-					predicate="?pv_"+seed;
-					piggyValue+=" && regex(str(?pv_"+seed+"),\".+"+attribute+"$\")";
+			}else {
+				return assembl(
+							generateVarsAndClauses(first),
+							op,
+							generateVarsAndClauses(next)
+						);
 			}
-		}
-		
-
-		//JSON-LD fields
-		predicates.add(predicate);
-		//JSON-LD value (and if needs piggyValue)
-		String opertant = ngsiQuery.getOperant();
-		if(!isNumeric(opertant)) {
-			needStrOnObj=true;
-			//that sanitize is not necessary
-			if(!opertant.startsWith("\"") || !opertant.endsWith("\"") ) {
-				opertant="\""+opertant+"\"";
-			}
-			
 		}else {
-			needStrOnObj=false;
+			if(first==null) {
+				//this is a leaf
+				return generateLeaf(ngsiQuery);
+			}else {
+				return generateVarsAndClauses(first);
+			}
+				 
 		}
-		values.add(opertant+piggyValue+" ");	
+		
+		
+		
 	}
 	
+	protected String[] generateLeaf(QueryTerm ngsiQuery) {
+		String vars = "";
+		String clauses ="";
+		
+		NGSIQueryTerm term;
+		String termName = ngsiQuery.getAttribute();
+		if(terms.containsKey(termName)) {
+			term= terms.get(termName);
+			//we need overwrite the OP and the VALUE of the term
+			term.overwrite(ngsiQuery);
+		}else {
+			term = new NGSIQueryTerm(ngsiQuery,super._seed+"_"+iSeed);
+			iSeed++;
+			terms.put(termName, term);
+			//only if the Term is new i need to add vars (triples that describes the NGSI-LD term)
+			//if the "terms" hasmap contains the term i dont need to re-add the vars
+			vars+="?s"+super._seed+ " "+term.getVars();
+			if(useHasValueToo) {
+				vars+="?shv"+this._seed+ " "+term.getHvVars();
+			}
+		}
+		
+		clauses+=term.getAllClauses(useHasValueToo);
+
+		return new String[]{vars,clauses};
+	}
 	
+	/*
+	 * "ngsiQuery" has the ACTUAL?
+	 * 
+	 * NOTE: ACTUAL is the same of FIRST for the NGSIQueryParam logic
+	 */
+	protected boolean  therIsActual(QueryTerm ngsiQuery) {
+		return (
+				ngsiQuery.getAttribute()!=null && 
+				ngsiQuery.getAttribute().length()>0
+				);
+	}
+	
+	protected String[] assembl(String[] first, String op,String[] next) {
+		String vars = first[0]+ next[0];
+		String clauses ="("+first[1]+op+next[1]+")";
+		return new String[]{vars,clauses};
+	}
 	
 	@Override
 	protected String generateClauseAt(int x) {
-		String value = values.get(x);
-		if(useHasValueToo) {
-			if(needStrOnObj) {
-				return "(str(?o"+_seed+"_"+x+")"+numberOP+value+" || "+
-						"str(?ohv"+_seed+"_"+x+")"+numberOP+value+")";
-			}else {
-				return "(?o"+_seed+"_"+x+numberOP+value+" || "+
-						"?ohv"+_seed+"_"+x+numberOP+value+")";
-			}
-		}else {
-			if(needStrOnObj) {
-				return "str(?o"+_seed+"_"+x+")"+numberOP+value+" ";
-			}else {
-				return "?o"+_seed+"_"+x+numberOP+value+" ";
-			}
-		}
+		//we can ignore x ( we will have just one predicate)
+		return _clauses;
 	}
 	
 	@Override
 	public String getVars() {
-		if(useHasValueToo) {
-			String vars ="";
-			for (int x =0 ;x<predicates.size();x++) {
-				String varID = _seed+"_"+x;
-				vars+="?s"+varID+" " + predicates.get(x)+ " ?o"+varID+".\n";
-				/*
-				 * <urn:ngsi-ld:T:I123k468:Context>	<http://example.org/P100>	t5942
-				 * t5942	<https://uri.etsi.org/ngsi-ld/hasValue>	12
-				 * 
-				 */
-				vars+="?s"+varID+" " + predicates.get(x)+ " ?shv"+varID+".\n";
-				if(needStrOnObj) {
-					/*
-					 * if value is not NUMERIC, the ?phv will not < NGSIConstants.NGSI_LD_HAS_VALUE>
-					 * but can be  <https://uri.etsi.org/ngsi-ld/hasObject> or something else
-					 * in future that can be managed in a better way
-					 */
-					vars+="?shv"+varID+" ?phv"+varID+" ?ohv"+varID+".\n";
-					
-				}else {
-					vars+="?shv"+varID+" <" + NGSIConstants.NGSI_LD_HAS_VALUE+ "> ?ohv"+varID+".\n";
-				}
-			}
-			for (IParam param : params) {
-				vars+=param.getVars();
-			}
-			if(vars.length()==0) {
-				return "?sANY ?pANY ?oANY";
-			}
-			return vars;
-		}else {
-			return super.getVars();
+		String vars = this._vars;
+		for (IParam param : params) {
+			vars+=param.getVars();
 		}
-		
+		if(vars.length()==0) {
+			vars="?sANY ?pANY ?oANY";
+		}
+		return vars;
 	}
 	
-	public static boolean isNumeric(String strNum) {
-	    if (strNum == null) {
-	        return false;
-	    }
-	    try {
-	        double d = Double.parseDouble(strNum);
-	    } catch (NumberFormatException nfe) {
-	        return false;
-	    }
-	    return true;
-	}
+	
 
 }
