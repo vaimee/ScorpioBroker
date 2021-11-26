@@ -13,6 +13,7 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.ErrorResponse;
@@ -61,11 +62,9 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 
 	public String getEntity(String entityId) {
 		//"SELECT data FROM entity WHERE id='" + entityId + "'"
+
 		
-		//###############################################WARNING
-		//The default SCORPIO use that --> DBCOLUMN_DATA 
-		
-		String graph = SPARQLGenerator.generateJsonGraphUri(DBConstants.DBTABLE_ENTITY,DBConstants.DBCOLUMN_DATA_WITHOUT_SYSATTRS, entityId);
+		String graph = SPARQLGenerator.generateJsonGraphUri(DBConstants.DBTABLE_ENTITY,DBConstants.DBCOLUMN_DATA, entityId);
 //		String sparql = "SELECT ?s ?p ?o ?e WHERE {\n"+
 //					"GRAPH ?e { ?s ?p ?o}\n"+
 //					"VALUES(?e){(<"+graph+">)}"+
@@ -82,6 +81,9 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 				System.err.print(((ErrorResponse)res).getError());
 			}else {
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
+//				if(converter instanceof TitaniumWrapper) {
+//					((TitaniumWrapper)converter).setResolveBlankNodesNoFraming(true);
+//				}
 				List<String> etities=converter.RDFtoJson(((QueryResponse)res).getBindingsResults().getBindings());
 				return etities.get(0);
 			}

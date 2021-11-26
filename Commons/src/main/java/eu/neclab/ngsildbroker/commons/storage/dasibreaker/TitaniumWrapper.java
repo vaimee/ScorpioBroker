@@ -40,6 +40,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+
 public class TitaniumWrapper implements IConverterJRDF {
 	private static HashMap<String,String> contextMap = new HashMap<String,String> ();
 	private static HashMap<String,Long> contextUTCMap = new HashMap<String,Long> ();
@@ -47,10 +48,13 @@ public class TitaniumWrapper implements IConverterJRDF {
 	private String _contextFrame=null;
 	private String _context=null;
 	private String _typeFrame = null;
+	private boolean _resolveBlankNodesNoFraming = true;
+	
 	public TitaniumWrapper() {
 		_context=null; 
 		_typeFrame = null;
 		_contextFrame=null;
+		_resolveBlankNodesNoFraming=true;
 	}
 	
 	public String JSONtoRDF(String json) throws Exception {
@@ -215,71 +219,12 @@ public class TitaniumWrapper implements IConverterJRDF {
 	/*
 	 * nQuads				-->	RDF quads of a query sparql 
 	 * 							(with the appropriate structure to convert them into json-ld)
+	 * type					-->	is the type of the entity (retrive by rdf-store)
 	 * filterBy				-->	is the Attrs filter of json-ld fields,
 	 * 							we will extract only that specific fields
 	 * 							(id and type are special field and will be keep)
-	 * forceToJsonObject	-->	In same case we need just one Entity and so in the upper level
-	 * 							we need a JsonObject, not a JsonArray
-	 * 							(i think that is always necessary as "true", there is no case that needs "forceToJsonObject=false")
 	 */
-	//------------OLD
-//	public String nQuadsToJson(String nQuads,String type,String filterBy,boolean forceToJsonObject) throws JsonLdError {
-//		Reader targetReader = new StringReader(nQuads);
-//		//read N-Quads or turtle
-//		RdfDocument doc=(RdfDocument) RdfDocument.of(targetReader);
-//
-//		JsonLdOptions options = new JsonLdOptions();
-//		options.setUseNativeTypes(true);
-//		String frameStr = this.generateFrame(type);
-//		if(frameStr!=null) {
-//			//covert to json-ld
-//			Document notFramed = JsonDocument.of(JsonLd.fromRdf(doc).options(options).get());
-//			//if there is the frame, we will frame the jsonld
-//			Reader targetReaderFrame = new StringReader(frameStr);
-//			Document frame = JsonDocument.of(targetReaderFrame);
-//
-//			long startTime = System.nanoTime();
-//			JsonObject jo = JsonLd.frame(notFramed, frame).get();
-//			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
-//			//here forceToJsonObject is useless,
-//			//the result is already an JsonObject
-//			if(filterBy==null) {
-//				return jo.toString();
-//			}else {
-//				return filter(jo,filterBy).toString();
-//			}
-//		}else {
-//			//convert to json-ld and didn't frame it
-//			JsonArray ja = JsonLd.fromRdf(doc).options(options).get();
-//			if(filterBy==null) {
-//				if(forceToJsonObject) {
-//					if(ja.size()>0) {
-//						return ja.get(0).toString();
-//					}else {
-//						return "";
-//					}
-//				}else {
-//					return ja.toString();
-//				}
-//			}else {
-//				JsonArrayBuilder ris =  Json.createArrayBuilder();
-//				for (int x = 0;x<ja.size();x++) {
-//					if(forceToJsonObject) {
-//						return filter(ja.getJsonObject(x),filterBy).toString();
-//					}else {
-//						ris.add(filter(ja.getJsonObject(x),filterBy));
-//					}
-//				}
-//				if(forceToJsonObject) {
-//					//if we are here, it means that
-//					//we not enter in the upper "for" because ja.size()<1
-//					//there is not any entity
-//					return "";
-//				}
-//				return ris.toString();
-//			}
-//		}
-//	}
+
 	public String nQuadsToJson(String nQuads,String type,String filterBy) throws JsonLdError {
 		Reader targetReader = new StringReader(nQuads);
 		//read N-Quads or turtle
@@ -297,21 +242,30 @@ public class TitaniumWrapper implements IConverterJRDF {
 		
 		JsonObject entity=null;
 
-		//########FRAMING	
-		if(frameStr!=null) {
-			//covert to json-ld
-			Document notFramed= JsonDocument.of(ja);
-			//if there is the frame, we will frame the jsonld
-			Reader targetReaderFrame = new StringReader(frameStr);
-			Document frame = JsonDocument.of(targetReaderFrame);
-
-			long startTime = System.nanoTime();
-			JsonObject jo = JsonLd.frame(notFramed, frame).get();
-			System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
-			entity =jo;
+		/*
+		 * in same case, we need resolve the blank node of an rdf entity
+		 * with Framing the blank node will be resolved, 
+		 * but we can't framing the entity in this case
+		 *	so we just replace manually the blank nodes
+		 */
+		if(this._resolveBlankNodesNoFraming) {
+			entity=resolveBNodes(ja);
 		}else {
-			System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+			//########FRAMING	
+			if(frameStr!=null) {
+				//covert to json-ld
+				Document notFramed= JsonDocument.of(ja);
+				//if there is the frame, we will frame the jsonld
+				Reader targetReaderFrame = new StringReader(frameStr);
+				Document frame = JsonDocument.of(targetReaderFrame);
+
+				long startTime = System.nanoTime();
+				JsonObject jo = JsonLd.frame(notFramed, frame).get();
+				System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+				entity =jo;
+			}
 		}
+		
 			
 		
 		
@@ -526,10 +480,11 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else {
 				this._contextFrame= downloadedContext;
 			}
-			
+			this._resolveBlankNodesNoFraming=false;
 		}else {
 			this._contextFrame=null;
 			this._context= null;
+			this._resolveBlankNodesNoFraming=true;
 		}
 		
 
@@ -614,5 +569,75 @@ public class TitaniumWrapper implements IConverterJRDF {
 		return list;
 	}
 
+//	public boolean isEnableResolveBlankNodesNoFraming() {
+//		return _resolveBlankNodesNoFraming;
+//	}
+//
+//	public void setResolveBlankNodesNoFraming(boolean enable) {
+//		this._resolveBlankNodesNoFraming = enable;
+//	}
+
+	protected JsonObject resolveBNodes(JsonArray ja) {
+		JsonObject entity=null;
+		String bnodesStart = "_:";
+		HashMap<String,JsonObject> bnodes = new HashMap<String,JsonObject> ();
+		for (int x=0;x<ja.size();x++) {
+			JsonValue jsonValue=ja.get(x);
+			if(jsonValue.getValueType() == ValueType.OBJECT) {
+				JsonObject actual = (JsonObject)jsonValue;
+				if(actual.containsKey("@id")) {
+					String id = actual.getString("@id");
+					if(id.startsWith(bnodesStart)) {
+						bnodes.put(id, Json.createObjectBuilder(actual).remove("@id").build());
+					}else {
+						entity= actual;
+					}
+				}else {
+					System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a JsonObject without @id (that will ignored)");
+				}
+			}else {
+				System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a not JsonObject (that will ignored)");
+			}
+		}
+		if(entity!=null) {
+			entity=resolveBnodes(entity,bnodes);
+		}else {
+			System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes not found main JsonObject");
+		}
+		return entity;
+	}
 	 
+	private JsonObject resolveBnodes(JsonObject obj,HashMap<String,JsonObject> bnodes ) {
+		JsonObjectBuilder ris =  Json.createObjectBuilder();
+		for (String key : obj.keySet()) {
+			JsonValue innerobj = obj.get(key);
+			if(innerobj.getValueType()==ValueType.ARRAY) {
+				JsonArrayBuilder newArray = Json.createArrayBuilder();
+				JsonArray array = ((JsonArray) innerobj);
+				for (JsonValue jsonValue : array) {
+					boolean notFound = true;
+					if(jsonValue.getValueType()==ValueType.OBJECT) {
+						JsonObject possible_b_node=(JsonObject)jsonValue;
+						if(possible_b_node.containsKey("@id") ) {
+							String id = possible_b_node.getString("@id");
+							if(bnodes.containsKey(id)) {
+								JsonObject actual= resolveBnodes(bnodes.get(id),bnodes);
+								notFound=false;
+								newArray.add(actual);
+							}
+							
+						}
+					}
+					if(notFound) {
+						newArray.add(jsonValue);
+					}
+				}
+				ris.add(key,newArray);
+			}
+			else {
+				ris.add(key,obj.get(key));
+			}
+		} 
+		return ris.build();
+	}
 }

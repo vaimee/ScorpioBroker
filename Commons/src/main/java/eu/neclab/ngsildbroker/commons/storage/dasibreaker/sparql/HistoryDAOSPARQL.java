@@ -2,6 +2,7 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,14 @@ import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IHistoryDAO;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
+import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
+import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
+import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
+import it.unibo.arces.wot.sepa.commons.response.ErrorResponse;
+import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
+import it.unibo.arces.wot.sepa.commons.response.Response;
+import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 
 @Repository
 public class HistoryDAOSPARQL extends StorageReaderDAOSPARQL  implements IHistoryDAO{
@@ -40,22 +49,54 @@ public class HistoryDAOSPARQL extends StorageReaderDAOSPARQL  implements IHistor
 
 	@Override
 	public String translateNgsildQueryToSql(QueryParams qp) throws ResponseException {
-
+				System.out.print("MIAO");
 		return null;
 	}
 
 	private String getSqlWhereForField(String dbColumn, String value) {
+		System.out.print("MIAO2");
 		return null;
 	}
 
 	public String translateNgsildTimequeryToSql(String timerel, String time, String timeproperty, String endTime,
 			String dbPrefix) throws ResponseException {
-
+		System.out.print("MIAO3");
 		return null;
 	}
 
 	public boolean entityExists(String entityId) {
-		return true;
+		//that query can just look for the entityId
+
+		HashSet<String> entityList = new HashSet<String>();
+		//SELECT id FROM entity
+		String sparql = "SELECT ?e WHERE "+
+					"{\nGRAPH ?e\n{?s ?p ?o}\n"+
+					"\nGRAPH <"+entityId+"/"+DBConstants.DBTABLE_TEMPORALENTITY+">\n{?s ?p ?o}\n}\n";
+				
+
+		System.out.println("EntityInfoDAOSPARQL.getAllIds.SPARLQ:\n"+sparql+ "\n");
+		try {
+			Response res= SepaGateway.getInstance().executeQuery(sparql);
+			if(res.isError()) {
+				System.err.print(((ErrorResponse)res).getError());
+			}else {
+				for (Bindings bind : ((QueryResponse)res).getBindingsResults().getBindings()) {
+					entityList.add(bind.getRDFTerm("e").getValue());
+				}
+			}
+		} catch (SEPASecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SEPABindingsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if(entityList.size()>0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 }
