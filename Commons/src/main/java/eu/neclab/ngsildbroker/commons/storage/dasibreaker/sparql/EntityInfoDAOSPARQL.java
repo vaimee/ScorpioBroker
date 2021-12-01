@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
+import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IEntityInfoDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
@@ -29,8 +30,8 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 	public Set<String> getAllIds() {
 		//SELECT id FROM entity
 		String termVarName = "id";
-		String idPredicate = SPARQLConstant.NGSI_GRAPH_PREFIX + DBConstants.DBCOLUMN_ID;
-		String filter = "FILTER(regex(str(?g),\"^"+SPARQLConstant.NGSI_GRAPH_PREFIX+DBConstants.DBTABLE_ENTITY+".\"))";
+		String idPredicate = NGSIConstants.NGSI_LD_DEFAULT_PREFIX + DBConstants.DBCOLUMN_ID;
+		String filter = "FILTER(regex(str(?g),\"^/"+DBConstants.DBTABLE_ENTITY+".\"))";
 		String sparql = "SELECT ?"+termVarName+
 					" WHERE {\nGRAPH ?g\n{?s <"+idPredicate+"> ?"+termVarName+"}\n "+
 					filter+"}";
@@ -101,9 +102,4 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 	}
 	
 
-//public String getEntity(String entityId) {
-//	logger.info("\ncall on DAO ====> EntityInfoDAOSQL.getEntity <====\n");
-//	List<String> tempList = readerJdbcTemplate.queryForList("SELECT data FROM entity WHERE id='" + entityId + "'", String.class);
-//	return tempList.get(0);
-//}
 }

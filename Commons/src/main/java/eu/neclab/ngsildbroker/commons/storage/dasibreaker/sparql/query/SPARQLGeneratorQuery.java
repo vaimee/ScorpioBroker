@@ -1,6 +1,7 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
+import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 public class SPARQLGeneratorQuery extends SPARQLGenerator {
@@ -70,14 +71,14 @@ public class SPARQLGeneratorQuery extends SPARQLGenerator {
 		String piggyTypeTriple ="";
 		if(needPiggyType) {
 			piggyTypeVar=" ?type ";
-			piggyTypeTriple=" ?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+DBConstants.DBCOLUMN_TYPE+"> ?type.\n";
+			piggyTypeTriple=" ?subject <"+NGSIConstants.NGSI_LD_DEFAULT_PREFIX+DBConstants.DBCOLUMN_TYPE+"> ?type.\n";
 		}
 		//--------------
 
 		String regexTable = SPARQLGenerator.generateURIRegex("?g", ".*", super._table, null);
 		String ngsi_part = "";//before fix: "?s \n";
 		if(ngsi_params!=null) {
-			String json_b_link = "?subject <"+SPARQLConstant.NGSI_GRAPH_PREFIX+jsonbColumn+"> ?e.\n";
+			String json_b_link = "?subject <"+NGSIConstants.NGSI_LD_DEFAULT_PREFIX+jsonbColumn+"> ?e.\n";
 			ngsi_part="GRAPH ?g {\n"+
 					json_b_link +
 					piggyTypeTriple + //void or not void, following needPiggyType false or true

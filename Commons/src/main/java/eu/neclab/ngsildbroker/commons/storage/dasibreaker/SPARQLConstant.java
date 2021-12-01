@@ -1,6 +1,7 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
+import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 
 public class SPARQLConstant {
 	
@@ -16,8 +17,6 @@ public class SPARQLConstant {
 	public static final String SPARQL_COLUMN = "ngsitosparql";
 
 	public static final String HAS_DATA = "hasData";
-	public static final String NGSI_GRAPH_PREFIX = "http://localhost:3000/ngsi/";//"http://ngsi/";
-	public static final String BLANK_NODE =NGSI_GRAPH_PREFIX+"blanknode/";
 	
 	public static final String RDFS_PREFIX ="PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
 	
@@ -31,12 +30,6 @@ public class SPARQLConstant {
 	public static final String[] XSD_ALLOWED ={"int","integer","float",
 			"double","boolean","decimal","long"};
 
-	
-	public static final String isJsonObject=SPARQLConstant.NGSI_GRAPH_PREFIX +"isJsonObject";
-	public static final String isJsonArray=SPARQLConstant.NGSI_GRAPH_PREFIX +"isJsonArray";
-	public static final String balnkNode="_:b";//SPARQLConstant.NGSI_GRAPH_PREFIX +"bn";
-	public static final String arrayPos="rdfs:_";//https://ontola.io/blog/ordered-data-in-rdf/
-	public static final String root=SPARQLConstant.NGSI_GRAPH_PREFIX +"root";
 	public static final String rdfType="rdfs:type";//@type and type
 	public static final String rdfId="rdfs:Resource"; //@id and id
 	//rdf:ID is discouraged: https://stackoverflow.com/questions/7118326/differences-between-rdfresource-rdfabout-and-rdfid

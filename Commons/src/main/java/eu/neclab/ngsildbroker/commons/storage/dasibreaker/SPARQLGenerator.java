@@ -9,6 +9,8 @@ import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.RdfDocument;
+
+import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import jakarta.json.JsonArray;
 
 //JSONLD-RDF-SPARQL-Converter
@@ -97,7 +99,7 @@ public class SPARQLGenerator {
 //		}else {
 //			return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content+">";
 //		}
-		return "<"+SPARQLConstant.NGSI_GRAPH_PREFIX+scorpio_content+">";
+		return "<"+NGSIConstants.NGSI_LD_DEFAULT_PREFIX+scorpio_content+">";
 	}
 
 	/*
