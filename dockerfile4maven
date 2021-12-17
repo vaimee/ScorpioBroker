@@ -1,4 +1,4 @@
-FROM openjdk:11-jre
+FROM openjdk:13.0.2-jdk
 
 WORKDIR /usr/src/scorpio
 

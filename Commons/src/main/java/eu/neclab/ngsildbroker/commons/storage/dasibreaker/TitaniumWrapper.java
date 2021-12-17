@@ -40,8 +40,13 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TitaniumWrapper implements IConverterJRDF {
+	
+	private final static Logger logger = LogManager.getLogger(TitaniumWrapper.class);
+	
 	private static HashMap<String,String> contextMap = new HashMap<String,String> ();
 	private static HashMap<String,Long> contextUTCMap = new HashMap<String,Long> ();
 	private static long contextAgeThreshold = 60000;//1h
@@ -58,7 +63,6 @@ public class TitaniumWrapper implements IConverterJRDF {
 	}
 	
 	public String JSONtoRDF(String json) throws Exception {
-//		System.out.println("\n--------------------JSON converter:\n"+json);
 		Reader targetReader = new StringReader(json);
 		Document document = JsonDocument.of(targetReader);
 		RdfDataset rdfdataset = JsonLd.toRdf(document).get();
@@ -190,7 +194,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 				nquads.put(entityGraph,triples);
 			}
 		}
-		System.out.println("RDFtoJson triple builder: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
+		logger.trace("RDFtoJson triple builder: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
 		startTime1 = System.nanoTime();
 		for (String key : nquads.keySet()) {
 			String rdf_triples= "";
@@ -204,7 +208,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 				piggyType=piggyTipes.get(key);
 			}
 			String jsonStr = nQuadsToJson(rdf_triples,piggyType,filterBy);
-			System.out.println("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+			logger.trace("nQuadsToJson: "  +(System.nanoTime() - startTime)/1000000 +"ms");
 			
 			if(containsDoubleQuotesEncoding(jsonStr)) {
 				ris.add(decodeDoubleQuotes(jsonStr));
@@ -212,7 +216,8 @@ public class TitaniumWrapper implements IConverterJRDF {
 				ris.add(jsonStr);
 			}
 		}
-		System.out.println("RDFtoJson nQuadsToJson for["+nquads.keySet().size()+"]: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
+		logger.trace("RDFtoJson nQuadsToJson for["+nquads.keySet().size()+"]: "  +(System.nanoTime() - startTime1)/1000000 +"ms");
+		
 		return ris;
 	}
 	
@@ -261,7 +266,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 
 				long startTime = System.nanoTime();
 				JsonObject jo = JsonLd.frame(notFramed, frame).get();
-				System.out.println("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
+				logger.trace("JsonLd.frame: "  +(System.nanoTime() - startTime)/1000000 +"ms");
 				entity =jo;
 			}
 		}
@@ -292,7 +297,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 				if(ja.size()==0) {
 					return "";
 				}
-				System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+				logger.warn("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
 				return filter(ja.getJsonObject(0),filterBy).toString();
 			}
 		}else {
@@ -302,7 +307,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 				if(ja.size()==0) {
 					return "";
 				}
-				System.out.println("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
+				logger.warn("WARNING: WitaniumWrapper.nQuadsToJson, Entity without framing, blank nodes will be not resolved!");
 				return ja.getJsonObject(0).toString();
 			}
 		}
@@ -359,7 +364,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else if(obj.containsKey("id")){
 				ris.add("id",obj.get("id"));
 			}else {
-				System.out.println("Warning: TitaniumWrapper.filter, found Entity without @id/id");
+				logger.warn("Warning: TitaniumWrapper.filter, found Entity without @id/id");
 			}
 		}
 		if(!typeDone) {
@@ -368,7 +373,7 @@ public class TitaniumWrapper implements IConverterJRDF {
 			}else if(obj.containsKey("type")) {
 				ris.add("type",obj.get("type"));
 			}else{
-				System.out.println("Warning: TitaniumWrapper.filter, found Entity without @type/type");
+				logger.warn("Warning: TitaniumWrapper.filter, found Entity without @type/type");
 			}
 		}
 		return ris.build();
@@ -463,10 +468,10 @@ public class TitaniumWrapper implements IConverterJRDF {
 					contextUTCMap.put(sanitizzeURL, System.currentTimeMillis());
 		        }
 		        catch (MalformedURLException e) {
-		            System.out.println("Malformed URL: " + e.getMessage());
+		        	logger.error("Malformed URL: " + e.getMessage());
 		        }
 		        catch (IOException e) {
-		            System.out.println("I/O Error: " + e.getMessage());
+		        	logger.error("I/O Error: " + e.getMessage());
 		        }
 			}
 
@@ -593,16 +598,16 @@ public class TitaniumWrapper implements IConverterJRDF {
 						entity= actual;
 					}
 				}else {
-					System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a JsonObject without @id (that will ignored)");
+					logger.warn("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a JsonObject without @id (that will ignored)");
 				}
 			}else {
-				System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a not JsonObject (that will ignored)");
+				logger.warn("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes found a not JsonObject (that will ignored)");
 			}
 		}
 		if(entity!=null) {
 			entity=resolveBnodes(entity,bnodes);
 		}else {
-			System.out.println("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes not found main JsonObject");
+			logger.warn("Warning: TitaniumWrapper.nQuadsToJson resolving blank nodes not found main JsonObject");
 		}
 		return entity;
 	}

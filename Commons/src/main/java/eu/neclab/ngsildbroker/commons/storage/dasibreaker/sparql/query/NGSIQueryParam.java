@@ -2,13 +2,7 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
-
-import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryTerm;
-import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 
 
 

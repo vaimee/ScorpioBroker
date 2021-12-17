@@ -1,7 +1,5 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import com.apicatalog.jsonld.JsonLdError;
 
 

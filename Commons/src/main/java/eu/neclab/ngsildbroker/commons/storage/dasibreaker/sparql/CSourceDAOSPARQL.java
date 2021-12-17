@@ -6,16 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Repository;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.GeoqueryRel;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryParams;
-import eu.neclab.ngsildbroker.commons.enums.ErrorType;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
 import eu.neclab.ngsildbroker.commons.storage.StorageReaderDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ICSourceDAO;
@@ -55,18 +52,15 @@ public class CSourceDAOSPARQL extends StorageReaderDAO implements ICSourceDAO {
 		return Collections.unmodifiableMap(map);
 	}
 
-	private boolean externalCsourcesOnly = false; 
 	
 	@Override
 	public List<String> query(QueryParams qp) {
 		logger.info("\ncall on DAO ====> CSourceDAOSPARQRL.query <====\n");
-		this.externalCsourcesOnly = false;
 		return super.query(qp);
 	}
 	
 	public List<String> queryExternalCsources(QueryParams qp) throws SQLException {
 		logger.info("\ncall on DAO ====> CSourceDAOSPARQL.queryExternalCsources <====\n");
-		this.externalCsourcesOnly = true;
 		return super.query(qp);
 	}
 
@@ -167,135 +161,6 @@ public class CSourceDAOSPARQL extends StorageReaderDAO implements ICSourceDAO {
 		*/
 	}
 
-	private String getCommonSqlWhereForTypeIdIdPattern(String typeValue, String idValue, String idPatternValue) {
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		logger.info("\ncall on DAO ====> CSourceDAOSPARQL.getCommonSqlWhereForTypeIdIdPattern <====\n");
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		return "";
-		/*
-		String sqlWhere = "";
-		if (idValue.isEmpty() && idPatternValue.isEmpty()) { // case 1: type only
-			sqlWhere += getSqlWhereByType(typeValue, false);
-		} else if (!idValue.isEmpty() && idPatternValue.isEmpty()) { // case 2: type+id
-			sqlWhere += "(";				
-			sqlWhere += getSqlWhereByType(typeValue, true);
-			sqlWhere += " OR ";
-			sqlWhere += getSqlWhereById(typeValue, idValue);
-			sqlWhere += ")";
-		} else if (idValue.isEmpty() && !idPatternValue.isEmpty()) { // case 3: type+idPattern
-			sqlWhere += "(";				
-			sqlWhere += getSqlWhereByType(typeValue, true);
-			sqlWhere += " OR ";
-			sqlWhere += getSqlWhereByIdPattern(typeValue, idPatternValue);
-			sqlWhere += ")";
-		}
-		return sqlWhere;
-		*/
-	}
-	
-	private String getSqlWhereByType(String typeValue, boolean includeIdAndIdPatternNullTest) {
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		logger.info("\ncall on DAO ====> CSourceDAOSPARQL.getSqlWhereByType <====\n");
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		return "";
-		/*
-		String sqlWhere = "(";
-		if (typeValue.indexOf(",") == -1) {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " = '" + typeValue + "' ";
-		} else {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " IN ('" + typeValue.replace(",", "','") + "') ";
-		}
-		if (includeIdAndIdPatternNullTest)
-			sqlWhere += "AND ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_ID + " IS NULL AND "
-					  + "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_IDPATTERN + " IS NULL";
-		sqlWhere += ")";
-		return sqlWhere;
-		*/
-	}
-	
-	private String getSqlWhereById(String typeValue, String idValue) {
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		logger.info("\ncall on DAO ====> CSourceDAOSQL.getSqlWhereById <====\n");
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		return "";
-		/*
-		String sqlWhere = "( ";
-	
-		if (typeValue.indexOf(",") == -1) {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " = '" + typeValue + "' AND ";
-		} else {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " IN ('" + typeValue.replace(",", "','") + "') AND ";
-		}
-		
-		if (idValue.indexOf(",") == -1) {
-			sqlWhere += "(" + "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_ID + " = '" + idValue + "' OR " + "'"
-					+ idValue + "' ~ " + "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_IDPATTERN + ")";
-		} else {			
-			String[] ids = idValue.split(",");
-			String whereId = "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_ID + " IN ( ";
-			String whereIdPattern = "(";
-			for (String id : ids) {
-				whereId += "'" + id + "',";
-				whereIdPattern += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_IDPATTERN + " ~ '" + id
-						+ "' OR ";
-			}
-			whereId = StringUtils.chomp(whereId, ",");
-			whereIdPattern = StringUtils.chomp(whereIdPattern, "OR ");
-			whereId += ")";
-			whereIdPattern += ")";
-	
-			sqlWhere += "(" + whereId + " OR " + whereIdPattern + ")";
-		}
-		
-		sqlWhere += " )";		
-		return sqlWhere;
-		*/
-	}
-	
-	private String getSqlWhereByIdPattern(String typeValue, String idPatternValue) {
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		logger.info("\ncall on DAO ====> CSourceDAOSQL.getSqlWhereByIdPattern <====\n");
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		return "";
-		/*
-		String sqlWhere = "( ";
-		if (typeValue.indexOf(",") == -1) {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " = '" + typeValue + "' AND ";
-		} else {
-			sqlWhere += "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_TYPE + " IN ('" + typeValue.replace(",", "','") + "') AND ";
-		}
-		sqlWhere += "(" + "ci." + DBCOLUMN_CSOURCE_INFO_ENTITY_ID + " ~ '" + idPatternValue + "' OR "
-				+ "ci." +  DBCOLUMN_CSOURCE_INFO_ENTITY_IDPATTERN + " ~ '" + idPatternValue + "')";					
-		sqlWhere += " )";		
-		return sqlWhere;
-		*/
-	}	
-	
-	private String getSqlWhereByAttrsInTypeFiltering(String attrsValue) {
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		logger.info("\ncall on DAO ====> CSourceDAOSQL.getSqlWhereByAttrsInTypeFiltering <====\n");
-		logger.info("\ncall on DAO ====> NOT IMPLEMENTED YET <====\n");
-		return "";
-		/*
-		String sqlWhere;		
-		sqlWhere = "( " + 
-				"NOT EXISTS (SELECT 1 FROM csourceinformation ci2 " + 
-				"	          WHERE ci2.group_id = ci.group_id AND " + 
-				"	                (ci2.property_id IS NOT NULL OR ci2.relationship_id IS NOT NULL)) " + 
-				"OR " + 
-				"EXISTS (SELECT 1 FROM csourceinformation ci3 " + 
-				"        WHERE ci3.group_id = ci.group_id AND " ;	
-		if (attrsValue.indexOf(",") == -1) {
-			sqlWhere +=	"(ci3.property_id = '" + attrsValue + "' OR " + 
-						" ci3.relationship_id = '" + attrsValue + "') ";
-		} else {
-			sqlWhere +=	"(ci3.property_id IN ('" + attrsValue.replace(",", "','") + "') OR " + 
-						" ci3.relationship_id IN ('" + attrsValue.replace(",", "','") + "') ) ";			
-		}		
-		sqlWhere += ") )"; 		
-		return sqlWhere;
-		*/
-	}
 	
 	// TODO: SQL input sanitization
 	// TODO: property of property

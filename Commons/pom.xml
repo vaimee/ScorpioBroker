@@ -13,25 +13,14 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
-	<!--Forcing JAVA version, for maven build error (java 52-55) (no success) 
+
+
 	
-	<build>
-        <plugins>
-			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-compiler-plugin</artifactId>
-			  <version>3.8.0</version>
-			   <configuration>
-			        <source>1.6</source>
-			        <target>1.6</target>
-			        <verbose>true</verbose>
-			    </configuration>
-			</plugin>
-        </plugins>
-	</build> 
-	-->
 	
 	<dependencies>
+	
+
+		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -44,11 +33,6 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-web</artifactId> 
-			<exclusions> <exclusion> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-logging</artifactId> 
-			</exclusion> </exclusions> </dependency> <dependency> <groupId>org.springframework.boot</groupId> 
-			<artifactId>spring-boot-starter-log4j2</artifactId> </dependency> -->
-
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -90,69 +74,42 @@
 			<version>1.2.21</version>
 		</dependency>
 		
-	<!-- Added by VAIMEE for DASI-BREAKER project-->
+
+		<!-- Added by VAIMEE for DASI-BREAKER project-->
 	
-	<!-- 	<dependency>
-		    <groupId>org.springframework.data</groupId>
-		    <artifactId>spring-data-elasticsearch</artifactId>
-		   
-		   		<version>3.2.5.RELEASE</version>
-		    		
-		</dependency> -->
 		<dependency>
 		    <groupId>org.glassfish</groupId>
 		    <artifactId>jakarta.json</artifactId>
 		    <version>2.0.0</version>
-		</dependency> 
-	<!--that Titanium lib ref can't build from maven (java 52-55 error)
-	 	
-	-->
+		</dependency>
+		
 		<dependency>
 		    <groupId>com.apicatalog</groupId>
 		    <artifactId>titanium-json-ld</artifactId>
 		    <version>1.1.0</version>
 		</dependency>
 		
-		<!-- This ref is local, we have to change it -->
-	<!-- 	 <dependency>
-		    <groupId>com.apicatalog</groupId>
-		    <artifactId>titanium-json-ld</artifactId>
-		    <version>1.1.1</version>
-		    <scope>system</scope>
-		    <systemPath>/${project.basedir}/lib/titanium-json-ld-1.1.1.jar</systemPath>
+
+		<dependency>
+		  <groupId>it.unibo.arces.wot</groupId>
+		  <artifactId>client-api</artifactId>
+		  <version>v0.11.4</version>
+		  <exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+					<exclusion>
+				<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		 -->
-		<!-- This ref is local, we have to change it -->
-		 <dependency>
-		    <groupId>com.client.api</groupId>
-		    <artifactId>client-api</artifactId>
-		    <version>1.0</version>
-		    <scope>system</scope>
-		    <systemPath>/${project.basedir}/lib/client-api-0-SNAPSHOT.jar</systemPath>
-		</dependency>  
-		<!-- <dependency>
-			<groupId>it.unibo.arces.wot</groupId>
-			<artifactId>client-api</artifactId>
-			<version>0-SNAPSHOT</version>
-		</dependency> -->
 	</dependencies>
 	
-	<!-- <dependencyManagement>
-	    <dependencies>
-	      <dependency>
-	        <groupId>it.unibo.arces.wot</groupId>
-	        <artifactId>client-api</artifactId>
-	        <exclusions>
-	          <exclusion>
-	            <groupId>org.apache.logging.log4j</groupId>
-	            <artifactId>log4j-api</artifactId>
-	          </exclusion>
-	          <exclusion>
-	            <groupId>org.apache.logging.log4j</groupId>
-	            <artifactId>log4j-core</artifactId>
-	          </exclusion>
-	        </exclusions>
-	      </dependency>
-	    </dependencies>
-    </dependencyManagement> -->
 </project>
+

@@ -1,6 +1,7 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -23,6 +24,8 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.EntityStorageReade
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.HistoryDAOSQL;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.sql.StorageReaderDAOSQL;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 enum QueryLanguage {
 	SQL,
@@ -33,7 +36,8 @@ enum QueryLanguage {
 @Component
 public class QueryLanguageFactory {
 	
-	private final static QueryLanguage entityHandlerType = QueryLanguage.SPARQL;
+	private final static Logger logger = LogManager.getLogger(QueryLanguageFactory.class);
+	private static QueryLanguage entityHandlerType = QueryLanguage.SPARQL;
 
 	@Autowired
 	private  ApplicationContext context;
@@ -44,6 +48,19 @@ public class QueryLanguageFactory {
 	}
 	
 	public QueryLanguageFactory() {
+	    Map<String, String> env = System.getenv();
+	    String queryLanguage= env.get("QUERY_LANGUAGE");
+		if(queryLanguage!=null) {
+			if(queryLanguage.compareTo("SPARQL")==0) {
+				entityHandlerType= QueryLanguage.SPARQL;	
+				logger.info("SETUP-INFO: query language setted to SPARQL");
+			}else if(queryLanguage.compareTo("SQL")==0){
+				entityHandlerType= QueryLanguage.SQL;		
+				logger.info("SETUP-INFO: query language setted to SQL");
+			}else {
+				logger.warn("Warning: not valid enviroment variable 'QUERY_LANGUAGE' value: "+queryLanguage);
+			}
+    	}
 		instance = this;
 	}
 

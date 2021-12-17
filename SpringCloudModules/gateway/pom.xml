@@ -27,6 +27,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			
+			<exclusions><!-- Added by VAIMEE  -->
+			    <exclusion>
+			        <groupId>org.apache.logging.log4j</groupId>
+			        <artifactId>log4j-to-slf4j</artifactId>
+			    </exclusion>
+		    </exclusions><!-- Added by VAIMEE  -->
+		    
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

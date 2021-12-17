@@ -13,7 +13,6 @@ import com.google.gson.JsonParser;
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.TemporalEntityStorageKey;
 import eu.neclab.ngsildbroker.commons.serialization.DataSerializer;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGeneratorUpdate;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IStorageWriterDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
@@ -96,7 +95,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 			String attributeId = tesk.getAttributeId();
 			String instanceId = tesk.getInstanceId();
 			Boolean overwriteOp = tesk.getOverwriteOp();
-			Integer n = 0;
+			//Integer n = 0;
 			
 //			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityId: "+entityId+"\n");
 //			logger.info("\ncall on DAO ====> StorageWriterDAOSQL.storeTemporalEntity.entityType: "+entityType+"\n");
@@ -221,7 +220,7 @@ public class StorageWriterDAOSPARQL implements IStorageWriterDAO {
 	public boolean storeEntity(String key, String value, String valueWithoutSysAttrs, String kvValue)
 			throws SQLTransientConnectionException {
 	
-		int n = 0;//not used yet
+		//int n = 0;//not used yet
 		
 
 //		SPARQLGeneratorUpdate gen = new SPARQLGeneratorUpdate(DBConstants.DBTABLE_ENTITY,key,true);

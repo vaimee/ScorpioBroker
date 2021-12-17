@@ -1,14 +1,13 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.datatypes.QueryTerm;
 import eu.neclab.ngsildbroker.commons.exceptions.ResponseException;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 
 
 /*
@@ -27,6 +26,8 @@ import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
  */
 public class NGSIQueryTerm {
 
+	private final static Logger logger = LogManager.getLogger(NGSIQueryTerm.class);
+	
 	
 	private String vars;
 	private String hv_vars;
@@ -71,7 +72,7 @@ public class NGSIQueryTerm {
 				
 				expandAttributePrefix=NGSIConstants.NGSI_LD_DEFAULT_PREFIX;
 				expandAttribute=expandAttributePrefix+attribute;
-				System.out.print("WARNING: NGSIQueryTerm.costructor :"+e1.getMessage());
+				logger.warn("WARNING: NGSIQueryTerm.costructor :"+e1.getMessage());
 			}
 			
 			hv_vars="";

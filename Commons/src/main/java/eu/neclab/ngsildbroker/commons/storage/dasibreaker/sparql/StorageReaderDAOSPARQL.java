@@ -31,7 +31,6 @@ import it.unibo.arces.wot.sepa.commons.response.ErrorResponse;
 import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 import it.unibo.arces.wot.sepa.commons.response.Response;
 import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
-
  public class StorageReaderDAOSPARQL implements IStorageReaderDao {
 
 	private final static Logger logger = LogManager.getLogger(StorageReaderDAOSPARQL.class);
@@ -76,9 +75,9 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 				BindingsResults binds;
 				if(success) {
 					binds=((QueryResponse)res).getBindingsResults();
-					System.out.println("Real Query time: "  +(System.nanoTime() - startTime2)/1000000 +"ms");
+					logger.trace("Real Query time: "  +(System.nanoTime() - startTime2)/1000000 +"ms");
 				}else {
-					System.err.print(((ErrorResponse)res).getError());
+					logger.error(((ErrorResponse)res).getError());
 					return new ArrayList<String>();
 				}
 				IConverterJRDF converter =QueryLanguageFactory.getConverterJRDF();
@@ -117,7 +116,7 @@ import it.unibo.arces.wot.sepa.commons.sparql.BindingsResults;
 
 					long endTime = System.nanoTime();
 					long duration = (endTime - startTime)/1000000; 
-					System.out.println("TOT query time: "  +duration +"ms");
+					logger.trace("TOT query time: "  +duration +"ms");
 					return list;
 				}
 			}

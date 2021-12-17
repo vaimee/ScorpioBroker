@@ -1,10 +1,5 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Repository;
 
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IEntityStorageReaderDAO;
 

@@ -2,7 +2,6 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
 import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 public class SPARQLGeneratorQuery extends SPARQLGenerator {
 

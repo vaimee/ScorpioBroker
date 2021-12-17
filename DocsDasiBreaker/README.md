@@ -20,18 +20,9 @@ Config-Server: ./SpringCloudModules/config-server/src/main/java/eu/neclab/ngsild
 AllInOne: ./home/tsg/Documents/ScorpioBrokerFork/AllInOneRunner/src/main/java/eu/neclab/ngsildbroker/runner/Runner.java
 Gateway: ./SpringCloudModules/gateway/src/main/java/eu/neclab/ngsildbroker/gateway/GatewayApplication.java
 
+# Build
+register github credential at /home/user/.m2/settings.xml, to allow maven to access at github repositories.
 
-# working paths
-sub-project: commons
-path: eu.neclab.ngsildbroker.commons.storage.dasibreaker
-(deprecated)
+sudo mvn clean package --settings /home/user/.m2/settings.xml -DskipTests -DskipDefault -Pdocker-aaio
 
-sub-project: core
-path: eu.neclab.ngsildbroker.entityhandler.controller.dasibreaker
-(working)
-
-
-#the idea
-
-![alt text](https://github.com/vaimee/ScorpioBroker/blob/dasi-breaker-main/DocsDasiBreaker/uml.jpg?raw=true)
 

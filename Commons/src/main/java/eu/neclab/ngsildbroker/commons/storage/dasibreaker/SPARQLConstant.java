@@ -1,7 +1,6 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
-import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 
 public class SPARQLConstant {
 	

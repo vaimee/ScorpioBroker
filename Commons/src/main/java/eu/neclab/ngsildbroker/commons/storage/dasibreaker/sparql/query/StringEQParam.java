@@ -3,7 +3,6 @@ package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 
 public class StringEQParam implements IParam {
 

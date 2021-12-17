@@ -16,7 +16,7 @@ public class SepaGateway {
 	
 	private static SepaGateway instance=null;
 	public static SepaGateway getInstance() throws SEPASecurityException {
-		System.out.println("\n###############################\n DAO setted on SPARQL\n###############################\n");
+		//System.out.println("\n###############################\n DAO setted on SPARQL\n###############################\n");
 		if(instance==null) {
 			instance=new SepaGateway();
 		}
@@ -40,14 +40,14 @@ public class SepaGateway {
 	private SepaGateway() throws SEPASecurityException {
 	    Map<String, String> env = System.getenv();
 	  
-    	if(env.get("sepaHost")!=null) {
-    		host= env.get("sepaHost");
+    	if(env.get("SEPA_HOST")!=null) {
+    		host= env.get("SEPA_HOST");
     	}
-    	if(env.get("sepaPort")!=null) {
-    		port= Integer.parseInt(env.get("sepaPort"));
+    	if(env.get("SEPA_PORT")!=null) {
+    		port= Integer.parseInt(env.get("SEPA_PORT"));
     	}
-    	if(env.get("sepaScheme")!=null) {
-    		scheme= env.get("sepaScheme");
+    	if(env.get("SEPA_SCHEME")!=null) {
+    		scheme= env.get("SEPA_SCHEME");
     	}
     	
 		client= new SPARQL11Protocol();

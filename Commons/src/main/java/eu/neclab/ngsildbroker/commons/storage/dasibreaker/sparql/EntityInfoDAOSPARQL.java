@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.stereotype.Repository;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
@@ -11,10 +14,8 @@ import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IEntityInfoDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.TitaniumWrapper;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPASecurityException;
 import it.unibo.arces.wot.sepa.commons.response.ErrorResponse;
@@ -26,6 +27,8 @@ import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEntityInfoDAO {
 	
 
+
+	private final static Logger logger = LogManager.getLogger(EntityInfoDAOSPARQL.class);
 	
 	public Set<String> getAllIds() {
 		//SELECT id FROM entity
@@ -35,8 +38,7 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 		String sparql = "SELECT ?"+termVarName+
 					" WHERE {\nGRAPH ?g\n{?s <"+idPredicate+"> ?"+termVarName+"}\n "+
 					filter+"}";
-
-		System.out.println("EntityInfoDAOSPARQL.getAllIds.SPARLQ:\n"+sparql+ "\n");
+		logger.debug("EntityInfoDAOSPARQL.getAllIds.SPARLQ:\n"+sparql+ "\n");
 		try {
 			Response res= SepaGateway.getInstance().executeQuery(sparql);
 			if(res.isError()) {
@@ -74,7 +76,7 @@ public class EntityInfoDAOSPARQL extends StorageReaderDAOSPARQL implements IEnti
 			"GRAPH ?e { ?s ?p ?o}\n"+
 			"GRAPH ?e { <"+entityId+"> rdf:type ?type}\n"+
 			"VALUES(?e){(<"+graph+">)}}\n";
-		System.out.println("EntityInfoDAOSPARQL.getEntity.SPARLQ:\n"+sparql+ "\n");
+		logger.debug("EntityInfoDAOSPARQL.getEntity.SPARLQ:\n"+sparql+ "\n");
 	
 		try {
 			Response res= SepaGateway.getInstance().executeQuery(sparql);

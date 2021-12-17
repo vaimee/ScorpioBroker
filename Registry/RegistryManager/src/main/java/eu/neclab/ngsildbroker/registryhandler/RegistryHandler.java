@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -23,6 +24,7 @@ import eu.neclab.ngsildbroker.registryhandler.config.CSourceProducerChannel;
 
 //@Component(immediate=true)
 @SpringBootApplication
+@ComponentScan({"eu.neclab.ngsildbroker.commons"})
 @EnableBinding({ CSourceProducerChannel.class, AtContextProducerChannel.class })
 @Import({CommonKafkaConfig.class, SwaggerConfigDetails.class})
 public class RegistryHandler {

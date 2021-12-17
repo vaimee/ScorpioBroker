@@ -1,13 +1,14 @@
 package eu.neclab.ngsildbroker.commons.storage.dasibreaker.sparql;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import eu.neclab.ngsildbroker.commons.constants.DBConstants;
@@ -15,7 +16,6 @@ import eu.neclab.ngsildbroker.commons.constants.NGSIConstants;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.IConverterJRDF;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.ISubscriptionInfoDAO;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.QueryLanguageFactory;
-import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLConstant;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SPARQLGenerator;
 import eu.neclab.ngsildbroker.commons.storage.dasibreaker.SepaGateway;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
@@ -25,10 +25,13 @@ import it.unibo.arces.wot.sepa.commons.response.QueryResponse;
 import it.unibo.arces.wot.sepa.commons.response.Response;
 import it.unibo.arces.wot.sepa.commons.sparql.Bindings;
 
+
 @Repository
 public class SubscriptionInfoDAOSPARQL extends StorageReaderDAOSPARQL  implements ISubscriptionInfoDAO{
 	
 
+	private final static Logger logger = LogManager.getLogger(SubscriptionInfoDAOSPARQL.class);
+	
 //	public String getEntity(String entityId) {
 //		logger.info("\ncall on DAO ====> SubscriptionInfoDAOSQL.getEntity <====\n");
 //		List<String> tempList = readerJdbcTemplate.queryForList("SELECT data FROM entity WHERE id='" + entityId + "'", String.class);
@@ -50,7 +53,7 @@ public class SubscriptionInfoDAOSPARQL extends StorageReaderDAOSPARQL  implement
 					" WHERE {\nGRAPH ?g\n{?s <"+idPredicate+"> ?"+termVarName+"}\n "+
 					filter+"}";
 
-		System.out.println("SubscriptionInfoDAOSPARQL.getAllIds.SPARLQ:\n"+sparql+ "\n");
+		logger.debug("SubscriptionInfoDAOSPARQL.getAllIds.SPARLQ:\n"+sparql+ "\n");
 		try {
 			Response res= SepaGateway.getInstance().executeQuery(sparql);
 			if(res.isError()) {
@@ -84,7 +87,7 @@ public class SubscriptionInfoDAOSPARQL extends StorageReaderDAOSPARQL  implement
 					" ?s <"+typePredicate+"> ?type.}\n"+
 					filter+"}";
 
-		System.out.println("SubscriptionInfoDAOSPARQL.getIds2Type.SPARLQ:\n"+sparql+ "\n");
+		logger.debug("SubscriptionInfoDAOSPARQL.getIds2Type.SPARLQ:\n"+sparql+ "\n");
 		Map<String, String> result =  new HashMap<String, String>();
 		
 		try {
@@ -119,7 +122,7 @@ public class SubscriptionInfoDAOSPARQL extends StorageReaderDAOSPARQL  implement
 			"GRAPH ?e { ?s ?p ?o}\n"+
 			"GRAPH ?e { <"+entityId+"> rdf:type ?type}\n"+
 			"VALUES(?e){(<"+graph+">)}}\n";
-		System.out.println("SubscriptionInfoDAOSPARQL.getEntity.SPARLQ:\n"+sparql+ "\n");
+		logger.debug("SubscriptionInfoDAOSPARQL.getEntity.SPARLQ:\n"+sparql+ "\n");
 	
 		try {
 			Response res= SepaGateway.getInstance().executeQuery(sparql);
