@@ -48,3 +48,9 @@ register github credential at /home/user/.m2/settings.xml, to allow maven to acc
 
 ```docker-compose -f docker-compose-aaio-sepa.yml up```
 
+That build contains: SEPA, blazegraph, SCOPRIO and all servicies required by SCORPIO
+
+To use SCORPIO with SQL (using postgis) set, in that docker-file, the environment var *QUERY_LANGUAGE* to ```SQL```.
+
+To use SCORPIO with SPARLQ (using SEPA and blazegraph) set, in that docker-file, the environment var *QUERY_LANGUAGE* to ```SPARQL```.
+
