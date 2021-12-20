@@ -1,5 +1,6 @@
+(Tested on Ubuntu 21.04)
+
 # Setup
-Using Ubuntu 21.04 (always use “sudo” for run eclipse too)
 
 Start 3 require services through docker 
 
