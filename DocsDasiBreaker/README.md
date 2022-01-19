@@ -1,3 +1,5 @@
+# <img src="./ScorpioRDFLogo.png" width="140" align="middle"> Scorpio RDF NGSI-LD Broker
+
 (Tested on Ubuntu 21.04)
 
 # Setup
