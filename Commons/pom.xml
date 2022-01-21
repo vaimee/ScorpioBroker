@@ -17,9 +17,7 @@
 
 	
 	
-	<dependencies>
-	
-
+	<dependencies>	
 		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

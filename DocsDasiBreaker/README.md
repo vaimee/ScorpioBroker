@@ -23,6 +23,19 @@ Gateway: ./SpringCloudModules/gateway/src/main/java/eu/neclab/ngsildbroker/gatew
 # Build
 register github credential at /home/user/.m2/settings.xml, to allow maven to access at github repositories.
 
-sudo mvn clean package --settings /home/user/.m2/settings.xml -DskipTests -DskipDefault -Pdocker-aaio
+sudo JAVA_HOME=/path/jdk-17.0.1/ mvn clean install --settings /home/user/.m2/settings.xml -DskipTests
+
+sudo JAVA_HOME=/path/jdk-17.0.1/ mvn clean package --settings /home/user/.m2/settings.xml -DskipTests -DskipDefault -Pdocker-aaio
+
+# Environment variables
+
+SEPA_HOST		=	"localhost"
+SEPA_PORT		=	8000
+SEPA_SCHEME		=	"http"
+SEPA_TIME_OUT		=	60000
+SEPA_HTTP_METHOD_QUERY	=	"post" || "encoded post" || "get"
+SEPA_HTTP_METHOD_UPDATE	=	"post" || "encoded post"
+SEPA_PATH_QUERY		=	"/query"
+SEPA_PATH_UPDATE	=	"/update"
 
 

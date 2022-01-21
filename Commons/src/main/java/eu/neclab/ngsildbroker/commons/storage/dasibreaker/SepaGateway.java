@@ -26,16 +26,15 @@ public class SepaGateway {
 	
 	protected SPARQL11Protocol client=null;
 	protected UpdateHTTPMethod httpMethod_u = UpdateHTTPMethod.POST;
+	protected String path_u="/sparql";
 	protected QueryHTTPMethod httpMethod_q = QueryHTTPMethod.POST;
+	protected String path_q="/sparql";
 	protected String host="localhost"; //default--> sepa and then take it from environment vars
 	protected int port=8000;
 //	private String authorization;//not implemented yet
 	protected String scheme = "http";
 	protected int timeOut =60000;
 	
-	protected String protocol="http";
-	protected String graph ="http://dasi.breaker.project/"; 
-	protected String ontology ="http://dasi.breaker.ngsi.ontology/"; 
 
 	private SepaGateway() throws SEPASecurityException {
 	    Map<String, String> env = System.getenv();
@@ -49,16 +48,41 @@ public class SepaGateway {
     	if(env.get("SEPA_SCHEME")!=null) {
     		scheme= env.get("SEPA_SCHEME");
     	}
+    	if(env.get("SEPA_TIME_OUT")!=null) {
+    		timeOut= Integer.parseInt(env.get("SEPA_TIME_OUT"));
+    	}
+
+    	if(env.get("SEPA_HTTP_METHOD_QUERY")!=null) {
+    		String method =env.get("SEPA_HTTP_METHOD_QUERY");
+    		if(method.toLowerCase().compareTo("post")==0) {
+    			httpMethod_u = UpdateHTTPMethod.POST;
+    		}else if(method.toLowerCase().compareTo("encoded post")==0){
+    			httpMethod_u = UpdateHTTPMethod.URL_ENCODED_POST;
+    		}
+    	}
+
+    	if(env.get("SEPA_HTTP_METHOD_QUERY")!=null) {
+    		String method =env.get("SEPA_HTTP_METHOD_QUERY");
+    		if(method.toLowerCase().compareTo("post")==0) {
+    			httpMethod_q = QueryHTTPMethod.POST;
+    		}else if(method.toLowerCase().compareTo("encoded post")==0){
+    			httpMethod_q = QueryHTTPMethod.URL_ENCODED_POST;
+    		}else if(method.toLowerCase().compareTo("get")==0){
+    			httpMethod_q = QueryHTTPMethod.GET;
+    		}
+    	}
+
+    	if(env.get("SEPA_PATH_QUERY")!=null) {
+    		path_q= env.get("SEPA_PATH_QUERY");
+    	}
+
+    	if(env.get("SEPA_PATH_UPDATE")!=null) {
+    		path_u= env.get("SEPA_PATH_UPDATE");
+    	}
     	
 		client= new SPARQL11Protocol();
 	}
 	
-	public String getGraph() {
-		return graph;
-	}
-	public String getGraph(String path) {
-		return graph+path;
-	}
 	
 	public Response executeUpdate(String sparql) {	
 		
@@ -72,7 +96,7 @@ public class SepaGateway {
 					scheme,
 					host,
 					port,
-					"/update",
+					path_u,
 					prefix_sparql,
 					new HashSet<String>(),
 					new HashSet<String>(),
@@ -98,7 +122,7 @@ public class SepaGateway {
 					scheme,
 					host,
 					port,
-					"/query",
+					path_q,
 					prefix_sparql,
 					new HashSet<String>(),
 					new HashSet<String>(),
