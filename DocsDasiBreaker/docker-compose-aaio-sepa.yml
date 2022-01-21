@@ -41,7 +41,7 @@ services:
     depends_on:
       - blazegraph
   scorpio:
-    image: vaimee/scorpio:1.0.4
+    image: vaimee/scorpio:1.0.6
     ports:
       - "9090:9090" 
     depends_on:
